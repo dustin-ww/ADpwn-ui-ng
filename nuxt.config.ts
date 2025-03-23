@@ -2,6 +2,9 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  future: {
+    compatibilityVersion: 4,
+  },
   compatibilityDate: "2024-11-01",
   css: ["~/assets/css/main.css", "v-network-graph/lib/style.css"],
   modules: [
@@ -18,7 +21,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     apiSecret: process.env.API_SECRET,
     public: {
-      apiBaseUrl: process.env.API_BASE_URL || 'http://127.0.0.1:8081'
-    }
-  }
+      apiBaseUrl: process.env.API_BASE_URL || "http://127.0.0.1:8081",
+    },
+  },
 });

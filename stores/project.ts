@@ -16,17 +16,16 @@ export const useProjectStore = defineStore("project", {
   }),
   getters: {
     projectID: (state) => state.project.id,
-    projectName: (state) => state.project.name
+    projectName: (state) => state.project.name,
   },
   actions: {
     setProject(id: string, name: string) {
-      this.project.id = id,
-      this.project.name = name
+      (this.project.id = id), (this.project.name = name);
     },
     clearProject() {
-      this.project.id = null
-      this.project.name = ''
-    }
+      this.project.id = null;
+      this.project.name = "";
+    },
   },
-  persist: true
+  persist: true,
 });
