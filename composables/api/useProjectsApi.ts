@@ -1,32 +1,34 @@
 // composables/api/projects.ts
-import { useApiClient } from '~/composables/api/apiWrapper'
-import { API_ROUTES } from '~/constants/apiRoutes'
+import { useApiClient } from '~/composables/api/useApiWrapper'
+import type { ProjectUpdateSchema } from '~/schemas/projectUpdate'
+import type { ADPwnProject } from '~/types/adpwn/ADPwnProject'
+import { API_ROUTES } from '~/utils/api-routes'
 
 export const useProjectsApi = () => {
   const api = useApiClient()
 
   return {
     // Projekte laden
-    getProjects: () => api.get<Project[]>(API_ROUTES.PROJECTS.OVERVIEWS),
+    getProjects: () => api.get<ADPwnProject[]>(API_ROUTES.PROJECTS.OVERVIEWS),
 
     // Projekt erstellen
-    createProject: (projectData: ProjectCreateDto) =>
-      api.create<Project>(API_ROUTES.PROJECTS.BASE, projectData),
+    createProject: (projectData: ProjectUpdateSchema) =>
+      api.create<ADPwnProject>(API_ROUTES.PROJECTS.BASE, projectData),
 
     // Projekt aktualisieren
-    updateProject: (uid: string, updateData: ProjectUpdateDto) =>
-      api.update<Project>(
+    updateProject: (uid: string, updateData: ProjectUpdateSchema) =>
+      api.update<ADPwnProject>(
         API_ROUTES.PROJECTS.DETAIL(uid),
         updateData,
         { headers: { 'Content-Type': 'application/merge-patch+json' } }
       ),
 
-    // Custom Request Beispiel
-    searchProjects: (query: string) =>
-      api.customRequest<ProjectSearchResult[]>(
-        `${API_ROUTES.PROJECTS.BASE}/search`,
-        'POST',
-        { data: { query } }
-      )
+    // Custom Request 
+    // searchProjects: (query: string) =>
+    //   api.customRequest<ProjectSearchResult[]>(
+    //     `${API_ROUTES.PROJECTS.BASE}/search`,
+    //     'POST',
+    //     { data: { query } }
+    //   )
   }
 }
