@@ -1,3 +1,1 @@
-export interface ADDomain {
-    
-}
+export interface ADDomain {}
