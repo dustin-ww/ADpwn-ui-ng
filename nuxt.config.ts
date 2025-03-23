@@ -7,7 +7,11 @@ export default defineNuxtConfig({
     '~/assets/css/main.css',
     'v-network-graph/lib/style.css'
   ],
-  modules: ['@nuxt/ui', '@pinia/nuxt', '@nuxt/icon'],
+  modules: [
+    '@nuxt/ui', 
+    '@pinia/nuxt', 
+    '@nuxt/icon',
+    'pinia-plugin-persistedstate/nuxt'],
   devtools: { enabled: true },
   vite: {
     plugins: [
