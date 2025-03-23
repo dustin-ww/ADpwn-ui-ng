@@ -13,7 +13,7 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "pinia-plugin-persistedstate/nuxt",
     "@nuxt/eslint",
-    '@vee-validate/nuxt',
+    "@vee-validate/nuxt",
   ],
   devtools: { enabled: true },
   vite: {

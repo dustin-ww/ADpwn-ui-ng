@@ -1,1 +1,3 @@
-<template><h1>Hi</h1></template>
+<template>
+  <h1>/</h1>
+</template>
