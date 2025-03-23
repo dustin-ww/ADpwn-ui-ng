@@ -84,11 +84,6 @@ const items = ref([
       icon: 'i-simple-icons-github',
       to: 'https://github.com/dustin-ww',
       target: '_blank'
-    },
-    {
-      label: 'Help',
-      icon: 'i-lucide-circle-help',
-      disabled: true
     }
   ]
 ])

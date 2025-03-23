@@ -3,14 +3,14 @@
 import { defineStore } from "pinia";
 
 interface Project {
-  id: string | null;
+  id: string;
   name: string;
 }
 
 export const useProjectStore = defineStore("project", {
   state: (): { project: Project } => ({
     project: {
-      id: null,
+      id: "",
       name: "",
     },
   }),
@@ -23,7 +23,7 @@ export const useProjectStore = defineStore("project", {
       (this.project.id = id), (this.project.name = name);
     },
     clearProject() {
-      this.project.id = null;
+      this.project.id = "";
       this.project.name = "";
     },
   },

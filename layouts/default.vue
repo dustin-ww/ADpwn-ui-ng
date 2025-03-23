@@ -35,49 +35,7 @@ const navbarlinks = [
   ],
 ];
 
-const sidebarlinks = [
-  {
-    label: "Dashboard",
-    icon: "material-symbols:dashboard",
-    to: "/",
-  },
-  {
-    label: "Project",
-    icon: "material-symbols:assignment-add-outline",
-    to: "/project",
-  },
-  {
-    label: "Domains",
-    icon: "material-symbols:assignment-add-outline",
-    to: "/domains",
-  },
-  {
-    label: "Hosts",
-    icon: "material-symbols:host",
-    to: "/hosts",
-  },
-  {
-    label: "Services",
-    icon: "material-symbols:tools-wrench-outline-sharp",
-    to: "/services",
-  },
-  {
-    label: "Users",
-    icon: "material-symbols:supervisor-account",
-    to: "/users",
-  },
-  { type: "divider" },
-  {
-    label: "Logs",
-    icon: "material-symbols:book-2-outline-rounded",
-    to: "/logs",
-  },
-  {
-    label: "Loot",
-    icon: "material-symbols:money-bag",
-    to: "/loot",
-  },
-];
+
 </script>
 
 <template>
@@ -92,7 +50,6 @@ const sidebarlinks = [
       </div>
     </div>
 
-    <!-- Main Content Area -->
     <div class="grid grid-cols-10 flex-grow overflow-hidden">
       <div class="col-span-1 flex flex-col justify-between">
         <!-- Navigation oben -->
@@ -100,7 +57,6 @@ const sidebarlinks = [
           <NavigationSidebar/>
         </div>
 
-        <!-- StatusViewer unten -->
         <div class="mt-auto">
           <StatusViewer />
         </div>

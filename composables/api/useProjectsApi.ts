@@ -1,6 +1,6 @@
 // composables/api/useProjectsApi.ts
 import { useApiClient } from "~/composables/api/useApiWrapper";
-import type { ProjectUpdateSchema } from "~/schemas/projectUpdate";
+import type { ProjectUpdateSchema } from "~/schemas/project";
 import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
 import { API_ROUTES } from "~/utils/api-routes";
 
@@ -18,6 +18,9 @@ export const useProjectsApi = () => {
       api.update<ADPwnProject>(API_ROUTES.PROJECTS.DETAIL(uid), updateData, {
         headers: { "Content-Type": "application/merge-patch+json" },
       }),
+      getProject: (uid: string) => 
+        api.get<ADPwnProject>(API_ROUTES.PROJECTS.DETAIL(uid)),
+    
     // Custom Request
     // searchProjects: (query: string) =>
     //   api.customRequest<ProjectSearchResult[]>(

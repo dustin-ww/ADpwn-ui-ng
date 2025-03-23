@@ -9,6 +9,12 @@ const items = ref([
       label: 'Config',
       icon: 'i-lucide-book-open',
       children: [
+      {
+          label: 'Project',
+          description: 'Fully styled and customizable components for Nuxt.',
+          icon: 'i-lucide-house',
+          to: "/project"
+        },
         {
           label: 'Domains',
           description: 'Fully styled and customizable components for Nuxt.',
