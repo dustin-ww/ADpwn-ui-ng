@@ -1,4 +1,6 @@
-export default defineNuxtRouteMiddleware((to, from) => {
+import { useProjectStore } from "~/stores/project";
+
+export default defineNuxtRouteMiddleware((to, _) => {
   const project = useProjectStore();
 
   const currentProject = computed(() => project.project.id);

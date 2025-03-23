@@ -1,4 +1,5 @@
 // stores/project.ts
+// This is a storage to save project id and name in a persistent user storage
 import { defineStore } from "pinia";
 
 interface Project {
@@ -6,7 +7,7 @@ interface Project {
   name: string;
 }
 
-export const useCounterStore = defineStore("project", {
+export const useProjectStore = defineStore("project", {
   state: (): { project: Project } => ({
     project: {
       id: null,
@@ -14,59 +15,18 @@ export const useCounterStore = defineStore("project", {
     },
   }),
   getters: {
-    doubleCount: (state) => state.count * 2,
+    projectID: (state) => state.project.id,
+    projectName: (state) => state.project.name
   },
   actions: {
-    increment() {
-      this.count++;
+    setProject(id: string, name: string) {
+      this.project.id = id,
+      this.project.name = name
     },
+    clearProject() {
+      this.project.id = null
+      this.project.name = ''
+    }
   },
+  persist: true
 });
-
-// export const useStore = defineStore(
-//     'project',
-//     {
-
-//     }
-//     () => {
-//       const someState = ref('hello pinia')
-//       return { someState }
-//     },
-//     {
-//       persist: true,
-//     },
-//   )
-
-// interface Project {
-//   id: string | null
-//   name: string
-// }
-
-// export const useProjectStore = defineStore('project', {
-//   state: (): { project: Project } => ({
-//     project: {
-//       id: null,
-//       name: ''
-//     }
-//   }),
-//   actions: {
-//     setProject(id: string, name: string) {
-//       this.project.id = id
-//       this.project.name = name
-//     },
-//     clearProject() {
-//       this.project.id = null
-//       this.project.name = ''
-//     }
-//   },
-//   // Persist-Konfiguration gemäß der aktuellen API des Plugins
-//   persist: {
-//     strategies: [
-//       {
-//         key: 'project',
-//         storage: typeof window !== 'undefined' ? localStorage : undefined,
-//         paths: ['project']
-//       }
-//     ]
-//   }
-// })

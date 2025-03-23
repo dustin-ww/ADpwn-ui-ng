@@ -11,7 +11,8 @@
     "lint": "yarn lint:eslint && yarn lint:prettier",
     "lint:eslint": "eslint .",
     "lint:prettier": "prettier . --check",
-    "lintfix": "eslint . --fix && prettier --write --list-different ."
+    "lintfix": "eslint . --fix && prettier --write --list-different .",
+    "prettyfix": "prettier . --write --list-different"
   },
   "dependencies": {
     "@nuxt/eslint": "^1.2.0",
@@ -29,6 +30,7 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
+    "@types/node": "^22.13.11",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.3",
     "prettier": "^3.5.3"
