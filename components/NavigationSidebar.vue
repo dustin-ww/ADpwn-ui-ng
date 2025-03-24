@@ -19,6 +19,7 @@ const items = ref([
           label: "Domains",
           description: "Fully styled and customizable components for Nuxt.",
           icon: "i-lucide-house",
+          to:"/domains"
         },
         {
           label: "Hosts",
