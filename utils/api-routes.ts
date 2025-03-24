@@ -1,10 +1,7 @@
 // constants/apiRoutes.ts
 
 /**
- * Zentrale Definition aller API-Endpunkte
- * - Verhindert Duplikation von Strings im Code
- * - Macht Änderungen an API-Pfaden einfacher zu verwalten
- * - Bietet eine Übersicht aller verfügbaren Endpunkte
+ * API Definition
  */
 
 export const API_ROUTES = {
@@ -18,7 +15,6 @@ export const API_ROUTES = {
         `/projects/${projectUid}/targets/${targetId}`,
     },
   },
-  // Hier kannst du weitere API-Bereiche hinzufügen
   USERS: {
     BASE: "/users",
     CURRENT: "/users/me",
@@ -30,5 +26,4 @@ export const API_ROUTES = {
     REGISTER: "/auth/register",
     REFRESH: "/auth/refresh",
   },
-  // Weitere Routen je nach Bedarf deiner Anwendung
 };

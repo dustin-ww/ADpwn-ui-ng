@@ -17,13 +17,13 @@ const loadProject = (id: string, name: string) => {
     <img
       class="w-1/12 min-w-[100px] max-w-[150px] mx-6 mt-4"
       src="/ADPwnLogo.png"
-    >
-    <ProjectList class="w-5/6">
+    />
+    <ListProjects class="w-5/6">
       <template #row-actions="{ row }">
         <UButton @click="loadProject(row.original.id, row.original.name)">
           Load {{ row.original.name }}
         </UButton>
       </template>
-    </ProjectList>
+    </ListProjects>
   </div>
 </template>

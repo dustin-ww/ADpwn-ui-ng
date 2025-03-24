@@ -10,8 +10,3 @@ export interface ADPwnModule {
   loot_path: string;
   key: string;
 }
-
-export interface ADPwnModuleInheritanceEdge {
-  previous_module: string;
-  next_module: string;
-}

@@ -11,3 +11,9 @@ export interface ADPwnProject {
   has_target?: ADTarget[];
   has_domain?: ADDomain[];
 }
+
+export interface Target {
+  uid: string
+  name: string
+  ip_range: string
+}

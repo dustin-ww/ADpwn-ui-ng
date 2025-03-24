@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NavigationNavbar } from '#components';
+import { NavigationNavbar } from "#components";
 
 const navbarlinks = [
   [
@@ -34,8 +34,6 @@ const navbarlinks = [
     },
   ],
 ];
-
-
 </script>
 
 <template>
@@ -46,7 +44,7 @@ const navbarlinks = [
         <ProjectSelector />
       </div>
       <div class="col-span-9">
-        <NavigationNavbar/>
+        <NavigationNavbar />
       </div>
     </div>
 
@@ -54,11 +52,11 @@ const navbarlinks = [
       <div class="col-span-1 flex flex-col justify-between">
         <!-- Navigation oben -->
         <div class="overflow-y-auto">
-          <NavigationSidebar/>
+          <NavigationSidebar />
         </div>
 
         <div class="mt-auto">
-          <StatusViewer />
+          <!-- <StatusViewer />-->
         </div>
       </div>
 

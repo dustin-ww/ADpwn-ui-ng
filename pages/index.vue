@@ -6,5 +6,5 @@ const id = computed(() => projectStore.projectID);
 </script>
 
 <template>
-    <p1></p1>
+  <p1></p1>
 </template>
