@@ -6,7 +6,7 @@
 
 export const API_ROUTES = {
   PROJECTS: {
-    BASE: "/projects",
+    BASE: "/projects/",
     OVERVIEWS: "/projects/overviews",
     DETAIL: (uid: string) => `/projects/${uid}`,
     TARGETS: {

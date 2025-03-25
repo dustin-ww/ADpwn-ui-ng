@@ -1,31 +1,54 @@
 // stores/project.ts
-// This is a storage to save project id and name in a persistent user storage
 import { defineStore } from "pinia";
-
-interface Project {
-  id: string;
-  name: string;
-}
+import { useProjectsApi } from "~/composables/api/useProjectsApi";
+import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
 
 export const useProjectStore = defineStore("project", {
-  state: (): { project: Project } => ({
-    project: {
+  state: () => ({
+    currentProject: {
       id: "",
       name: "",
     },
+    projects: [] as ADPwnProject[],
+    loading: false
   }),
   getters: {
-    projectID: (state) => state.project.id,
-    projectName: (state) => state.project.name,
+    projectID: (state) => state.currentProject.id,
+    projectName: (state) => state.currentProject.name,
+    hasProjects: (state) => {
+      return state.projects.length > 0
+    }
   },
   actions: {
     setProject(id: string, name: string) {
-      (this.project.id = id), (this.project.name = name);
+      this.currentProject.id = id;
+      this.currentProject.name = name;
     },
     clearProject() {
-      this.project.id = "";
-      this.project.name = "";
+      this.currentProject.id = "";
+      this.currentProject.name = "";
     },
-  },
-  persist: true,
-});
+    async fetchProjects() {
+      this.loading = true;
+      try {
+        const projectApi = useProjectsApi();
+        const response = await projectApi.getProjects();
+        
+        if (response.error) throw response.error;
+        
+        this.projects = response.data;
+        return response.data; 
+      } catch (error) {
+        console.error("Failed to fetch projects:", error);
+        throw error; 
+      } finally {
+        this.loading = false;
+      }
+    },
+  persist: [
+    {
+      pick: ['currentProject'],
+      storage: piniaPluginPersistedstate.localStorage(),
+    },
+  ],
+}});

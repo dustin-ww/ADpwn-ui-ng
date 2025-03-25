@@ -1,23 +1,22 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useProjectsApi } from "~/composables/api/useProjectsApi";
 import type { TableColumn } from "@nuxt/ui";
 import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
 
-const projectsApi = useProjectsApi();
 
-const { data: projects } = await useAsyncData("projects", () =>
-  projectsApi.getProjects(),
+const props = defineProps<{
+  projects: ADPwnProject[];
+  loading?: boolean;
+}>();
+
+const tableData = computed(() => 
+  props.projects.map((project) => ({
+    id: project.uid,
+    name: project.name,
+    description: project.description,
+  })) || []
 );
 
-const tableData = computed(
-  () =>
-    projects.value?.data?.map((project) => ({
-      id: project.uid,
-      name: project.name,
-      description: project.description,
-    })) || [],
-);
 
 const columns: TableColumn<ADPwnProject>[] = [
   { accessorKey: "id", header: "ID" },

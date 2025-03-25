@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const projectStore = useProjectStore();
-const currentProject = computed(() => projectStore.project.name);
+const currentProject = computed(() => projectStore.currentProject.name);
 </script>
 
 <template>

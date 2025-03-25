@@ -13,7 +13,7 @@ export interface ADPwnProject {
 }
 
 export interface Target {
-  uid: string
-  name: string
-  ip_range: string
+  uid: string;
+  name: string;
+  ip_range: string;
 }

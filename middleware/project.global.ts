@@ -3,7 +3,7 @@ import { useProjectStore } from "~/stores/project";
 export default defineNuxtRouteMiddleware((to, _) => {
   const project = useProjectStore();
 
-  const currentProject = computed(() => project.project.id);
+  const currentProject = computed(() => project.currentProject.id);
 
   const isProjectInStore =
     currentProject.value !== null &&

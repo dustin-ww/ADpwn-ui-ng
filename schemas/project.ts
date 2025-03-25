@@ -7,5 +7,11 @@ export const projectUpdateSchema = v.object({
   description: v.pipe(v.string()),
 });
 
+export const projectCreateSchema = v.object({
+  name: v.pipe(v.string(), v.minLength(3, "Must be at least 3 characters")),
+  description: v.pipe(v.string()),
+});
+
 // Typ-Definition
 export type ProjectUpdateSchema = v.InferOutput<typeof projectUpdateSchema>;
+export type ProjectCreateSchema = v.InferOutput<typeof projectCreateSchema>;
