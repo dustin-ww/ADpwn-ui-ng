@@ -20,7 +20,7 @@ async function onSubmit(_event: FormSubmitEvent<typeof projectCreateSchema>) {
 
   try {
     const { error } = await projectApi.createProject(projectCreateState);
-    
+
     if (error) {
       toast.add({
         title: "Error",
@@ -38,7 +38,7 @@ async function onSubmit(_event: FormSubmitEvent<typeof projectCreateSchema>) {
 
     projectCreateState.name = "";
     projectCreateState.description = "";
-    
+
     emit("submit-success");
   } catch (e) {
     toast.add({

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { ADPwnProject } from '~/types/adpwn/ADPwnProject';
+import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
 
 useHead({
-  title: 'ADPwn - Project Management',
-  meta: [{ name: 'description', content: 'Project management dashboard' }]
-})
+  title: "ADPwn - Project Management",
+  meta: [{ name: "description", content: "Project management dashboard" }],
+});
 
 definePageMeta({
   layout: false,
@@ -24,17 +24,17 @@ const loadProject = (id: string, name: string) => {
   navigateTo("/");
 };
 
-const { 
-  data: projects, 
-  refresh: refreshProjects, 
-  status: projectsStatus 
+const {
+  data: projects,
+  refresh: refreshProjects,
+  status: projectsStatus,
 } = useAsyncData<ADPwnProject[]>(
-  'projects',
+  "projects",
   async () => {
     try {
       await projectStore.fetchProjects();
-      console.log('Fetched projects:', projectStore.projects); // Debugging
-      return Array.isArray(projectStore.projects) ? projectStore.projects : []; 
+      console.log("Fetched projects:", projectStore.projects); // Debugging
+      return Array.isArray(projectStore.projects) ? projectStore.projects : [];
     } catch (error) {
       toast.add({
         title: "Error",
@@ -46,14 +46,13 @@ const {
   },
   {
     server: true,
-    immediate: true
-  }
+    immediate: true,
+  },
 );
 
 const handleSubmitSuccess = () => {
   refreshProjects();
 };
-
 </script>
 
 <template>
@@ -62,10 +61,10 @@ const handleSubmitSuccess = () => {
     <img
       class="w-1/12 min-w-[100px] max-w-[150px] mx-6 mt-4"
       src="/ADPwnLogo.png"
-    >
-    <ModalCreateProject class="mt-10" @project-created="handleSubmitSuccess"/>
-    <ListProjects 
-      :projects="projects || []" 
+    />
+    <ModalCreateProject class="mt-10" @project-created="handleSubmitSuccess" />
+    <ListProjects
+      :projects="projects || []"
       :loading="projectsStatus === 'pending'"
       class="w-5/6"
     >

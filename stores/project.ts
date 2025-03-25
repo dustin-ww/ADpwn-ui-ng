@@ -10,14 +10,14 @@ export const useProjectStore = defineStore("project", {
       name: "",
     },
     projects: [] as ADPwnProject[],
-    loading: false
+    loading: false,
   }),
   getters: {
     projectID: (state) => state.currentProject.id,
     projectName: (state) => state.currentProject.name,
     hasProjects: (state) => {
-      return state.projects.length > 0
-    }
+      return state.projects.length > 0;
+    },
   },
   actions: {
     setProject(id: string, name: string) {
@@ -33,22 +33,23 @@ export const useProjectStore = defineStore("project", {
       try {
         const projectApi = useProjectsApi();
         const response = await projectApi.getProjects();
-        
+
         if (response.error) throw response.error;
-        
+
         this.projects = response.data;
-        return response.data; 
+        return response.data;
       } catch (error) {
         console.error("Failed to fetch projects:", error);
-        throw error; 
+        throw error;
       } finally {
         this.loading = false;
       }
     },
-  persist: [
-    {
-      pick: ['currentProject'],
-      storage: piniaPluginPersistedstate.localStorage(),
-    },
-  ],
-}});
+    persist: [
+      {
+        pick: ["currentProject"],
+        storage: piniaPluginPersistedstate.localStorage(),
+      },
+    ],
+  },
+});

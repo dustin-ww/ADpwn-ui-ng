@@ -53,7 +53,7 @@ async function onSubmit(event: FormSubmitEvent<ProjectUpdateSchema>) {
         color: "success",
       });
       await projectStore.fetchProjects();
-      await refreshNuxtData('projects');
+      await refreshNuxtData("projects");
     }
   } catch (error) {
     toast.add({

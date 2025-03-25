@@ -14,7 +14,6 @@ const handleSubmitSuccess = () => {
   open.value = false;
   emit("project-created");
 };
-
 </script>
 
 <template>

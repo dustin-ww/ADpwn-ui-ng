@@ -1,18 +1,14 @@
 <script setup lang="ts">
-const projectStore = useProjectStore();
-const currentProject = computed(() => projectStore.currentProject.name);
 </script>
 
 <template>
-  <div class="flex justify-evenly place-content-center mt-3">
-    <NuxtLink to="/start" class="ml-2" reload>
-      <UBadge
-        class="mr-2"
-        color="primary"
-        label="Current Project"
-        variant="outline"
-      />
-      <UBadge color="primary" :label="currentProject" />
-    </NuxtLink>
+  <div class="flex place-content-center mt-3 w-full">
+    <UButton 
+      to="/start" 
+      ctarget="_blank" 
+      class="flex items-center justify-center w-1text-center"
+    >
+      Change Project
+    </UButton>
   </div>
 </template>

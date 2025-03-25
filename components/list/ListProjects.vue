@@ -3,14 +3,13 @@ import { computed } from "vue";
 import type { TableColumn } from "@nuxt/ui";
 import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
 
-
 const props = defineProps<{
   projects?: ADPwnProject[];
   loading?: boolean;
 }>();
 
 const tableData = computed(() => {
-  const projects = unref(props.projects) || []; 
+  const projects = unref(props.projects) || [];
   if (!Array.isArray(projects)) {
     return [];
   }

@@ -8,6 +8,8 @@ const items = ref([
     {
       label: "Config",
       icon: "i-lucide-book-open",
+      active: true,
+      defaultOpen: true,
       children: [
         {
           label: "Project",
@@ -63,8 +65,6 @@ const items = ref([
       label: "Loot",
       icon: "i-lucide-box",
       to: "/components",
-      active: true,
-      defaultOpen: true,
       children: [
         {
           label: "All",

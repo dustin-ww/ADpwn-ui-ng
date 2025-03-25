@@ -1,4 +1,7 @@
 <script setup lang="ts">
+
+const projectStore = useProjectStore();
+
 const items = ref([
   [
     {
@@ -84,12 +87,15 @@ const items = ref([
     },
   ],
   [
+  {
+      label: "Current Project: " + projectStore.projectName,
+    },
     {
       label: "GitHub",
       icon: "i-simple-icons-github",
       to: "https://github.com/dustin-ww",
       target: "_blank",
-    },
+    }
   ],
 ]);
 </script>
