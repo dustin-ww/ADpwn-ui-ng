@@ -5,7 +5,7 @@ const currentProject = computed(() => projectStore.currentProject.name);
 
 <template>
   <div class="flex justify-evenly place-content-center mt-3">
-    <NuxtLink to="/start" class="ml-2">
+    <NuxtLink to="/start" class="ml-2" reload>
       <UBadge
         class="mr-2"
         color="primary"

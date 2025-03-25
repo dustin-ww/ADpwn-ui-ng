@@ -10,7 +10,14 @@ definePageMeta({
   layout: false,
 });
 
+onMounted(async () => {
+  if (!projectStore.projects.length) {
+    await projectStore.fetchProjects();
+  }
+});
+
 const projectStore = useProjectStore();
+const toast = useToast();
 
 const loadProject = (id: string, name: string) => {
   projectStore.setProject(id, name);
@@ -25,22 +32,28 @@ const {
   'projects',
   async () => {
     try {
-      await projectStore.fetchProjects()
-      return projectStore.projects
+      await projectStore.fetchProjects();
+      console.log('Fetched projects:', projectStore.projects); // Debugging
+      return Array.isArray(projectStore.projects) ? projectStore.projects : []; 
     } catch (error) {
-      showError('Could not fetch projects')
-      return []
+      toast.add({
+        title: "Error",
+        description: error.message,
+        color: "error",
+      });
+      return []; // Fallback auf leeres Array
     }
   },
   {
     server: true,
-    immediate: !projectStore.hasProjects
+    immediate: true
   }
-)
+);
 
 const handleSubmitSuccess = () => {
   refreshProjects();
 };
+
 </script>
 
 <template>

@@ -25,4 +25,12 @@ export default defineNuxtConfig({
       apiBaseUrl: process.env.API_BASE_URL || "http://127.0.0.1:8081",
     },
   },
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      ]
+    }
+  }
 });
+

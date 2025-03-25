@@ -5,18 +5,21 @@ import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
 
 
 const props = defineProps<{
-  projects: ADPwnProject[];
+  projects?: ADPwnProject[];
   loading?: boolean;
 }>();
 
-const tableData = computed(() => 
-  props.projects.map((project) => ({
+const tableData = computed(() => {
+  const projects = unref(props.projects) || []; 
+  if (!Array.isArray(projects)) {
+    return [];
+  }
+  return projects.map((project) => ({
     id: project.uid,
     name: project.name,
     description: project.description,
-  })) || []
-);
-
+  }));
+});
 
 const columns: TableColumn<ADPwnProject>[] = [
   { accessorKey: "id", header: "ID" },

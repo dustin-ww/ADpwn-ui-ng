@@ -8,7 +8,7 @@ import {
 const projectStore = useProjectStore();
 const projectsApi = useProjectsApi();
 const { data: project, refresh } = await useAsyncData("projects", () =>
-  projectsApi.getProject(projectStore.project.id),
+  projectsApi.getProject(projectStore.projectID),
 );
 
 const isLoading = ref(false);
@@ -35,7 +35,7 @@ async function onSubmit(event: FormSubmitEvent<ProjectUpdateSchema>) {
 
   try {
     const response = await projectsApi.updateProject(
-      projectStore.project.id,
+      projectStore.projectID,
       event.data,
     );
 
@@ -52,9 +52,8 @@ async function onSubmit(event: FormSubmitEvent<ProjectUpdateSchema>) {
         description: "Project has been updated successfully.",
         color: "success",
       });
-
-      await refreshNuxtData();
-      await refresh();
+      await projectStore.fetchProjects();
+      await refreshNuxtData('projects');
     }
   } catch (error) {
     toast.add({
