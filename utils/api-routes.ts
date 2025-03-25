@@ -15,6 +15,10 @@ export const API_ROUTES = {
         `/projects/${projectUid}/targets/${targetId}`,
     },
   },
+  ADPWN_MODULES: {
+    BASE: "/adpmod/",
+    GRAPH: "/adpmod/graph",
+  },
   USERS: {
     BASE: "/users",
     CURRENT: "/users/me",

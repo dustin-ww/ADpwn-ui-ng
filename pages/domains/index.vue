@@ -1,3 +1,3 @@
 <template>
-  <h1>HI</h1>
+  <SharedHeading heading="Manage Domains" />
 </template>

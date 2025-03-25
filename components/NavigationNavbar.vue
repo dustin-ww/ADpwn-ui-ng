@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const projectStore = useProjectStore();
 
 const items = ref([
@@ -15,6 +14,7 @@ const items = ref([
           description:
             "See Graph with Dependencies between loaded ADPwn Modules.",
           icon: "i-lucide-house",
+          to: "/modules",
         },
         {
           label: "Module List",
@@ -87,7 +87,7 @@ const items = ref([
     },
   ],
   [
-  {
+    {
       label: "Current Project: " + projectStore.projectName,
     },
     {
@@ -95,7 +95,7 @@ const items = ref([
       icon: "i-simple-icons-github",
       to: "https://github.com/dustin-ww",
       target: "_blank",
-    }
+    },
   ],
 ]);
 </script>
