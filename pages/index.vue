@@ -45,5 +45,40 @@ const name = computed(() => projectStore.projectName);
         </template>
       </UCard>
     </div>
+    <div class="grid grid-cols-3 gap-4 m-20">
+      <UCard>
+        <template #header>
+          <h1>ADPwnModules</h1>
+        </template>
+
+        <Placeholder class="h-32" />
+
+        <template #footer>
+          <Placeholder class="h-8" />
+        </template>
+      </UCard>
+      <UCard>
+        <template #header>
+          <h1>Network Graph</h1>
+        </template>
+
+        <Placeholder class="h-32" />
+
+        <template #footer>
+          <Placeholder class="h-8" />
+        </template>
+      </UCard>
+      <UCard>
+        <template #header>
+          <h1>Network Change History</h1>
+        </template>
+
+        <Placeholder class="h-32" />
+
+        <template #footer>
+          <Placeholder class="h-8" />
+        </template>
+      </UCard>
+    </div>
   </div>
 </template>

@@ -21,6 +21,7 @@ const items = ref([
           description:
             "Learn how to install and configure Nuxt UI in your application.",
           icon: "i-lucide-cloud-download",
+          to: "/modules/list",
         },
         {
           label: "Run Queue",
@@ -106,6 +107,6 @@ const items = ref([
     highlight-color="primary"
     orientation="horizontal"
     :items="items"
-    class="data-[orientation=horizontal]:border-b border-(--ui-border) data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-48"
+    class="data-[orientation=horizontal]:border-b border-(--ui-border) data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-48 z-50"
   />
 </template>
