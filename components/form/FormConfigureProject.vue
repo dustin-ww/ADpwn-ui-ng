@@ -72,28 +72,28 @@ async function onSubmit(event: FormSubmitEvent<ProjectUpdateSchema>) {
   <UForm
     :schema="validationSchema"
     :state="projectUpdateState"
-    class="space-y-4 grid justify-items-center w-full h-full"
+    class="space-y-4 grid justify-items-center w-full h-full pb-10"
     @submit="onSubmit"
   >
-    <UFormField label="UID" name="uid">
+    <UFormField label="UID" name="uid" class="w-1/2">
       <UInput class="w-full" disabled :placeholder="project?.data?.uid" />
     </UFormField>
-    <UFormField label="Name" name="name">
+    <UFormField label="Name" name="name" class="w-1/2">
       <UInput
         v-model="projectUpdateState.name"
         class="w-full"
         :placeholder="project?.data?.name"
       />
     </UFormField>
-    <UFormField label="Description" name="description">
+    <UFormField label="Description" name="description" class="w-1/2">
       <UTextarea
         v-model="projectUpdateState.description"
         class="w-full"
         :placeholder="project?.data?.description"
       />
     </UFormField>
-    <UButton type="submit" :loading="isLoading" class="w-full h-1/2 mb-0">
-      Update
+    <UButton type="submit" :loading="isLoading" class="text-center w-1/2 h-1/2 mb-0 flex justify-center items-center">
+      Update Project
     </UButton>
   </UForm>
 </template>

@@ -1,9 +1,13 @@
 <template>
   <UModal :dismissible="false" title="Create Target">
-    <UButton label="Create Target" color="success" variant="subtle" />
-
+    <UButton
+      label="Create Target"
+      color="success"
+      variant="subtle"
+      class="flex justify-center items-center mx-auto"
+    />
     <template #body>
-      <h1>HI</h1>
+      <FormCreateTarget />
     </template>
   </UModal>
 </template>

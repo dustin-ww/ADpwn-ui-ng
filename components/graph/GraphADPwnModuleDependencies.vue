@@ -4,10 +4,8 @@ import * as vNG from "v-network-graph";
 import type { ADPwnInheritanceGraph } from "~/types/adpwn/ADPwnModuleGraph";
 import { useADPwnModuleApi } from "~/composables/api/useADwnModuleApi";
 
-// Stelle sicher, dass dagre nur clientseitig importiert wird
 let dagre: any = null;
 
-// Prüfe ob wir auf Client-Seite sind
 const isClient = typeof window !== "undefined";
 
 interface Node extends vNG.Node {
@@ -22,7 +20,6 @@ interface Edge extends vNG.Edge {
   dashed?: boolean;
 }
 
-// State für den Graph
 const nodes = ref<Record<string, Node>>({});
 const edges = ref<Record<string, Edge>>({});
 const layouts = ref<{ nodes: Record<string, { x: number; y: number }> }>({
@@ -33,7 +30,6 @@ const error = ref<string | null>(null);
 const graph = ref<vNG.VNetworkGraphInstance>();
 const nodeSize = 40;
 
-// Funktion zur Konvertierung von ADPwnInheritanceGraph zu v-network-graph Format
 const convertToGraphFormat = (graph: ADPwnInheritanceGraph) => {
   const graphNodes: Record<string, Node> = {};
   const graphEdges: Record<string, Edge> = {};
@@ -85,7 +81,6 @@ const convertToGraphFormat = (graph: ADPwnInheritanceGraph) => {
   };
 };
 
-// Event Handler
 const eventHandlers: vNG.EventHandlers = {
   "node:click": ({ node }) => {
     const moduleKey = node as string;
@@ -98,7 +93,6 @@ const eventHandlers: vNG.EventHandlers = {
   },
 };
 
-// Reaktive Konfigurationen
 const configs = reactive(
   vNG.defineConfigs<Node, Edge>({
     view: {
@@ -149,12 +143,13 @@ const configs = reactive(
   }),
 );
 
-// Rohdaten des Graphen speichern
-const graphData = ref<ADPwnInheritanceGraph | null>(null);
+const graphData = ref<ADPwnInheritanceGraph | null>({
+  nodes: [],
+  edges: [],
+}); // Ensure consistent structure
 
 const { getGraph } = useADPwnModuleApi();
 
-// Layout-Funktionen mit dagre
 function layout(direction: "TB" | "LR") {
   if (
     !dagre ||
@@ -205,16 +200,16 @@ onMounted(async () => {
     try {
       dagre = await import("dagre").then((m) => m.default || m);
     } catch (e) {
-      console.error("Fehler beim Laden der dagre-Bibliothek:", e);
+      console.error("Error loading dagre library:", e);
     }
   }
 
   try {
     loading.value = true;
     const data = await getGraph();
-    graphData.value = data.data;
+    graphData.value = data.data ?? { nodes: [], edges: [] }; // Ensure consistent structure
 
-    const formattedGraph = convertToGraphFormat(data.data);
+    const formattedGraph = convertToGraphFormat(graphData.value);
     nodes.value = formattedGraph.nodes;
     edges.value = formattedGraph.edges;
     layouts.value = formattedGraph.layouts;
@@ -228,7 +223,7 @@ onMounted(async () => {
     error.value =
       err instanceof Error
         ? err.message
-        : "Ein unbekannter Fehler ist aufgetreten";
+        : "An unknown error occurred";
     loading.value = false;
   }
 });

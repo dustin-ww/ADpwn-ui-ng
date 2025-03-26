@@ -4,16 +4,18 @@
   <div>
     <SharedHeading heading="Manage Project" />
     <div
-      class="grid grid-cols-2 gap-x-10 justify-items-center w-full max-w-4xl mx-auto px-4 text-center"
+      class="grid grid-cols-2 gap-x-10 justify-items-center w-full mx-auto px-4 text-center"
     >
       <div class="w-full bg-black border-solid rounded-lg">
-        Configure Project
+        <h1 class="text-2xl mt-5">Configure Project</h1>
         <FormConfigureProject />
       </div>
       <div class="w-full bg-black border-solid rounded-lg">
-        Configure Targets
-        <ListTarget />
-        <ModalModelCreateTarget />
+        <h1 class="text-2xl mt-5">Configure Targets</h1>
+        <div class="mb-10 mt-10">
+          <ListTarget />
+          <ModalModelCreateTarget class="w-1/2"/>
+        </div>
       </div>
     </div>
   </div>

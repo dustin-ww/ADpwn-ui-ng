@@ -33,7 +33,6 @@ const columnFilters = ref([
 const table = useTemplateRef("table");
 </script>
 <template>
-  <h1 class="text-3xl">Targets</h1>
   <UInput
     :model-value="table?.tableApi?.getColumn('ip')?.getFilterValue() as string"
     class="max-w-sm"

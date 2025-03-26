@@ -28,7 +28,8 @@ export const useProjectStore = defineStore("project", {
       this.currentProject.id = "";
       this.currentProject.name = "";
     },
-    async fetchProjects() {
+    async fetchProjects(force = false) {
+      if (this.hasProjects && !force) return;
       this.loading = true;
       try {
         const projectApi = useProjectsApi();
