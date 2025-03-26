@@ -221,9 +221,7 @@ onMounted(async () => {
     loading.value = false;
   } catch (err) {
     error.value =
-      err instanceof Error
-        ? err.message
-        : "An unknown error occurred";
+      err instanceof Error ? err.message : "An unknown error occurred";
     loading.value = false;
   }
 });

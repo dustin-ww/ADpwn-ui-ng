@@ -41,16 +41,15 @@ const {
         description: error.message,
         color: "error",
       });
-      return []; // Fallback to an empty array
+      return [];
     }
   },
   {
     server: true,
     immediate: true,
-    default: () => [], // Ensure default value for hydration
+    default: () => [],
   },
 );
-
 
 const handleSubmitSuccess = () => {
   refreshProjects();

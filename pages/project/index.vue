@@ -14,7 +14,7 @@
         <h1 class="text-2xl mt-5">Configure Targets</h1>
         <div class="mb-10 mt-10">
           <ListTarget />
-          <ModalModelCreateTarget class="w-1/2"/>
+          <ModalModelCreateTarget class="w-1/2" />
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ADPwnProject } from '~/types/adpwn/ADPwnProject';
+import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
 
 const moduleStore = useADPwnModuleStore();
 const toast = useToast();
@@ -7,7 +7,7 @@ const toast = useToast();
 const {
   data: modules,
   refresh: freshModules,
-  status: modulesStatus, // Corrected to match the template usage
+  status: modulesStatus,
 } = useAsyncData<ADPwnProject[]>(
   "projects",
   async () => {
@@ -30,12 +30,14 @@ const {
     default: () => [],
   },
 );
-
 </script>
 
 <template>
   <div class="flex flex-col flex-1 w-full">
-    <ListADPwnModules :modules="modules || []" :loading="modulesStatus === 'pending'">
+    <ListADPwnModules
+      :modules="modules || []"
+      :loading="modulesStatus === 'pending'"
+    >
       <template #row-actions="{ row }">
         <UButton class="w-full text-center justify-self-center cursor-pointer">
           Run

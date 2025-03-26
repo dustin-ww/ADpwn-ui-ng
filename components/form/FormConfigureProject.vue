@@ -92,7 +92,11 @@ async function onSubmit(event: FormSubmitEvent<ProjectUpdateSchema>) {
         :placeholder="project?.data?.description"
       />
     </UFormField>
-    <UButton type="submit" :loading="isLoading" class="text-center w-1/2 h-1/2 mb-0 flex justify-center items-center">
+    <UButton
+      type="submit"
+      :loading="isLoading"
+      class="text-center w-1/2 h-1/2 mb-0 flex justify-center items-center"
+    >
       Update Project
     </UButton>
   </UForm>
