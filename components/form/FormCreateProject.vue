@@ -40,10 +40,10 @@ async function onSubmit(_event: FormSubmitEvent<typeof projectCreateSchema>) {
     projectCreateState.description = "";
 
     emit("submit-success");
-  } catch (e) {
+  } catch (error) {
     toast.add({
       title: "Error",
-      description: "An unexpected error occurred",
+      description: "An unexpected error occurred: " + (error as Error).message,
       color: "error",
     });
   } finally {

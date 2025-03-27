@@ -10,7 +10,7 @@ const emit = defineEmits<{
   (e: "project-created"): void;
 }>();
 
-const handleSubmitSuccess = () => {
+const handleSubmitSuccess = async () => {
   open.value = false;
   emit("project-created");
 };
@@ -18,9 +18,14 @@ const handleSubmitSuccess = () => {
 
 <template>
   <UModal v-model:open="open" :dismissible="false" title="Create Project">
-    <UButton label="Create Project" color="success" variant="subtle" />
+    <UButton
+      label="Create Project"
+      color="success"
+      variant="subtle"
+      @click="open = true"
+    />
     <template #body>
-      <FormCreateProject :projects @submit-success="handleSubmitSuccess" />
+      <FormCreateProject @submit-success="handleSubmitSuccess" />
     </template>
   </UModal>
 </template>

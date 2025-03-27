@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
+import type { ADPwnModule } from "~/types/adpwn/ADPwnModule";
 
 const moduleStore = useADPwnModuleStore();
 const toast = useToast();
 
 const {
   data: modules,
-  refresh: freshModules,
+  refresh: _,
   status: modulesStatus,
-} = useAsyncData<ADPwnProject[]>(
+} = useAsyncData<ADPwnModule[]>(
   "projects",
   async () => {
     try {
@@ -19,8 +19,12 @@ const {
             uid: module.uid || "",
           }))
         : [];
-    } catch (error: any) {
-      toast.error(error.message || "An error occurred");
+    } catch (error) {
+      toast.add({
+        title: "Error",
+        description: (error as Error).message,
+        color: "error",
+      });
       return [];
     }
   },
@@ -38,7 +42,7 @@ const {
       :modules="modules || []"
       :loading="modulesStatus === 'pending'"
     >
-      <template #row-actions="{ row }">
+      <template #row-actions="">
         <UButton class="w-full text-center justify-self-center cursor-pointer">
           Run
         </UButton>

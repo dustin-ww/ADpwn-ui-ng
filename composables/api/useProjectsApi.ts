@@ -1,6 +1,7 @@
 // composables/api/useProjectsApi.ts
 import { useApiClient } from "~/composables/api/useApiWrapper";
 import type { ProjectUpdateSchema } from "~/schemas/project";
+import type { TargetSchema } from "~/schemas/target";
 import type { ADPwnProject, Target } from "~/types/adpwn/ADPwnProject";
 import { API_ROUTES } from "~/utils/api-routes";
 
@@ -24,7 +25,14 @@ export const useProjectsApi = () => {
 
     // Get Project Targets with Project UID
     getTargets: (uid: string) =>
-      api.get<Target[]>(API_ROUTES.PROJECTS.TARGETS.LIST(uid)),
+      api.get<Target[]>(API_ROUTES.PROJECTS.TARGETS.BASE(uid)),
+
+    // Create Target for Project with given UID
+    createTarget: (projectUid: string, targetData: TargetSchema) =>
+      api.create<Target>(
+        API_ROUTES.PROJECTS.TARGETS.BASE(projectUid),
+        targetData,
+      ),
 
     // Custom Request
     // searchProjects: (query: string) =>

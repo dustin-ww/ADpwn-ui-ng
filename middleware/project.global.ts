@@ -1,11 +1,11 @@
-import { useProjectStore } from "~/stores/project";
+import { useCurrentProjectStore } from "~/stores/currentProject";
 
 export default defineNuxtRouteMiddleware((to) => {
   if (import.meta.server) return;
 
-  const project = useProjectStore();
+  const project = useCurrentProjectStore();
 
-  const isProjectInStore = project.currentProject.id !== "";
+  const isProjectInStore = project.id !== "";
 
   if (to.path === "/start") {
     return;

@@ -10,7 +10,7 @@ export const API_ROUTES = {
     OVERVIEWS: "/projects/overviews",
     DETAIL: (uid: string) => `/projects/${uid}`,
     TARGETS: {
-      LIST: (projectUid: string) => `/projects/${projectUid}/targets`,
+      BASE: (projectUid: string) => `/projects/${projectUid}/targets`,
       DETAIL: (projectUid: string, targetId: string) =>
         `/projects/${projectUid}/targets/${targetId}`,
     },

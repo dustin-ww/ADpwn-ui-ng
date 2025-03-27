@@ -23,21 +23,13 @@ import * as v from "valibot";
 //   ),
 // );
 
-
-
 export const targetSchema = v.object({
-    name: v.pipe(
-      v.string(),
-      v.minLength(3, "Must be at least 3 characters")
-    ),
-    ip: v.pipe(
-      v.string(),
-      v.ipv4("Must be a valid IP address")
-    ),
-    cidr: v.pipe(
-      v.number(),
-      v.maxValue(32, "Must be a valid CIDR notation (<= /32)")),
-  });
-  
+  name: v.pipe(v.string(), v.minLength(3, "Must be at least 3 characters")),
+  ip: v.pipe(v.string(), v.ipv4("Must be a valid IP address")),
+  cidr: v.pipe(
+    v.number(),
+    v.maxValue(32, "Must be a valid CIDR notation (<= /32)"),
+  ),
+});
 
 export type TargetSchema = v.InferOutput<typeof targetSchema>;

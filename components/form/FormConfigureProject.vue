@@ -1,103 +1,84 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
-import { useProjectsApi } from "~/composables/api/useProjectsApi";
-import {
-  projectUpdateSchema,
-  type ProjectUpdateSchema,
-} from "~/schemas/project";
-const projectStore = useProjectStore();
-const projectsApi = useProjectsApi();
-const { data: project, refresh } = await useAsyncData("projects", () =>
-  projectsApi.getProject(projectStore.projectID),
-);
+import { projectUpdateSchema } from "~/schemas/project";
+import { useCurrentProjectStore } from "~/stores/currentProject";
 
+const currentProjectStore = useCurrentProjectStore();
+const toast = useToast();
 const isLoading = ref(false);
 
-const projectUpdateState = reactive({
-  name: "",
-  description: "",
+const formState = reactive({
+  name: currentProjectStore.name,
+  description: currentProjectStore.description || '',
 });
-const validationSchema = projectUpdateSchema;
-watch(
-  () => project.value,
-  (newProject) => {
-    if (newProject) {
-      projectUpdateState.name = newProject.data?.name || "";
-      projectUpdateState.description = newProject.data?.description || "";
-    }
-  },
-  { immediate: true },
-);
-const toast = useToast();
 
-async function onSubmit(event: FormSubmitEvent<ProjectUpdateSchema>) {
-  isLoading.value = true;
-
+const handleSubmit = async (_: FormSubmitEvent<typeof formState>) => {
   try {
-    const response = await projectsApi.updateProject(
-      projectStore.projectID,
-      event.data,
-    );
+    isLoading.value = true;
 
-    if (response.error) {
-      toast.add({
-        title: "Error",
-        description: `Failed to update project: ${response.error.message}`,
-        color: "error",
-      });
-      console.error("Update error:", response.error);
-    } else {
-      toast.add({
-        title: "Success",
-        description: "Project has been updated successfully.",
-        color: "success",
-      });
-      await projectStore.fetchProjects();
-      await refreshNuxtData("projects");
-    }
+    await currentProjectStore.updateProject({
+      name: formState.name,
+      description: formState.description,
+    });
+
+    toast.add({
+      title: 'Project updated',
+      color: 'success',
+      icon: 'i-heroicons-check-circle',
+    });
   } catch (error) {
     toast.add({
-      title: "Error",
-      description: "An unexpected error occurred.",
-      color: "error",
+      title: 'Error while updating project',
+      description: error instanceof Error ? error.message : 'Unbekannter Fehler',
+      color: 'error',
+      icon: 'i-heroicons-x-circle',
     });
-    console.error("Unexpected error:", error);
   } finally {
     isLoading.value = false;
   }
-}
+};
 </script>
 
 <template>
-  <UForm
-    :schema="validationSchema"
-    :state="projectUpdateState"
+  <UForm 
+    :schema="projectUpdateSchema" 
+    :state="formState"
     class="space-y-4 grid justify-items-center w-full h-full pb-10"
-    @submit="onSubmit"
+    @submit="handleSubmit"
   >
     <UFormField label="UID" name="uid" class="w-1/2">
-      <UInput class="w-full" disabled :placeholder="project?.data?.uid" />
+      <UInput 
+        :model-value="currentProjectStore.uid" 
+        class="w-full" 
+        disabled 
+      />
     </UFormField>
+
     <UFormField label="Name" name="name" class="w-1/2">
       <UInput
-        v-model="projectUpdateState.name"
+        v-model="formState.name"
         class="w-full"
-        :placeholder="project?.data?.name"
+        placeholder="Name"
       />
     </UFormField>
+
     <UFormField label="Description" name="description" class="w-1/2">
       <UTextarea
-        v-model="projectUpdateState.description"
+        v-model="formState.description"
         class="w-full"
-        :placeholder="project?.data?.description"
+        placeholder="This is a cool description..."
+        :rows="5"
       />
     </UFormField>
+
     <UButton
       type="submit"
       :loading="isLoading"
-      class="text-center w-1/2 h-1/2 mb-0 flex justify-center items-center"
+      class="w-1/2 min-h-10"
+      variant="solid"
+      color="primary"
     >
-      Update Project
+      Projekt aktualisieren
     </UButton>
   </UForm>
 </template>

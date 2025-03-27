@@ -1,5 +1,8 @@
 <script setup lang="ts">
-const projectStore = useProjectStore();
+import { useCurrentProjectStore } from '~/stores/currentProject';
+
+const currentProjectStore = useCurrentProjectStore;
+
 
 const items = ref([
   [
@@ -89,7 +92,7 @@ const items = ref([
   ],
   [
     {
-      label: "Current Project: " + projectStore.projectName,
+      label: "Current Project: " + currentProjectStore().name,
     },
     {
       label: "GitHub",

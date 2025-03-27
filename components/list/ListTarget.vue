@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { useProjectsStore } from "#imports";
 import type { TableColumn } from "@nuxt/ui";
 import { useProjectsApi } from "~/composables/api/useProjectsApi";
 import type { Target } from "~/types/adpwn/ADPwnProject";
 
-const projectStore = useProjectStore();
+const projectStore = useProjectsStore();
 const projectApi = useProjectsApi();
 
 const { data: targets } = await useAsyncData("targets", () =>

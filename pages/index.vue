@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { useCurrentProjectStore } from "~/stores/currentProject";
 
-const projectStore = useProjectStore();
-const id = computed(() => projectStore.projectID);
-const name = computed(() => projectStore.projectName);
+const currentProjectStore = useCurrentProjectStore();
+const id = computed(() => currentProjectStore.getUID);
+const name = computed(() => currentProjectStore.getName);
 </script>
 
 <template>

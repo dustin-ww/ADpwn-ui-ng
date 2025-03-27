@@ -1,21 +1,60 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
+import { useProjectsApi } from "~/composables/api/useProjectsApi";
 import { targetSchema } from "~/schemas/target";
 
 const targetCreateState = reactive({
+  name: "",
   ip: "",
   cidr: "",
-  name: "",
 });
 
 const toast = useToast();
-async function onSubmit(event: FormSubmitEvent<typeof targetSchema>) {
-  toast.add({
-    title: "Success",
-    description: "The form has been submitted.",
-    color: "success",
-  });
-  console.log(event.data);
+const projectApi = useProjectsApi();
+const projectStore = useProjectStore();
+const isLoading = ref(false);
+const emit = defineEmits<{
+  (e: "submit-success"): void;
+}>();
+
+async function onSubmit(_event: FormSubmitEvent<typeof targetSchema>) {
+  isLoading.value = true;
+
+  try {
+    const { error } = await projectApi.createTarget(projectStore.projectID, {
+      ...targetCreateState,
+      cidr: Number(targetCreateState.cidr),
+    });
+
+    if (error) {
+      toast.add({
+        title: "Error",
+        description: error.message || "Target creation failed",
+        color: "error",
+      });
+      return;
+    }
+
+    toast.add({
+      title: "Success",
+      description: "Target created successfully",
+      color: "success",
+    });
+
+    targetCreateState.name = "";
+    targetCreateState.ip = "";
+    targetCreateState.cidr = "";
+
+    emit("submit-success");
+  } catch (error) {
+    toast.add({
+      title: "Error",
+      description: "An unexpected error occurred: " + (error as Error).message,
+      color: "error",
+    });
+  } finally {
+    isLoading.value = false;
+  }
 }
 </script>
 

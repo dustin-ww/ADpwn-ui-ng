@@ -9,10 +9,7 @@ const props = defineProps<{
 }>();
 
 const tableData = computed(() => {
-  const projects = unref(props.projects) || [];
-  if (!Array.isArray(projects)) {
-    return [];
-  }
+  const projects = props.projects || [];
   return projects.map((project) => ({
     id: project.uid,
     name: project.name,
