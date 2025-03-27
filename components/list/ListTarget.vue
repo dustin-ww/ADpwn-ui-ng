@@ -1,54 +1,54 @@
 <script setup lang="ts">
-import { useProjectsStore } from "#imports";
+import { useCurrentProjectStore } from "~/stores/currentProject";
 import type { TableColumn } from "@nuxt/ui";
-import { useProjectsApi } from "~/composables/api/useProjectsApi";
-import type { Target } from "~/types/adpwn/ADPwnProject";
 
-const projectStore = useProjectsStore();
-const projectApi = useProjectsApi();
+const currentProjectStore = useCurrentProjectStore();
 
-const { data: targets } = await useAsyncData("targets", () =>
-  projectApi.getTargets(projectStore.project.id),
+// Daten aus dem Store holen
+const tableData = computed(() => 
+  currentProjectStore.targets.map(target => ({
+    ip: target.ip_range,
+    note: target.name
+  }))
 );
 
-const tableData = computed(
-  () =>
-    targets.value?.data?.map((target) => ({
-      ip: target.ip_range,
-      note: target.name,
-    })) || [],
-);
-
-const columns: TableColumn<Target>[] = [
+// Spaltendefinition
+const columns: TableColumn[] = [
   { accessorKey: "ip", header: "IP" },
-  { accessorKey: "note", header: "Note" },
+  { accessorKey: "note", header: "Note" }
 ];
 
-const columnFilters = ref([
-  {
-    id: "",
-    value: "",
-  },
-]);
-
+// Filter-Refs
+const columnFilters = ref([{ id: "", value: "" }]);
 const table = useTemplateRef("table");
+
+// Initiales Laden der Targets
+onMounted(async () => {
+  await currentProjectStore.fetchTargets();
+});
 </script>
+
 <template>
-  <UInput
-    :model-value="table?.tableApi?.getColumn('ip')?.getFilterValue() as string"
-    class="max-w-sm"
-    placeholder="Filter ips..."
-    @update:model-value="
-      table?.tableApi?.getColumn('ip')?.setFilterValue($event)
-    "
-  />
-  <div class="min-h-[300px]">
-    <!-- Add this wrapper div with minimum height -->
-    <UTable
-      ref="table"
-      v-model:column-filters="columnFilters"
-      :data="tableData"
-      :columns="columns"
+  <div class="space-y-4">
+    <UInput
+      :model-value="table?.tableApi?.getColumn('ip')?.getFilterValue() as string"
+      class="max-w-sm"
+      placeholder="Filter IPs..."
+      @update:model-value="table?.tableApi?.getColumn('ip')?.setFilterValue($event)"
     />
+
+    <div class="min-h-[300px] relative">
+      <UTable
+        ref="table"
+        v-model:column-filters="columnFilters"
+        :data="tableData"
+        :columns="columns"
+        :loading="currentProjectStore.loading"
+      />
+
+      <div v-if="currentProjectStore.error" class="mt-4 text-red-500">
+        Error: {{ currentProjectStore.error.message }}
+      </div>
+    </div>
   </div>
 </template>

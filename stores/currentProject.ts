@@ -3,6 +3,7 @@ import { useProjectsApi } from "~/composables/api/useProjectsApi";
 import type { ADTarget } from "~/types/ad/ADTarget";
 import { useProjectsStore } from "./projects";
 import type { ProjectUpdateSchema } from "~/schemas/project";
+import type { TargetSchema } from "~/schemas/target";
 
 interface CurrentProjectState {
   uid: string;
@@ -62,6 +63,32 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       } finally {
         this.loading = false;
       }
+    },
+
+    async createTarget(targetData: TargetSchema) {
+        this.loading = true;
+        try {
+            const api = useProjectsApi();
+            const response = await api.createTarget(this.uid, targetData);
+            
+            if (response.error) {
+                throw response.error;
+            }
+            
+            if (response.data) {
+                this.targets.push(response.data);
+            } else {
+                throw new Error("Target creation response is undefined");
+            }
+            
+            console.log("Target created successfully", response.data);
+            return { success: true };
+            } catch (error) {
+            this.handleError(error instanceof Error ? error : new Error('Target creation failed'));
+            throw error;
+            } finally {
+            this.loading = false;
+            }
     },
 
     async updateProject(payload: ProjectUpdateSchema) {

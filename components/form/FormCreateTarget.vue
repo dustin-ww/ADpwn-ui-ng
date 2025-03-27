@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { useCurrentProjectStore } from "~/stores/currentProject";
 import type { FormSubmitEvent } from "@nuxt/ui";
-import { useProjectsApi } from "~/composables/api/useProjectsApi";
 import { targetSchema } from "~/schemas/target";
 
 const targetCreateState = reactive({
@@ -10,8 +10,7 @@ const targetCreateState = reactive({
 });
 
 const toast = useToast();
-const projectApi = useProjectsApi();
-const projectStore = useProjectStore();
+const currentProjectStore = useCurrentProjectStore();
 const isLoading = ref(false);
 const emit = defineEmits<{
   (e: "submit-success"): void;
@@ -21,19 +20,10 @@ async function onSubmit(_event: FormSubmitEvent<typeof targetSchema>) {
   isLoading.value = true;
 
   try {
-    const { error } = await projectApi.createTarget(projectStore.projectID, {
+    await currentProjectStore.createTarget({
       ...targetCreateState,
       cidr: Number(targetCreateState.cidr),
     });
-
-    if (error) {
-      toast.add({
-        title: "Error",
-        description: error.message || "Target creation failed",
-        color: "error",
-      });
-      return;
-    }
 
     toast.add({
       title: "Success",
@@ -41,10 +31,12 @@ async function onSubmit(_event: FormSubmitEvent<typeof targetSchema>) {
       color: "success",
     });
 
+    // Formular zurücksetzen
     targetCreateState.name = "";
     targetCreateState.ip = "";
     targetCreateState.cidr = "";
 
+    // Erfolgs-Event auslösen
     emit("submit-success");
   } catch (error) {
     toast.add({
@@ -65,31 +57,47 @@ async function onSubmit(_event: FormSubmitEvent<typeof targetSchema>) {
     class="space-y-4"
     @submit="onSubmit"
   >
-    <!-- Grid für IP und CIDR -->
+    <!-- IP/CIDR Input Group -->
     <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-      <!-- IP Field -->
       <UFormField label="IP*" name="ip" class="flex flex-col">
-        <UInput v-model="targetCreateState.ip" placeholder="0.0.0.0" />
+        <UInput
+          v-model="targetCreateState.ip"
+          placeholder="0.0.0.0"
+          data-testid="ip-input"
+        />
       </UFormField>
 
-      <!-- Separator -->
       <span class="text-center text-lg font-bold mt-5">/</span>
 
-      <!-- CIDR Suffix Field -->
       <UFormField label="CIDR Suffix" name="cidr" class="flex flex-col">
-        <UInput v-model.number="targetCreateState.cidr" placeholder="24" />
+        <UInput
+          v-model.number="targetCreateState.cidr"
+          placeholder="24"
+          type="number"
+          min="0"
+          max="32"
+          data-testid="cidr-input"
+        />
       </UFormField>
     </div>
 
-    <!-- Letztes Input-Feld über die gesamte Breite -->
+    <!-- Name Input -->
     <UFormField label="Note" name="note" class="w-full">
       <UInput
         v-model="targetCreateState.name"
         placeholder="Suspected Domain Controller.."
+        data-testid="name-input"
       />
     </UFormField>
 
     <!-- Submit Button -->
-    <UButton type="submit"> Create </UButton>
+    <UButton
+      type="submit"
+      :loading="isLoading"
+      class="mt-4"
+      data-testid="submit-button"
+    >
+      Create Target
+    </UButton>
   </UForm>
 </template>
