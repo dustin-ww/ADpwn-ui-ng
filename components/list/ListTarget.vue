@@ -4,7 +4,6 @@ import type { TableColumn } from "@nuxt/ui";
 
 const currentProjectStore = useCurrentProjectStore();
 
-// Daten aus dem Store holen
 const tableData = computed(() => 
   currentProjectStore.targets.map(target => ({
     ip: target.ip_range,
@@ -12,17 +11,14 @@ const tableData = computed(() =>
   }))
 );
 
-// Spaltendefinition
 const columns: TableColumn[] = [
   { accessorKey: "ip", header: "IP" },
   { accessorKey: "note", header: "Note" }
 ];
 
-// Filter-Refs
 const columnFilters = ref([{ id: "", value: "" }]);
 const table = useTemplateRef("table");
 
-// Initiales Laden der Targets
 onMounted(async () => {
   await currentProjectStore.fetchTargets();
 });

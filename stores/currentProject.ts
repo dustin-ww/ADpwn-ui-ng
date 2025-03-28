@@ -96,23 +96,18 @@ export const useCurrentProjectStore = defineStore("currentProject", {
           this.loading = true;
           const api = useProjectsApi();
           
-          // API-Call mit UID und Payload
           const { error } = await api.updateProject(this.uid, payload);
       
           if (error) {
             throw error;
           }
       
-          // Lokale Store-Daten aktualisieren
           this.name = payload.name ?? this.name;
           this.description = payload.description ?? this.description;
       
-          // Hauptstore aktualisieren mit kombinierten Daten
           const projectsStore = useProjectsStore();
           projectsStore.updateProject({
             uid: this.uid,
-            // name is already included in the spread operator
-            // Behalte existierende Werte falls nicht im Payload
             ...payload
           });
       

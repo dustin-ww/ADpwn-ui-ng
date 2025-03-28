@@ -54,7 +54,7 @@ const items = ref([
           label: "Network Graph",
           icon: "i-lucide-file-text",
           description: "Define shortcuts for your application.",
-          to: "/composables/define-shortcuts",
+          to: "/network",
         },
         {
           label: "Discovered Network Changes",
