@@ -31,12 +31,10 @@ async function onSubmit(_event: FormSubmitEvent<typeof targetSchema>) {
       color: "success",
     });
 
-    // Formular zurücksetzen
     targetCreateState.name = "";
     targetCreateState.ip = "";
     targetCreateState.cidr = "";
 
-    // Erfolgs-Event auslösen
     emit("submit-success");
   } catch (error) {
     toast.add({

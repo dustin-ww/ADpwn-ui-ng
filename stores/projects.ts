@@ -20,7 +20,7 @@ export const useProjectsStore = defineStore("projects", {
 
   actions: {
     async fetchProjects(force = false) {
-        console.log("Fetching projects...");
+      console.log("Fetching projects...");
       if (this.list.length > 0 && !force) return;
 
       this.loading = true;
@@ -29,7 +29,7 @@ export const useProjectsStore = defineStore("projects", {
         const response = await api.getProjects();
         if (response.error) throw response.error;
         this.list = response.data ?? [];
-        console.log("Fetched projects:", this.list);   
+        console.log("Fetched projects:", this.list);
       } catch (error) {
         this.handleError(error);
       } finally {
@@ -38,6 +38,7 @@ export const useProjectsStore = defineStore("projects", {
     },
 
     async fetchSingleProject(id: string) {
+      console.log("Fetching single project with ID:", id);
       try {
         const api = useProjectsApi();
         const response = await api.getProject(id);
@@ -49,26 +50,23 @@ export const useProjectsStore = defineStore("projects", {
     },
 
     updateProject(updatedProject: ADPwnProject) {
-        console.log("Updating project:", updatedProject.uid);
-        try {
+      console.log("Updating project:", updatedProject.uid);
+      try {
+        const index = this.list.findIndex((p) => p.uid === updatedProject.uid);
 
-        const index = this.list.findIndex(p => p.uid === updatedProject.uid);
-        
         if (index === -1) {
-            throw new Error(`Project with UID ${updatedProject.uid} not found`);
+          throw new Error(`Project with UID ${updatedProject.uid} not found`);
         }
 
         this.list = [
-            ...this.list.slice(0, index),
-            { ...this.list[index], ...updatedProject },
-            ...this.list.slice(index + 1)
+          ...this.list.slice(0, index),
+          { ...this.list[index], ...updatedProject },
+          ...this.list.slice(index + 1),
         ];
-
-  
-        } catch (error) {
+      } catch (error) {
         this.handleError(error);
         throw error;
-        }
+      }
     },
     handleError(error: unknown) {
       this.error = error instanceof Error ? error : new Error(String(error));

@@ -9,7 +9,7 @@ const isLoading = ref(false);
 
 const formState = reactive({
   name: currentProjectStore.name,
-  description: currentProjectStore.description || '',
+  description: currentProjectStore.description || "",
 });
 
 const handleSubmit = async (_: FormSubmitEvent<typeof formState>) => {
@@ -22,16 +22,17 @@ const handleSubmit = async (_: FormSubmitEvent<typeof formState>) => {
     });
 
     toast.add({
-      title: 'Project updated',
-      color: 'success',
-      icon: 'i-heroicons-check-circle',
+      title: "Project updated",
+      color: "success",
+      icon: "i-heroicons-check-circle",
     });
   } catch (error) {
     toast.add({
-      title: 'Error while updating project',
-      description: error instanceof Error ? error.message : 'Unbekannter Fehler',
-      color: 'error',
-      icon: 'i-heroicons-x-circle',
+      title: "Error while updating project",
+      description:
+        error instanceof Error ? error.message : "Unbekannter Fehler",
+      color: "error",
+      icon: "i-heroicons-x-circle",
     });
   } finally {
     isLoading.value = false;
@@ -40,26 +41,18 @@ const handleSubmit = async (_: FormSubmitEvent<typeof formState>) => {
 </script>
 
 <template>
-  <UForm 
-    :schema="projectUpdateSchema" 
+  <UForm
+    :schema="projectUpdateSchema"
     :state="formState"
     class="space-y-4 grid justify-items-center w-full h-full pb-10"
     @submit="handleSubmit"
   >
     <UFormField label="UID" name="uid" class="w-1/2">
-      <UInput 
-        :model-value="currentProjectStore.uid" 
-        class="w-full" 
-        disabled 
-      />
+      <UInput :model-value="currentProjectStore.uid" class="w-full" disabled />
     </UFormField>
 
     <UFormField label="Name" name="name" class="w-1/2">
-      <UInput
-        v-model="formState.name"
-        class="w-full"
-        placeholder="Name"
-      />
+      <UInput v-model="formState.name" class="w-full" placeholder="Name" />
     </UFormField>
 
     <UFormField label="Description" name="description" class="w-1/2">

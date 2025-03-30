@@ -4,16 +4,16 @@ import type { TableColumn } from "@nuxt/ui";
 
 const currentProjectStore = useCurrentProjectStore();
 
-const tableData = computed(() => 
-  currentProjectStore.targets.map(target => ({
+const tableData = computed(() =>
+  currentProjectStore.targets.map((target) => ({
     ip: target.ip_range,
-    note: target.name
-  }))
+    note: target.name,
+  })),
 );
 
 const columns: TableColumn[] = [
   { accessorKey: "ip", header: "IP" },
-  { accessorKey: "note", header: "Note" }
+  { accessorKey: "note", header: "Note" },
 ];
 
 const columnFilters = ref([{ id: "", value: "" }]);
@@ -27,10 +27,14 @@ onMounted(async () => {
 <template>
   <div class="space-y-4">
     <UInput
-      :model-value="table?.tableApi?.getColumn('ip')?.getFilterValue() as string"
+      :model-value="
+        table?.tableApi?.getColumn('ip')?.getFilterValue() as string
+      "
       class="max-w-sm"
       placeholder="Filter IPs..."
-      @update:model-value="table?.tableApi?.getColumn('ip')?.setFilterValue($event)"
+      @update:model-value="
+        table?.tableApi?.getColumn('ip')?.setFilterValue($event)
+      "
     />
 
     <div class="min-h-[300px] relative">

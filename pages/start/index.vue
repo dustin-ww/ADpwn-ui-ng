@@ -61,14 +61,10 @@ const handleSubmitSuccess = async () => {
     <img
       class="w-1/12 min-w-[100px] max-w-[150px] mx-6 mt-4"
       src="/ADPwnLogo.png"
-    >
+    />
     <ModalCreateProject class="mt-10" @project-created="handleSubmitSuccess" />
-    
-    <ListProjects
-      :projects="projects"
-      :loading="isLoading"
-      class="w-5/6"
-    >
+
+    <ListProjects :projects="projects" :loading="isLoading" class="w-5/6">
       <template #row-actions="{ row }">
         <UButton
           :disabled="currentProjectStore.loading"
@@ -78,7 +74,7 @@ const handleSubmitSuccess = async () => {
           Load {{ row.original.name }}
         </UButton>
       </template>
-      
+
       <!-- <template #error v-if="projectsStore.error">
         <p>{{} }}</p> :error="projectsStore.error" />
       </template> -->

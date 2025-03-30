@@ -1,3 +1,17 @@
+<script lang="ts">
+useHead({
+  title: "ADPwn - Domain Management",
+  meta: [{ name: "description", content: "Domain management dashboard" }],
+});
+</script>
+
 <template>
-  <SharedHeading heading="Manage Domains" />
+  <div>
+    <SharedHeading heading="Manage Domains" />
+    <ListDomains
+      :domains="domains"
+      :loading="loading"
+      @row-actions="onRowActions"
+    />
+  </div>
 </template>

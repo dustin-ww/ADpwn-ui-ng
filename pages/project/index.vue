@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { useProjectsStore } from '~/stores/projects';
-
+import { useProjectsStore } from "~/stores/projects";
 
 const route = useRoute();
 const projectUid = route.params.projectUid as string;
@@ -47,7 +46,6 @@ const toast = useToast();
 //     }
 //   }
 // });
-
 </script>
 
 <template>

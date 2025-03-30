@@ -17,10 +17,8 @@ const name = computed(() => currentProjectStore.getName);
           <h1>Enumerate</h1>
         </template>
 
-        <Placeholder class="h-32" />
-
         <template #footer>
-          <Placeholder class="h-8" />
+          <p>todo</p>
         </template>
       </UCard>
       <UCard>
@@ -28,10 +26,8 @@ const name = computed(() => currentProjectStore.getName);
           <h1>Exploit</h1>
         </template>
 
-        <Placeholder class="h-32" />
-
         <template #footer>
-          <Placeholder class="h-8" />
+          <p>todo</p>
         </template>
       </UCard>
       <UCard>
@@ -39,10 +35,8 @@ const name = computed(() => currentProjectStore.getName);
           <h1>Collect Loot</h1>
         </template>
 
-        <Placeholder class="h-32" />
-
         <template #footer>
-          <Placeholder class="h-8" />
+          <p>todo</p>
         </template>
       </UCard>
     </div>
@@ -52,10 +46,8 @@ const name = computed(() => currentProjectStore.getName);
           <h1>ADPwnModules</h1>
         </template>
 
-        <Placeholder class="h-32" />
-
         <template #footer>
-          <Placeholder class="h-8" />
+          <p>todo</p>
         </template>
       </UCard>
       <UCard>
@@ -63,10 +55,8 @@ const name = computed(() => currentProjectStore.getName);
           <h1>Network Graph</h1>
         </template>
 
-        <Placeholder class="h-32" />
-
         <template #footer>
-          <Placeholder class="h-8" />
+          <p>todo</p>
         </template>
       </UCard>
       <UCard>
@@ -74,10 +64,8 @@ const name = computed(() => currentProjectStore.getName);
           <h1>Network Change History</h1>
         </template>
 
-        <Placeholder class="h-32" />
-
         <template #footer>
-          <Placeholder class="h-8" />
+          <p>todo</p>
         </template>
       </UCard>
     </div>

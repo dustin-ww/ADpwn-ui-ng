@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { useCurrentProjectStore } from '~/stores/currentProject';
+import { useCurrentProjectStore } from "~/stores/currentProject";
 
 const currentProjectStore = useCurrentProjectStore;
-
 
 const items = ref([
   [
@@ -60,32 +59,32 @@ const items = ref([
           label: "Discovered Network Changes",
           icon: "i-lucide-file-text",
           description: "Display a modal/slideover within your application.",
-          to: "/composables/use-overlay",
+          to: "/",
         },
       ],
     },
     {
       label: "Collections",
       icon: "i-lucide-box",
-      to: "/components",
+      to: "/",
       children: [
         {
           label: "Collection List",
           icon: "i-lucide-file-text",
           description: "Use NuxtLink with superpowers.",
-          to: "/components/link",
+          to: "/",
         },
         {
           label: "Collection Manager",
           icon: "i-lucide-file-text",
           description: "Display a modal within your application.",
-          to: "/components/modal",
+          to: "/",
         },
         {
           label: "History",
           icon: "i-lucide-file-text",
           description: "Display a list of links.",
-          to: "/components/navigation-menu",
+          to: "/",
         },
       ],
     },
