@@ -16,7 +16,7 @@ const columns: TableColumn[] = [
   { accessorKey: "note", header: "Note" },
 ];
 
-const columnFilters = ref([{ id: "", value: "" }]);
+const columnFilters = ref([{ ip: "", value: "" }]);
 const table = useTemplateRef("table");
 
 onMounted(async () => {

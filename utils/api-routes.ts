@@ -19,8 +19,8 @@ export const API_ROUTES = {
     },
   },
   ADPWN_MODULES: {
-    BASE: "/adpmod/",
-    GRAPH: "/adpmod/graph",
+    BASE: "/adpwn/",
+    GRAPH: "/adpwn/graph",
   },
   USERS: {
     BASE: "/users",

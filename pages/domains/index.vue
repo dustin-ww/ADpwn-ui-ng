@@ -1,17 +1,17 @@
 <script lang="ts">
-useHead({
-  title: "ADPwn - Domain Management",
-  meta: [{ name: "description", content: "Domain management dashboard" }],
-});
+import { ModalCreateDomain } from '#components';
+import Modal from '@nuxt/ui/runtime/components/Modal.vue';
+
+
+
 </script>
 
 <template>
   <div>
-    <SharedHeading heading="Manage Domains" />
-    <ListDomains
-      :domains="domains"
-      :loading="loading"
-      @row-actions="onRowActions"
-    />
+    <div class="flex items-center justify-between mb-4">
+      <SharedHeading heading="Manage Domains" />
+      <ModalCreateDomain class="mr-10"/>
+    </div>
+    <ListDomains/>
   </div>
 </template>

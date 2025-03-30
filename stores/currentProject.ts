@@ -71,6 +71,7 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       await handleApiCall(
         async () => {
           const api = useDomainsApi();
+          console.log("Fetching domains...");
           return await api.getDomainsByProjectUID(this.uid);
         },
         (response) => {
