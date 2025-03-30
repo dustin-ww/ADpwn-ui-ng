@@ -14,6 +14,9 @@ export const API_ROUTES = {
       DETAIL: (projectUid: string, targetId: string) =>
         `/projects/${projectUid}/targets/${targetId}`,
     },
+    DOMAINS: {
+      BASE: (projectUid: string) => `/projects/${projectUid}/domains`,
+    },
   },
   ADPWN_MODULES: {
     BASE: "/adpmod/",

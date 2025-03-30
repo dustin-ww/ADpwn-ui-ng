@@ -5,6 +5,7 @@ import { useProjectsStore } from "./projects";
 import type { ProjectUpdateSchema } from "~/schemas/project";
 import type { TargetSchema } from "~/schemas/target";
 import type { ADDomain } from "~/types/ad/ADDomain";
+import { useDomainsApi } from "~/composables/api/useDomainsApi";
 
 interface CurrentProjectState {
   uid: string;
@@ -14,6 +15,10 @@ interface CurrentProjectState {
   domains: ADDomain[];
   loading: boolean;
   error: Error | null;
+  cache: {
+    domains: number | null; // Timestamp of last fetch
+    targets: number | null; // Timestamp of last fetch
+  };
 }
 
 export const useCurrentProjectStore = defineStore("currentProject", {
@@ -25,6 +30,10 @@ export const useCurrentProjectStore = defineStore("currentProject", {
     domains: [],
     loading: false,
     error: null,
+    cache: {
+      domains: null,
+      targets: null,
+    },
   }),
 
   getters: {
@@ -39,9 +48,6 @@ export const useCurrentProjectStore = defineStore("currentProject", {
 
   actions: {
     async initialize(projectId: string, projectName: string) {
-      console.log("INIT WITH", projectId, projectName);
-      if (this.uid === projectId) return;
-
       this.reset();
       this.uid = projectId;
       this.name = projectName;
@@ -55,91 +61,94 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       if (project) this.name = project.name;
     },
 
-    // async fetchDomains(force = false) {
-    //   if (this.domains.length > 0 && !force) return;
-    //   this.loading = true;
-    //   try {
-    //     const api = useProjectsApi();
-    //     const response = await api.getDomains(this.uid);
-
-    async fetchTargets(force = false) {
-      if (this.targets.length > 0 && !force) return;
-
-      this.loading = true;
-      try {
-        const api = useProjectsApi();
-        const response = await api.getTargets(this.uid);
-        if (response.error) throw response.error;
-        this.targets = response.data ?? [];
-      } catch (error) {
-        this.handleError(error);
-      } finally {
-        this.loading = false;
+    async fetchDomains() {
+      const cacheDuration = 5 * 60 * 1000; // 5 minutes
+      if (isCacheValid(this.cache.domains, cacheDuration)) {
+        console.log("Using cached domains");
+        return;
       }
+
+      await handleApiCall(
+        async () => {
+          const api = useDomainsApi();
+          return await api.getDomainsByProjectUID(this.uid);
+        },
+        (response) => {
+          this.domains = response.data ?? [];
+          this.cache.domains = Date.now(); // Update cache timestamp
+        },
+        (error) => this.handleError(error),
+        { value: this.loading }
+      );
+    },
+
+    async fetchTargets() {
+      const cacheDuration = 5 * 60 * 1000; // 5 minutes
+      if (isCacheValid(this.cache.targets, cacheDuration)) {
+        console.log("Using cached targets");
+        return;
+      }
+
+      await handleApiCall(
+        async () => {
+          const api = useProjectsApi();
+          return await api.getTargets(this.uid);
+        },
+        (response) => {
+          this.targets = response.data ?? [];
+          this.cache.targets = Date.now(); // Update cache timestamp
+        },
+        (error) => this.handleError(error),
+        { value: this.loading }
+      );
     },
 
     async createTarget(targetData: TargetSchema) {
-      this.loading = true;
-      try {
-        const api = useProjectsApi();
-        const response = await api.createTarget(this.uid, targetData);
-
-        if (response.error) {
-          throw response.error;
-        }
-
-        if (response.data) {
-          this.targets.push(response.data);
-        } else {
-          throw new Error("Target creation response is undefined");
-        }
-
-        console.log("Target created successfully", response.data);
-        return { success: true };
-      } catch (error) {
-        this.handleError(
-          error instanceof Error ? error : new Error("Target creation failed"),
-        );
-        throw error;
-      } finally {
-        this.loading = false;
-      }
+      await handleApiCall(
+        async () => {
+          const api = useProjectsApi();
+          return await api.createTarget(this.uid, targetData);
+        },
+        (response) => {
+          if (response.data) {
+            this.targets.push(response.data);
+            this.cache.targets = null; // Invalidate targets cache
+          } else {
+            throw new Error("Target creation response is undefined");
+          }
+        },
+        (error) => this.handleError(error),
+        { value: this.loading }
+      );
     },
 
     async updateProject(payload: ProjectUpdateSchema) {
-      try {
-        this.loading = true;
-        const api = useProjectsApi();
+      await handleApiCall(
+        async () => {
+          const api = useProjectsApi();
+          return await api.updateProject(this.uid, payload);
+        },
+        () => {
+          this.name = payload.name ?? this.name;
+          this.description = payload.description ?? this.description;
 
-        const { error } = await api.updateProject(this.uid, payload);
+          const projectsStore = useProjectsStore();
+          projectsStore.updateProject({
+            uid: this.uid,
+            ...payload,
+          });
 
-        if (error) {
-          throw error;
-        }
-
-        this.name = payload.name ?? this.name;
-        this.description = payload.description ?? this.description;
-
-        const projectsStore = useProjectsStore();
-        projectsStore.updateProject({
-          uid: this.uid,
-          ...payload,
-        });
-
-        console.log("Project updated successfully", payload);
-        return { success: true };
-      } catch (error) {
-        this.handleError(
-          error instanceof Error ? error : new Error("Update failed"),
-        );
-        throw error;
-      } finally {
-        this.loading = false;
-      }
+          this.cache.domains = null; // Invalidate domains cache
+          this.cache.targets = null; // Invalidate targets cache
+        },
+        (error) => this.handleError(error),
+        { value: this.loading }
+      );
     },
 
     reset() {
       this.$reset();
+      this.cache = { domains: null, targets: null }; // Clear cache
     },
 
     handleError(error: unknown) {
@@ -147,24 +156,23 @@ export const useCurrentProjectStore = defineStore("currentProject", {
     },
   },
 
-  
-persist: [
-  {
-    pick: ["uid", "name"],
-    storage: {
-      getItem: (key: string) => {
-        const cookie = useCookie(key);
-        return cookie.value;
-      },
-      setItem: (key: string, value: string) => {
-        const cookie = useCookie(key, { path: '/' });
-        cookie.value = value;
-      },
-      removeItem: (key: string) => {
-        const cookie = useCookie(key);
-        cookie.value = null;
+  persist: [
+    {
+      pick: ["uid", "name"],
+      storage: {
+        getItem: (key: string) => {
+          const cookie = useCookie(key);
+          return cookie.value;
+        },
+        setItem: (key: string, value: string) => {
+          const cookie = useCookie(key, { path: '/' });
+          cookie.value = value;
+        },
+        removeItem: (key: string) => {
+          const cookie = useCookie(key);
+          cookie.value = null;
+        }
       }
     }
-  }
-]
+  ]
 });

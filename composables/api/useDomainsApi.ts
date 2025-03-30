@@ -1,8 +1,7 @@
 // composables/api/useProjectsApi.ts
 import { useApiClient } from "~/composables/api/useApiWrapper";
-import type { ProjectUpdateSchema } from "~/schemas/project";
-import type { TargetSchema } from "~/schemas/target";
-import type { ADPwnProject, Target } from "~/types/adpwn/ADPwnProject";
+import type { ADDomainSchema } from "~/schemas/domain";
+import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
 import { API_ROUTES } from "~/utils/api-routes";
 
 export const useDomainsApi = () => {
@@ -10,30 +9,15 @@ export const useDomainsApi = () => {
 
   return {
     // Load All Projects
-    getProjects: () => api.get<ADPwnProject[]>(API_ROUTES.PROJECTS.OVERVIEWS),
+    getDomainsByProjectUID: (projectUid: string) => api.get<ADPwnProject[]>(API_ROUTES.PROJECTS.TARGETS.BASE(projectUid)),
     // Create Project
-    createProject: (projectData: ProjectUpdateSchema) =>
-      api.create<ADPwnProject>(API_ROUTES.PROJECTS.BASE, projectData),
+    createDomain: (projectUid: string, domainData: ADDomainSchema) =>
+      api.create<ADPwnProject>(API_ROUTES.PROJECTS.TARGETS.BASE(projectUid), domainData),
     // Update Project
-    updateProject: (uid: string, updateData: ProjectUpdateSchema) =>
-      api.update<ADPwnProject>(API_ROUTES.PROJECTS.DETAIL(uid), updateData, {
-        headers: { "Content-Type": "application/merge-patch+json" },
-      }),
-    // Get Project with UID
-    getProject: (uid: string) =>
-      api.get<ADPwnProject>(API_ROUTES.PROJECTS.DETAIL(uid)),
-
-    // Get Project Targets with Project UID
-    getTargets: (uid: string) =>
-      api.get<Target[]>(API_ROUTES.PROJECTS.TARGETS.BASE(uid)),
-
-    // Create Target for Project with given UID
-    createTarget: (projectUid: string, targetData: TargetSchema) =>
-      api.create<Target>(
-        API_ROUTES.PROJECTS.TARGETS.BASE(projectUid),
-        targetData,
-      ),
-
+    // updateProject: (uid: string, updateData: ProjectUpdateSchema) =>
+    //   api.update<ADPwnProject>(API_ROUTES.PROJECTS.DETAIL(uid), updateData, {
+    //     headers: { "Content-Type": "application/merge-patch+json" },
+    //   }),
     // Custom Request
     // searchProjects: (query: string) =>
     //   api.customRequest<ProjectSearchResult[]>(
