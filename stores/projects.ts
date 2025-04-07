@@ -3,6 +3,7 @@ import { useProjectsApi } from "~/composables/api/useProjectsApi";
 import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
 
 interface ProjectsState {
+  projectsFetched: boolean;
   list: ADPwnProject[];
   loading: boolean;
   error: Error | null;
@@ -13,6 +14,7 @@ export const useProjectsStore = defineStore("projects", {
     list: [],
     loading: false,
     error: null,
+    projectsFetched: false,
   }),
   getters: {
     getProjects: (state) => state.list,
@@ -20,6 +22,7 @@ export const useProjectsStore = defineStore("projects", {
 
   actions: {
     async fetchProjects(force = false) {
+      this.projectsFetched = true;
       console.log("Fetching projects...");
       if (this.list.length > 0 && !force) return;
 
@@ -41,6 +44,7 @@ export const useProjectsStore = defineStore("projects", {
       console.log("Fetching single project with ID:", id);
       try {
         const api = useProjectsApi();
+        console.log("UIdD ", id);
         const response = await api.getProject(id);
         if (response.error) throw response.error;
         return response.data;
@@ -50,6 +54,7 @@ export const useProjectsStore = defineStore("projects", {
     },
 
     updateProject(updatedProject: ADPwnProject) {
+      if (!this.projectsFetched) return;
       console.log("Updating project:", updatedProject.uid);
       try {
         const index = this.list.findIndex((p) => p.uid === updatedProject.uid);

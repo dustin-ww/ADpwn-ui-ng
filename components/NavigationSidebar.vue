@@ -28,6 +28,7 @@ const items = ref([
           description:
             "Learn how to install and configure Nuxt UI in your application.",
           icon: "i-lucide-cloud-download",
+          to: "/hosts",
         },
         {
           label: "Services",

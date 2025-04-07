@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 const open = ref(false);
 defineShortcuts({
   o: () => (open.value = !open.value),
@@ -6,15 +7,15 @@ defineShortcuts({
 </script>
 
 <template>
-  <UModal v-model:open="open" :dismissible="false" title="Create Domain">
+  <UModal v-model:open="open" :dismissible="false" title="Create Host">
     <UButton
-      label="Create Domain"
+      label="Create Host"
       color="success"
       variant="subtle"
       @click="open = true"
     />
     <template #body>
-      <FormCreateDomain />
+      <FormCreateHost />
     </template>
   </UModal>
 </template>

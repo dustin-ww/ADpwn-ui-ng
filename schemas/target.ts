@@ -24,7 +24,7 @@ import * as v from "valibot";
 // );
 
 export const targetSchema = v.object({
-  name: v.pipe(v.string(), v.minLength(3, "Must be at least 3 characters")),
+  note: v.pipe(v.string()),
   ip: v.pipe(v.string(), v.ipv4("Must be a valid IP address")),
   cidr: v.pipe(
     v.number(),

@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { useProjectsStore } from "~/stores/projects";
 
-const route = useRoute();
-const projectUid = route.params.projectUid as string;
-const projectStore = useProjectsStore();
-const toast = useToast();
+useHead({
+  title: 'Project • ADPwn',
+})
 
 // // Set current project from route
 // projectStore.setProject(projectUid);

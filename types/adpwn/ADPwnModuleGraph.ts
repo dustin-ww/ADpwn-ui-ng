@@ -1,4 +1,5 @@
-import type { ADPwnModule, ADPwnModuleInheritanceEdge } from "./ADPwnModule";
+import type { ADPwnModuleInheritanceEdge } from "./ADPwnInheritanceEdge";
+import type { ADPwnModule } from "./ADPwnModule";
 
 export interface ADPwnInheritanceGraph {
   nodes: ADPwnModule[];

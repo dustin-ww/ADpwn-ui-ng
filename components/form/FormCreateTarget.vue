@@ -4,7 +4,7 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 import { targetSchema } from "~/schemas/target";
 
 const targetCreateState = reactive({
-  name: "",
+  note: "",
   ip: "",
   cidr: "",
 });
@@ -22,7 +22,7 @@ async function onSubmit(_event: FormSubmitEvent<typeof targetSchema>) {
   try {
     await currentProjectStore.createTarget({
       ...targetCreateState,
-      cidr: Number(targetCreateState.cidr),
+      cidr: Number(targetCreateState.cidr) || 0,
     });
 
     toast.add({
@@ -31,7 +31,7 @@ async function onSubmit(_event: FormSubmitEvent<typeof targetSchema>) {
       color: "success",
     });
 
-    targetCreateState.name = "";
+    targetCreateState.note = "";
     targetCreateState.ip = "";
     targetCreateState.cidr = "";
 
@@ -46,6 +46,9 @@ async function onSubmit(_event: FormSubmitEvent<typeof targetSchema>) {
     isLoading.value = false;
   }
 }
+const props = defineProps<{
+  unknownTargetRange?: boolean;
+}>();
 </script>
 
 <template>
@@ -65,9 +68,14 @@ async function onSubmit(_event: FormSubmitEvent<typeof targetSchema>) {
         />
       </UFormField>
 
-      <span class="text-center text-lg font-bold mt-5">/</span>
+      <span v-if="props.unknownTargetRange" class="text-center text-lg font-bold mt-5">/</span>
 
-      <UFormField label="CIDR Suffix" name="cidr" class="flex flex-col">
+      <UFormField
+        v-if="props.unknownTargetRange"
+        label="CIDR Suffix*"
+        name="cidr"
+        class="flex flex-col"
+      >
         <UInput
           v-model.number="targetCreateState.cidr"
           placeholder="24"
@@ -82,11 +90,13 @@ async function onSubmit(_event: FormSubmitEvent<typeof targetSchema>) {
     <!-- Name Input -->
     <UFormField label="Note" name="note" class="w-full">
       <UInput
-        v-model="targetCreateState.name"
+        v-model="targetCreateState.note"
         placeholder="Suspected Domain Controller.."
         data-testid="name-input"
       />
     </UFormField>
+
+    <UBadge v-if="unknownTargetRange"  icon="i-lucide-rocket">Please note that IPs from unknown target ranges will not be displayed during domain or host creation as they are stored in cidr notation. These rangees can only be used for tools during enumeration. </UBadge>
 
     <!-- Submit Button -->
     <UButton

@@ -4,6 +4,6 @@ export interface ProjectADTargets {
 
 export interface ADTarget {
   uid: string;
-  name: string;
+  note: string;
   ip_range: string;
 }

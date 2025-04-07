@@ -1,8 +1,6 @@
 // composables/api/useProjectsApi.ts
 import { useApiClient } from "~/composables/api/useApiWrapper";
-import type { ADDomainSchema } from "~/schemas/domain";
 import type { ADDomain } from "~/types/ad/ADDomain";
-import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
 import { API_ROUTES } from "~/utils/api-routes";
 
 export const useDomainsApi = () => {
@@ -10,10 +8,14 @@ export const useDomainsApi = () => {
 
   return {
     // Load All Projects
-    getDomainsByProjectUID: (projectUid: string) => api.get<ADDomain[]>(API_ROUTES.PROJECTS.DOMAINS.BASE(projectUid)),
+    getDomainsByProjectUID: (projectUid: string) =>
+      api.get<ADDomain[]>(API_ROUTES.PROJECTS.DOMAINS.BASE(projectUid)),
     // Create Project
-    createDomain: (projectUid: string, domainData: ADDomainSchema) =>
-      api.create<ADPwnProject>(API_ROUTES.PROJECTS.TARGETS.BASE(projectUid), domainData),
+    createDomain: (projectUid: string, domainData: ADDomain) =>
+      api.create<ADDomain>(
+        API_ROUTES.PROJECTS.DOMAINS.BASE(projectUid),
+        domainData,
+      ),
     // Update Project
     // updateProject: (uid: string, updateData: ProjectUpdateSchema) =>
     //   api.update<ADPwnProject>(API_ROUTES.PROJECTS.DETAIL(uid), updateData, {

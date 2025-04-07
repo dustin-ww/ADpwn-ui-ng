@@ -1,24 +1,18 @@
 import { defineStore } from "pinia";
-import { useProjectsApi } from "~/composables/api/useProjectsApi";
 import type { ADTarget } from "~/types/ad/ADTarget";
-import { useProjectsStore } from "./projects";
 import type { ProjectUpdateSchema } from "~/schemas/project";
 import type { TargetSchema } from "~/schemas/target";
-import type { ADDomain } from "~/types/ad/ADDomain";
+import { useBaseStore, type BaseStoreState } from "~/composables/useBaseStore";
 import { useDomainsApi } from "~/composables/api/useDomainsApi";
+import { useProjectsApi } from "~/composables/api/useProjectsApi";
+import type { ADDomain } from "~/types/ad/ADDomain";
 
-interface CurrentProjectState {
+interface CurrentProjectState extends BaseStoreState {
   uid: string;
   name: string;
   description: string;
   targets: ADTarget[];
   domains: ADDomain[];
-  loading: boolean;
-  error: Error | null;
-  cache: {
-    domains: number | null; // Timestamp of last fetch
-    targets: number | null; // Timestamp of last fetch
-  };
 }
 
 export const useCurrentProjectStore = defineStore("currentProject", {
@@ -47,83 +41,106 @@ export const useCurrentProjectStore = defineStore("currentProject", {
   },
 
   actions: {
+    // Initialize the base store helpers
+    _initBaseStore() {
+      const baseStore = useBaseStore<CurrentProjectState>("currentProject");
+      const fetcher = baseStore.createFetcher(this);
+      const entityCreator = baseStore.createEntityCreator(this);
+      
+      return {
+        ...baseStore,
+        fetcher,
+        entityCreator
+      };
+    },
+
     async initialize(projectId: string, projectName: string) {
       this.reset();
       this.uid = projectId;
       this.name = projectName;
 
       await Promise.all([this.fetchProjectDetails(), this.fetchTargets()]);
+      
+      if (import.meta.client) {
+        this.fetchDomains();
+      }
     },
 
     async fetchProjectDetails() {
       const projectsStore = useProjectsStore();
       const project = await projectsStore.fetchSingleProject(this.uid);
-      if (project) this.name = project.name;
+      if (project) {
+        this.name = project.name;
+        this.description = project.description;
+      }
     },
 
     async fetchDomains() {
-      const cacheDuration = 5 * 60 * 1000; // 5 minutes
-      if (isCacheValid(this.cache.domains, cacheDuration)) {
-        console.log("Using cached domains");
-        return;
-      }
-
-      await handleApiCall(
-        async () => {
+      const { fetcher } = this._initBaseStore();
+      
+      const fetchDomainsWithCache = fetcher(
+        () => {
           const api = useDomainsApi();
-          console.log("Fetching domains...");
-          return await api.getDomainsByProjectUID(this.uid);
+          return api.getDomainsByProjectUID(this.uid);
         },
-        (response) => {
-          this.domains = response.data ?? [];
-          this.cache.domains = Date.now(); // Update cache timestamp
-        },
-        (error) => this.handleError(error),
-        { value: this.loading }
+        'domains',
+        (data: ADDomain[]) => { this.domains = data; }
       );
+      
+      await fetchDomainsWithCache();
     },
 
     async fetchTargets() {
-      const cacheDuration = 5 * 60 * 1000; // 5 minutes
-      if (isCacheValid(this.cache.targets, cacheDuration)) {
-        console.log("Using cached targets");
-        return;
-      }
-
-      await handleApiCall(
-        async () => {
+      const { fetcher } = this._initBaseStore();
+      
+      const fetchTargetsWithCache = fetcher(
+        () => {
           const api = useProjectsApi();
-          return await api.getTargets(this.uid);
+          return api.getTargets(this.uid);
         },
-        (response) => {
-          this.targets = response.data ?? [];
-          this.cache.targets = Date.now(); // Update cache timestamp
-        },
-        (error) => this.handleError(error),
-        { value: this.loading }
+        'targets',
+        (data: ADTarget[]) => { this.targets = data; }
       );
+      
+      await fetchTargetsWithCache();
+    },
+
+    async createDomain(domainData: ADDomain) {
+      const { entityCreator } = this._initBaseStore();
+      
+      const createDomainEntity = entityCreator(
+        () => {
+          const api = useDomainsApi();
+          console.log("Creating domain with data:", JSON.stringify(domainData));
+          return api.createDomain(this.uid, domainData);
+        },
+        'domains',
+        this.domains,
+        { successToast: true }
+      );
+      
+      await createDomainEntity();
     },
 
     async createTarget(targetData: TargetSchema) {
-      await handleApiCall(
-        async () => {
+      const { entityCreator } = this._initBaseStore();
+      
+      const createTargetEntity = entityCreator(
+        () => {
           const api = useProjectsApi();
-          return await api.createTarget(this.uid, targetData);
+          return api.createTarget(this.uid, targetData);
         },
-        (response) => {
-          if (response.data) {
-            this.targets.push(response.data);
-            this.cache.targets = null; // Invalidate targets cache
-          } else {
-            throw new Error("Target creation response is undefined");
-          }
-        },
-        (error) => this.handleError(error),
-        { value: this.loading }
+        'targets',
+        this.targets,
+        { successToast: true }
       );
+      
+      await createTargetEntity();
     },
 
     async updateProject(payload: ProjectUpdateSchema) {
+      const { handleApiCall, invalidateCache } = this._initBaseStore();
+      
       await handleApiCall(
         async () => {
           const api = useProjectsApi();
@@ -139,41 +156,45 @@ export const useCurrentProjectStore = defineStore("currentProject", {
             ...payload,
           });
 
-          this.cache.domains = null; // Invalidate domains cache
-          this.cache.targets = null; // Invalidate targets cache
-        },
-        (error) => this.handleError(error),
-        { value: this.loading }
+          invalidateCache(this.cache);
+          
+          const toast = useToast();
+          toast.add({
+            title: 'Success',
+            description: 'Project updated successfully.',
+            color: 'success',
+          });
+        }
       );
     },
 
     reset() {
+      const { invalidateCache } = this._initBaseStore();
       this.$reset();
-      this.cache = { domains: null, targets: null }; // Clear cache
-    },
-
-    handleError(error: unknown) {
-      this.error = error instanceof Error ? error : new Error(String(error));
+      invalidateCache(this.cache);
     },
   },
 
   persist: [
     {
-      pick: ["uid", "name"],
-      storage: {
-        getItem: (key: string) => {
-          const cookie = useCookie(key);
-          return cookie.value;
-        },
-        setItem: (key: string, value: string) => {
-          const cookie = useCookie(key, { path: '/' });
-          cookie.value = value;
-        },
-        removeItem: (key: string) => {
-          const cookie = useCookie(key);
-          cookie.value = null;
-        }
-      }
-    }
-  ]
+      pick: ["uid", "name", "description"],
+      storage: import.meta.client
+        ? {
+            getItem: (key: string) => {
+              const cookie = useCookie(key);
+              return cookie.value;
+            },
+            setItem: (key: string, value: string) => {
+              const cookie = useCookie(key, { path: "/" });
+              cookie.value = value;
+            },
+            removeItem: (key: string) => {
+              const cookie = useCookie(key);
+              cookie.value = null;
+            },
+          }
+        : undefined,
+    },
+  ],
+  
 });
