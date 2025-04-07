@@ -1,8 +1,7 @@
 <script setup lang="ts">
-
 useHead({
-  title: 'Project • ADPwn',
-})
+  title: "Project • ADPwn",
+});
 
 // // Set current project from route
 // projectStore.setProject(projectUid);

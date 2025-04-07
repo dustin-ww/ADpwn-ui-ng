@@ -1,9 +1,8 @@
 <script setup lang="ts">
 useHead({
-  title: 'ADHosts • ADPwn',
-})
+  title: "ADHosts • ADPwn",
+});
 </script>
-
 
 <template>
   <div>
@@ -11,6 +10,5 @@ useHead({
       <SharedHeading heading="Manage Hosts" />
       <ModalCreateHost class="mr-10" />
     </div>
-    
   </div>
 </template>

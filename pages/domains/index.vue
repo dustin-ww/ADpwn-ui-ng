@@ -1,9 +1,8 @@
 <script setup lang="ts">
 useHead({
-  title: 'ADDomains • ADPwn',
-})
+  title: "ADDomains • ADPwn",
+});
 </script>
-
 
 <template>
   <div>

@@ -1,3 +1,3 @@
 export interface ADService {
-    uid: string;
+  uid: string;
 }

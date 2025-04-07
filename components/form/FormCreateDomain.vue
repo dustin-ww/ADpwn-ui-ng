@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
-import type { ADDomain, adDomainSchema} from "~/types/ad/ADDomain";
-
+import type { ADDomain, adDomainSchema } from "~/types/ad/ADDomain";
 
 const formState = reactive<ADDomain>({
   // General
@@ -50,7 +49,6 @@ const formState = reactive<ADDomain>({
   // Functional Levels
   domainFunctionLevel: "Windows2016",
 });
-
 
 const currentProjectStore = useCurrentProjectStore();
 const isLoading = ref(false);

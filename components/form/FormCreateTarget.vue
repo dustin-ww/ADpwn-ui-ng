@@ -68,7 +68,11 @@ const props = defineProps<{
         />
       </UFormField>
 
-      <span v-if="props.unknownTargetRange" class="text-center text-lg font-bold mt-5">/</span>
+      <span
+        v-if="props.unknownTargetRange"
+        class="text-center text-lg font-bold mt-5"
+        >/</span
+      >
 
       <UFormField
         v-if="props.unknownTargetRange"
@@ -96,7 +100,11 @@ const props = defineProps<{
       />
     </UFormField>
 
-    <UBadge v-if="unknownTargetRange"  icon="i-lucide-rocket">Please note that IPs from unknown target ranges will not be displayed during domain or host creation as they are stored in cidr notation. These rangees can only be used for tools during enumeration. </UBadge>
+    <UBadge v-if="unknownTargetRange" icon="i-lucide-rocket"
+      >Please note that IPs from unknown target ranges will not be displayed
+      during domain or host creation as they are stored in cidr notation. These
+      rangees can only be used for tools during enumeration.
+    </UBadge>
 
     <!-- Submit Button -->
     <UButton

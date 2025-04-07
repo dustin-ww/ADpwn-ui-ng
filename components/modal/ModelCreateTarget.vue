@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TabsItem } from '@nuxt/ui';
+import type { TabsItem } from "@nuxt/ui";
 
 const open = ref(false);
 
@@ -17,20 +17,19 @@ const handleSubmitSuccess = async () => {
 };
 const items = [
   {
-    label: 'Unknown Target Range',
-    icon: 'i-lucide-user',
-    slot: 'uknownTargetRange' as const
+    label: "Unknown Target Range",
+    icon: "i-lucide-user",
+    slot: "uknownTargetRange" as const,
   },
   {
-    label: 'Known Target',
-    icon: 'i-lucide-lock',
-    slot: 'knownTarget' as const
-  }
-] satisfies TabsItem[]
+    label: "Known Target",
+    icon: "i-lucide-lock",
+    slot: "knownTarget" as const,
+  },
+] satisfies TabsItem[];
 </script>
 
 <template>
-
   <UModal :dismissible="false" title="Create Target">
     <UButton
       label="Create Target"
@@ -40,14 +39,25 @@ const items = [
       @click="open = true"
     />
     <template #body>
-      <UTabs :items="items" variant="link" class="gap-4 w-full" :ui="{ trigger: 'flex-1' }">
-      <template #uknownTargetRange="{ item }">
-        <FormCreateTarget :unknown-target-range="true" @submit-success="handleSubmitSuccess" />
-      </template>
-      <template #knownTarget="{ item }">
-        <FormCreateTarget :unknown-target-range="false" @submit-success="handleSubmitSuccess" />
-      </template>
-    </UTabs>
+      <UTabs
+        :items="items"
+        variant="link"
+        class="gap-4 w-full"
+        :ui="{ trigger: 'flex-1' }"
+      >
+        <template #uknownTargetRange="{ item }">
+          <FormCreateTarget
+            :unknown-target-range="true"
+            @submit-success="handleSubmitSuccess"
+          />
+        </template>
+        <template #knownTarget="{ item }">
+          <FormCreateTarget
+            :unknown-target-range="false"
+            @submit-success="handleSubmitSuccess"
+          />
+        </template>
+      </UTabs>
     </template>
   </UModal>
 </template>

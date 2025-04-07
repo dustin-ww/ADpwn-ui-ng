@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
-import type { ADHost, adHostInputSchema} from "~/types/ad/ADHost";
+import type { ADHost, adHostInputSchema } from "~/types/ad/ADHost";
 
 const formState = reactive<ADHost>({
   distinguishedName: "",
@@ -19,55 +19,54 @@ const formState = reactive<ADHost>({
 const isLoading = ref(false);
 const toast = useToast();
 
-
 async function onSubmit(_event: FormSubmitEvent<ADHost>) {
-    toast.add({
-       title: "Success",
-       description: "Host created successfully",
-      color: "success",
-    });
-//   isLoading.value = true;
-  
-//   try {
-//     const { error } = await currentProjectStore.createHost(formState);
+  toast.add({
+    title: "Success",
+    description: "Host created successfully",
+    color: "success",
+  });
+  //   isLoading.value = true;
 
-//     if (error) {
-//       toast.add({
-//         title: "Error",
-//         description: error.message || "Host creation failed",
-//         color: "error",
-//       });
-//       return;
-//     }
+  //   try {
+  //     const { error } = await currentProjectStore.createHost(formState);
 
-//     toast.add({
-//       title: "Success",
-//       description: "Host created successfully",
-//       color: "success",
-//     });
+  //     if (error) {
+  //       toast.add({
+  //         title: "Error",
+  //         description: error.message || "Host creation failed",
+  //         color: "error",
+  //       });
+  //       return;
+  //     }
 
-//     emit("submit-success");
-//   } catch (error) {
-//     toast.add({
-//       title: "Error",
-//       description: "An unexpected error occurred: " + (error as Error).message,
-//       color: "error",
-//     });
-//   } finally {
-//     isLoading.value = false;
-//   }
+  //     toast.add({
+  //       title: "Success",
+  //       description: "Host created successfully",
+  //       color: "success",
+  //     });
+
+  //     emit("submit-success");
+  //   } catch (error) {
+  //     toast.add({
+  //       title: "Error",
+  //       description: "An unexpected error occurred: " + (error as Error).message,
+  //       color: "error",
+  //     });
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
 }
 
 const operatingSystems = [
   "Windows Server 2022",
   "Windows Server 2019",
   "Windows Server 2016",
-  "Windows Server 2012 R2", 
+  "Windows Server 2012 R2",
   "Windows Server 2012",
   "Windows 11",
   "Windows 10",
   "Windows 8.1",
-  "Windows 7"
+  "Windows 7",
 ];
 
 // Common user account control flags
@@ -89,13 +88,19 @@ const uacOptions = [
     <!-- Identity Section -->
     <div class="space-y-4 border-b pb-6">
       <h3 class="text-lg font-medium">Host Identity</h3>
-      
+
       <UFormField label="Distinguished Name" name="distinguishedName">
-        <UInput v-model="formState.distinguishedName" placeholder="CN=WS01,OU=Workstations,DC=example,DC=com" />
+        <UInput
+          v-model="formState.distinguishedName"
+          placeholder="CN=WS01,OU=Workstations,DC=example,DC=com"
+        />
       </UFormField>
 
       <UFormField label="Object GUID" name="objectGUID">
-        <UInput v-model="formState.objectGUID" placeholder="00000000-0000-0000-0000-000000000000" />
+        <UInput
+          v-model="formState.objectGUID"
+          placeholder="00000000-0000-0000-0000-000000000000"
+        />
       </UFormField>
 
       <UFormField label="Object SID" name="objectSid">
@@ -112,7 +117,10 @@ const uacOptions = [
       </UFormField>
 
       <UFormField label="DNS Host Name" name="dNSHostName">
-        <UInput v-model="formState.dNSHostName" placeholder="ws01.example.com" />
+        <UInput
+          v-model="formState.dNSHostName"
+          placeholder="ws01.example.com"
+        />
       </UFormField>
     </div>
 
@@ -128,10 +136,16 @@ const uacOptions = [
         />
       </UFormField>
 
-      <UFormField label="Operating System Version" name="operatingSystemVersion">
-        <UInput v-model="formState.operatingSystemVersion" placeholder="10.0 (19044)" />
+      <UFormField
+        label="Operating System Version"
+        name="operatingSystemVersion"
+      >
+        <UInput
+          v-model="formState.operatingSystemVersion"
+          placeholder="10.0 (19044)"
+        />
       </UFormField>
-      
+
       <UFormField label="User Account Control" name="userAccountControl">
         <USelect
           v-model="formState.userAccountControl"
@@ -160,6 +174,8 @@ const uacOptions = [
       </UFormField>
     </div>
 
-    <UButton type="submit" class="mt-6" :loading="isLoading"> Create Host </UButton>
+    <UButton type="submit" class="mt-6" :loading="isLoading">
+      Create Host
+    </UButton>
   </UForm>
 </template>

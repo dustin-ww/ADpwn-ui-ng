@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const open = ref(false);
 defineShortcuts({
   o: () => (open.value = !open.value),

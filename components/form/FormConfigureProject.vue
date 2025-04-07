@@ -41,37 +41,45 @@ const handleSubmit = async (_: FormSubmitEvent<typeof formState>) => {
 </script>
 
 <template>
-  <UForm
-    :schema="projectUpdateSchema"
-    :state="formState"
-    class="space-y-4 grid justify-items-center w-full h-full pb-10"
-    @submit="handleSubmit"
-  >
-    <UFormField label="UID" name="uid" class="w-1/2">
-      <UInput :model-value="currentProjectStore.uid" class="w-full" disabled />
-    </UFormField>
-
-    <UFormField label="Name" name="name" class="w-1/2">
-      <UInput v-model="formState.name" class="w-full" placeholder="Name" />
-    </UFormField>
-
-    <UFormField label="Description" name="description" class="w-1/2">
-      <UTextarea
-        v-model="formState.description"
-        class="w-full"
-        placeholder="This is a cool description..."
-        :rows="5"
-      />
-    </UFormField>
-
-    <UButton
-      type="submit"
-      :loading="isLoading"
-      class="w-1/2 min-h-10"
-      variant="solid"
-      color="primary"
+  <div class="h-full">
+    <UForm
+      :schema="projectUpdateSchema"
+      :state="formState"
+      class="grid justify-items-center w-full gap-y-12"
+      @submit="handleSubmit"
     >
-      Projekt aktualisieren
-    </UButton>
-  </UForm>
+      <UFormField label="UID" name="uid" class="w-1/2">
+        <UInput
+          :model-value="currentProjectStore.uid"
+          class="w-full"
+          disabled
+        />
+      </UFormField>
+
+      <UFormField label="Name" name="name" class="w-1/2">
+        <UInput v-model="formState.name" class="w-full" placeholder="Name" />
+      </UFormField>
+
+      <UFormField label="Description" name="description" class="w-1/2">
+        <UTextarea
+          v-model="formState.description"
+          class="w-full"
+          placeholder="This is a cool description..."
+          :rows="5"
+        />
+      </UFormField>
+
+      <div class="mt-auto w-full flex justify-center text-center">
+        <UButton
+          type="submit"
+          :loading="isLoading"
+          class="w-1/2 flex items-center justify-center"
+          variant="solid"
+          color="primary"
+        >
+          Update Project
+        </UButton>
+      </div>
+    </UForm>
+  </div>
 </template>
