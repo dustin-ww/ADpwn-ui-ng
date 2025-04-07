@@ -2,14 +2,23 @@
 const items = ref([
   [
     {
+      label: "ADPwn",
+      type: "label",
+      icon: "i-lucide-settings",
+      children: [
+        {
+          label: "Targets",
+          description: "Fully styled and customizable components for Nuxt.",
+          icon: "i-lucide-house",
+          to: "/targets",
+        },
+      ],
+    },
+
+    {
       label: "Active Directory",
       type: "label",
-    },
-    {
-      label: "Config",
-      icon: "i-lucide-book-open",
-      active: true,
-      defaultOpen: true,
+      icon: "i-lucide-settings",
       children: [
         {
           label: "Project",
@@ -42,7 +51,7 @@ const items = ref([
           description:
             "Choose a primary and a neutral color from your Tailwind CSS theme.",
         },
-      ],
+      ]
     },
     {
       label: "Logs",
@@ -92,6 +101,8 @@ const items = ref([
 
 <template>
   <UNavigationMenu
+    highlight
+    highlight-color="primary"
     orientation="vertical"
     :items="items"
     class="data-[orientation=vertical]:w-48"

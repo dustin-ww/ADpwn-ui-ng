@@ -66,13 +66,12 @@ const items = ref([
     {
       label: "Collections",
       icon: "i-lucide-box",
-      to: "/",
       children: [
         {
           label: "Collection List",
           icon: "i-lucide-file-text",
           description: "Use NuxtLink with superpowers.",
-          to: "/",
+          to: "/collections",
         },
         {
           label: "Collection Manager",
