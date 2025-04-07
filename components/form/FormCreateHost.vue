@@ -3,6 +3,7 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 import type { ADHost, adHostInputSchema } from "~/types/ad/ADHost";
 
 const formState = reactive<ADHost>({
+  ipAddress: "",
   distinguishedName: "",
   objectGUID: "",
   objectSid: "",
@@ -57,7 +58,7 @@ async function onSubmit(_event: FormSubmitEvent<ADHost>) {
   //   }
 }
 
-const operatingSystems = [
+const operatingSystems = ref([
   "Windows Server 2022",
   "Windows Server 2019",
   "Windows Server 2016",
@@ -67,15 +68,16 @@ const operatingSystems = [
   "Windows 10",
   "Windows 8.1",
   "Windows 7",
-];
+]);
 
-// Common user account control flags
-const uacOptions = [
+const uacOptions = ref([
   { label: "Enabled Account (512)", value: 512 },
   { label: "Disabled Account (514)", value: 514 },
   { label: "Workstation Trust Account (4096)", value: 4096 },
   { label: "Server Trust Account (8192)", value: 8192 },
-];
+]);
+
+const date = ref(null);
 </script>
 
 <template>
@@ -85,6 +87,23 @@ const uacOptions = [
     class="space-y-6"
     @submit="onSubmit"
   >
+    <!-- General Section -->
+    <div class="space-y-4 border-b pb-6">
+      <h3 class="text-lg font-medium">Host Connection</h3>
+      <UBadge icon="i-lucide-message-circle-warning"
+        >Please fill in one of the following connection informations.
+      </UBadge>
+      <UFormField label="IP Address" name="ip">
+        <UInput v-model="formState.ipAddress" placeholder="0.0.0.0" />
+      </UFormField>
+
+      <UFormField label="DNS Host Name" name="dNSHostName">
+        <UInput
+          v-model="formState.dNSHostName"
+          placeholder="ws01.example.com"
+        />
+      </UFormField>
+    </div>
     <!-- Identity Section -->
     <div class="space-y-4 border-b pb-6">
       <h3 class="text-lg font-medium">Host Identity</h3>
@@ -115,13 +134,6 @@ const uacOptions = [
       <UFormField label="SAM Account Name" name="sAMAccountName">
         <UInput v-model="formState.sAMAccountName" placeholder="WS01$" />
       </UFormField>
-
-      <UFormField label="DNS Host Name" name="dNSHostName">
-        <UInput
-          v-model="formState.dNSHostName"
-          placeholder="ws01.example.com"
-        />
-      </UFormField>
     </div>
 
     <!-- System Information -->
@@ -131,7 +143,7 @@ const uacOptions = [
       <UFormField label="Operating System" name="operatingSystem">
         <USelect
           v-model="formState.operatingSystem"
-          :options="operatingSystems"
+          :items="operatingSystems"
           placeholder="Select operating system"
         />
       </UFormField>
@@ -149,7 +161,7 @@ const uacOptions = [
       <UFormField label="User Account Control" name="userAccountControl">
         <USelect
           v-model="formState.userAccountControl"
-          :options="uacOptions"
+          :items="uacOptions"
           option-attribute="label"
           value-attribute="value"
           placeholder="Select account control flags"
@@ -162,15 +174,15 @@ const uacOptions = [
       <h3 class="text-lg font-medium">Timestamps</h3>
 
       <UFormField label="Last Logon Timestamp" name="lastLogonTimestamp">
-        <UDatepicker v-model="formState.lastLogonTimestamp" />
+        <VueDatePicker v-model="formState.lastLogonTimestamp" placeholder="Start Typing ..." text-input dark />
       </UFormField>
 
       <UFormField label="When Created" name="whenCreated">
-        <UDatepicker v-model="formState.whenCreated" />
+        <VueDatePicker v-model="formState.whenCreated" placeholder="Start Typing ..." text-input dark/>
       </UFormField>
 
       <UFormField label="When Changed" name="whenChanged">
-        <UDatepicker v-model="formState.whenChanged" />
+        <VueDatePicker v-model="formState.whenChanged" placeholder="Start Typing ..." text-input dark />
       </UFormField>
     </div>
 

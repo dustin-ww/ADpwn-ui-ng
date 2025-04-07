@@ -4,6 +4,7 @@ export interface ADHost {
   // internal
   uid?: string;
   createdAt?: Date;
+  ipAddress?: string;
 
   // ad related
   distinguishedName: string;

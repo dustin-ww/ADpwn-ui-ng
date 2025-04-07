@@ -5,7 +5,16 @@ const items = ref([
       label: "ADPwn",
       type: "label",
       icon: "i-lucide-settings",
+      slot: "adpwnlabel",
+      defaultOpen: true,
+      active: true,
       children: [
+        {
+          label: "Project",
+          description: "Fully styled and customizable components for Nuxt.",
+          icon: "i-lucide-house",
+          to: "/project",
+        },
         {
           label: "Targets",
           description: "Fully styled and customizable components for Nuxt.",
@@ -18,14 +27,10 @@ const items = ref([
     {
       label: "Active Directory",
       type: "label",
+      slot: "adlabel",
+      defaultOpen: true,
       icon: "i-lucide-settings",
       children: [
-        {
-          label: "Project",
-          description: "Fully styled and customizable components for Nuxt.",
-          icon: "i-lucide-house",
-          to: "/project",
-        },
         {
           label: "Domains",
           description: "Fully styled and customizable components for Nuxt.",
@@ -51,8 +56,10 @@ const items = ref([
           description:
             "Choose a primary and a neutral color from your Tailwind CSS theme.",
         },
-      ]
+      ],
     },
+  ],
+  [
     {
       label: "Logs",
       icon: "i-lucide-database",
@@ -84,17 +91,6 @@ const items = ref([
         },
       ],
     },
-    {
-      label: "ADPwn",
-      type: "label",
-    },
-  ],
-  [
-    {
-      label: "Help",
-      icon: "i-lucide-circle-help",
-      disabled: true,
-    },
   ],
 ]);
 </script>
@@ -106,5 +102,16 @@ const items = ref([
     orientation="vertical"
     :items="items"
     class="data-[orientation=vertical]:w-48"
-  />
+  >
+    <template #adpwnlabel-label="{ item }">
+      <div class="text-xs">
+        {{ item.label }}
+      </div>
+    </template>
+    <template #adlabel-label="{ item }">
+      <div class="text-xs">
+        {{ item.label }}
+      </div>
+    </template>
+  </UNavigationMenu>
 </template>

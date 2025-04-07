@@ -21,6 +21,7 @@
     "@pinia/nuxt": "^0.10.1",
     "@tailwindcss/vite": "^4.0.15",
     "@vee-validate/nuxt": "^4.15.0",
+    "@vuepic/vue-datepicker": "^11.0.2",
     "dagre": "^0.8.5",
     "eslint": "^9.23.0",
     "nuxt": "^3.16.1",
