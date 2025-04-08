@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import type { ADPwnModule } from "~/types/adpwn/ADPwnModule";
+import { useADPwnModuleStore } from "~/stores/adpwnModules";
+
+useHead({
+  title: "Module List • ADPwn",
+});
 
 const moduleStore = useADPwnModuleStore();
 const toast = useToast();
@@ -34,6 +39,8 @@ const {
     default: () => [],
   },
 );
+
+console.log("modules", modules.value);
 </script>
 
 <template>
@@ -42,10 +49,8 @@ const {
       :modules="modules || []"
       :loading="modulesStatus === 'pending'"
     >
-      <template #row-actions="">
-        <UButton class="w-full text-center justify-self-center cursor-pointer">
-          Run
-        </UButton>
+      <template #row-actions="{ row }">
+        <ModalRunModule :module-key="row.original.key" />
       </template>
     </ListADPwnModules>
   </div>

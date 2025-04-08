@@ -128,6 +128,7 @@ export function useBaseStore<T extends BaseStoreState>(storeName: string) {
           !import.meta.server &&
           isCacheValid(store.cache[cacheKey] ?? null, cacheDuration)
         ) {
+          console.log("Debug: Using cached data for", cacheKey);
           return;
         }
 

@@ -1,3 +1,5 @@
+import type { ADPwnModuleOption } from "./ADPwnModuleOption";
+
 export interface ADPwnModule {
   uid?: string;
   attack_id: string;
@@ -9,4 +11,5 @@ export interface ADPwnModule {
   module_type: string;
   loot_path: string;
   key: string;
+  options: ADPwnModuleOption[];
 }

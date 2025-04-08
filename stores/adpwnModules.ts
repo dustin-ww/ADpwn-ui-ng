@@ -1,58 +1,112 @@
-import { useADPwnModuleApi } from "~/composables/api/useADwnModuleApi";
+import { defineStore } from "pinia";
 import type { ADPwnModule } from "~/types/adpwn/ADPwnModule";
 import type { ADPwnInheritanceGraph } from "~/types/adpwn/ADPwnModuleGraph";
+import { useBaseStore, type BaseStoreState } from "~/composables/useBaseStore";
+import { useADPwnModuleApi } from "~/composables/api/useADwnModuleApi";
+import { toast } from "#build/ui";
 
-type State = {
+interface ADPwnModuleState extends BaseStoreState {
   modules: ADPwnModule[];
   graph: ADPwnInheritanceGraph;
-};
+}
 
 export const useADPwnModuleStore = defineStore("adpwnModules", {
-  state: (): State => ({
-    modules: [] as ADPwnModule[], // Ensure proper initialization
-    graph: { nodes: [], edges: [] } as ADPwnInheritanceGraph, // Ensure consistent structure
+  state: (): ADPwnModuleState => ({
+    modules: [],
+    graph: { nodes: [], edges: [] },
+    loading: false,
+    error: null,
+    cache: {
+      modules: null,
+      graph: null,
+    },
   }),
+
   getters: {
-    hasModules: (state) => {
-      return state.modules.length > 0;
-    },
-    hasGraph: (state) => {
-      return state.graph.nodes.length > 0 || state.graph.edges.length > 0; // Adjusted for consistency
-    },
-    // Removed duplicate getter names to avoid conflicts
+    hasModules: (state) => state.modules.length > 0,
+    hasGraph: (state) =>
+      state.graph.nodes.length > 0 || state.graph.edges.length > 0,
     getModules: (state) => state.modules,
     getGraph: (state) => state.graph,
   },
+
   actions: {
+    // Initialize the base store helpers
+    _initBaseStore() {
+      const baseStore = useBaseStore<ADPwnModuleState>("adpwnModules");
+      const fetcher = baseStore.createFetcher<ADPwnModule>(this);
+      const entityCreator = baseStore.createEntityCreator(this);
+
+      return {
+        ...baseStore,
+        fetcher,
+        entityCreator,
+      };
+    },
+
+    async fetchSingleModule(key: string) {
+      if (this.modules.length === 0) {
+        await this.fetchModules();
+      }
+      const module = this.modules.find((m) => m.key === key);
+      if (!module) {
+        throw new Error(`Module with key ${key} not found`);
+      }
+      return module;
+    },
+
     async fetchModules(force = false) {
-      if (this.hasModules && !force) return;
-      try {
-        const api = useADPwnModuleApi();
-        const response = await api.getModules();
-        if (response.error) throw response.error;
-        this.modules = Array.isArray(response.data) ? response.data : [];
-        return response.data;
-      } catch (error) {
-        console.error("Failed to fetch modules:", error);
-        throw error;
+      if (this.hasModules && !force) {
+        const { isCacheValid } = this._initBaseStore();
+        if (isCacheValid(this.cache.modules)) {
+          return this.modules;
+        }
       }
+
+      const { fetcher } = this._initBaseStore();
+
+      const fetchModulesWithCache = fetcher<"modules">(
+        () => {
+          const api = useADPwnModuleApi();
+          return api.getModules();
+        },
+        "modules",
+        (data) => {
+          console.log("Fetched modules:", JSON.stringify(data));
+          this.modules = data as ADPwnModule[];
+        },
+        { skipCache: force },
+      );
+
+      return await fetchModulesWithCache();
     },
-    async fetchGraph() {
-      try {
-        const api = useADPwnModuleApi();
-        const response = await api.getGraph();
-        if (response.error) throw response.error;
-        this.graph = response.data ?? { nodes: [], edges: [] }; // Ensure consistent structure
-        return response.data;
-      } catch (error) {
-        console.error("Failed to fetch graph:", error);
-        throw error;
+
+    async fetchGraph(force = false) {
+      if (this.hasGraph && !force) {
+        const { isCacheValid } = this._initBaseStore();
+        if (isCacheValid(this.cache.graph)) {
+          return this.graph;
+        }
       }
+
+      const { handleApiCall } = this._initBaseStore();
+
+      return await handleApiCall(
+        () => {
+          const api = useADPwnModuleApi();
+          return api.getGraph();
+        },
+        (response) => {
+          this.graph = response.data ?? { nodes: [], edges: [] };
+          this.cache.graph = import.meta.client ? Date.now() : null;
+        },
+      );
     },
+
     resetModules() {
-      this.modules = []; // Zustand zurücksetzen
-      this.graph = { nodes: [], edges: [] }; // Graph ebenfalls zurücksetzen
+      const { invalidateCache } = this._initBaseStore();
+      this.$reset();
+      invalidateCache(this.cache);
     },
   },
-  persist: true,
 });
