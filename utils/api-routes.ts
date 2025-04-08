@@ -21,15 +21,15 @@ export const API_ROUTES = {
   ADPWN_MODULES: {
     BASE: "/adpwn/",
     MODULES: {
-      BASE: "/adpwn/modules",
+      BASE: "/adpwn/modules/",
       GRAPH: "/adpwn/modules/graph",
       ITEMS: {
-        DETAIL: (moduleId: string) => `/adpwn/modules/items/${moduleId}`,
-        LASTRUN: (moduleId: string) =>
-          `/adpwn/modules/items/${moduleId}/lastrun`,
-        RUN: (moduleId: string) => `/adpwn/modules/items/${moduleId}/run`,
-        VECTOR(moduleId: string) {
-          return `/adpwn/modules/items/${moduleId}/vector`;
+        DETAIL: (moduleKey: string) => `/adpwn/modules/items/${moduleKey}`,
+        LASTRUN: (moduleKey: string) =>
+          `/adpwn/modules/items/${moduleKey}/lastrun`,
+        RUN: (moduleKey: string) => `/adpwn/modules/items/${moduleKey}/run`,
+        VECTOR(moduleKey: string) {
+          return `/adpwn/modules/items/${moduleKey}/vector`;
         },
       },
     },

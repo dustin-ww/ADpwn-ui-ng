@@ -6,8 +6,8 @@ export const useADPwnModuleApi = () => {
   const api = useApiClient();
 
   return {
-    getModules: () => api.get<ADPwnModule[]>(API_ROUTES.ADPWN_MODULES.BASE),
+    getModules: () => api.get<ADPwnModule[]>(API_ROUTES.ADPWN_MODULES.MODULES.BASE),
     getGraph: () =>
-      api.get<ADPwnInheritanceGraph>(API_ROUTES.ADPWN_MODULES.GRAPH),
+      api.get<ADPwnInheritanceGraph>(API_ROUTES.ADPWN_MODULES.MODULES.GRAPH),
   };
 };

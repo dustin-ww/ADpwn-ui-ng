@@ -10,7 +10,8 @@ const moduleStore = useADPwnModuleStore();
 const module = ref<ADPwnModule>();
 
 onMounted(async () => {
-  module.value = await moduleStore.fetchSingleModule(props.moduleKey);
+  module.value = await moduleStore.getModuleWithDependencies(props.moduleKey);
+  console.log("module", module.value);
 });
 </script>
 <template>
