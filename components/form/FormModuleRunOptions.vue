@@ -24,12 +24,11 @@ onMounted(async () => {
       >
         <UInput placeholder="Enter your value..." />
       </UFormField>
-      <UCheckbox v-if="option.type== ModuleOptionType.Checkbox"  default-value />
-    </div>
-    <UButton
-      label="Run Module"
-      color="primary"
-      class="mt-5"
+      <UCheckbox
+        v-if="option.type == ModuleOptionType.Checkbox"
+        default-value
       />
+    </div>
+    <UButton label="Run Module" color="primary" class="mt-5" />
   </div>
 </template>

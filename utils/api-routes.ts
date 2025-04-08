@@ -6,31 +6,32 @@
 
 export const API_ROUTES = {
   PROJECTS: {
-    BASE: "/projects/",
-    OVERVIEWS: "/projects/overviews",
-    DETAIL: (uid: string) => `/projects/${uid}`,
+    BASE: "/project/",
+    OVERVIEWS: "/project/overviews",
+    DETAIL: (uid: string) => `/project/${uid}`,
     TARGETS: {
-      BASE: (projectUid: string) => `/projects/${projectUid}/targets`,
+      BASE: (projectUid: string) => `/project/${projectUid}/targets`,
       DETAIL: (projectUid: string, targetId: string) =>
-        `/projects/${projectUid}/targets/${targetId}`,
+        `/project/${projectUid}/targets/${targetId}`,
     },
     DOMAINS: {
-      BASE: (projectUid: string) => `/projects/${projectUid}/domains`,
+      BASE: (projectUid: string) => `/project/${projectUid}/domains`,
     },
   },
   ADPWN_MODULES: {
     BASE: "/adpwn/",
-    GRAPH: "/adpwn/graph",
-  },
-  USERS: {
-    BASE: "/users",
-    CURRENT: "/users/me",
-    DETAIL: (uid: string) => `/users/${uid}`,
-  },
-  AUTH: {
-    LOGIN: "/auth/login",
-    LOGOUT: "/auth/logout",
-    REGISTER: "/auth/register",
-    REFRESH: "/auth/refresh",
+    MODULES: {
+      BASE: "/adpwn/modules",
+      GRAPH: "/adpwn/modules/graph",
+      ITEMS: {
+        DETAIL: (moduleId: string) => `/adpwn/modules/items/${moduleId}`,
+        LASTRUN: (moduleId: string) =>
+          `/adpwn/modules/items/${moduleId}/lastrun`,
+        RUN: (moduleId: string) => `/adpwn/modules/items/${moduleId}/run`,
+        VECTOR(moduleId: string) {
+          return `/adpwn/modules/items/${moduleId}/vector`;
+        },
+      },
+    },
   },
 };
