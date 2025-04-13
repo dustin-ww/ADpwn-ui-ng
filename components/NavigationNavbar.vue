@@ -28,17 +28,14 @@ const items = ref([
         {
           label: "Run Queue",
           icon: "i-lucide-smile",
+          to: "/modules/queue",
           description:
             "You have nothing to do, @nuxt/icon will handle it automatically.",
         },
+
         {
-          label: "Logs",
-          icon: "i-lucide-swatch-book",
-          description:
-            "Choose a primary and a neutral color from your Tailwind CSS theme.",
-        },
-        {
-          label: "Recommendations",
+          label: "History",
+          to: "/modules/history",
           description:
             "See Graph with Dependencies between loaded ADPwn Modules.",
           icon: "i-lucide-house",

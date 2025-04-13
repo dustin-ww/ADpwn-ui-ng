@@ -24,17 +24,19 @@ export const API_ROUTES = {
       BASE: "/adpwn/modules/",
       GRAPH: "/adpwn/modules/graph",
       ITEMS: {
-        DETAIL: (moduleKey: string) => `/adpwn/modules/items/${moduleKey}`,
+        DETAIL: (moduleKey: string) => `/adpwn/modules/${moduleKey}`,
         LASTRUN: (moduleKey: string) =>
           `/adpwn/modules/${moduleKey}/lastrun`,
-        RUN: {
-          SINGLE: (moduleKey: string) => `/adpwn/modules/${moduleKey}/run/single`,
-          VECTOR: (moduleKey: string) => `/adpwn/modules/${moduleKey}/run/vector`,
-        } ,
-        VECTOR(moduleKey: string) {
-          return `/adpwn/modules/items/${moduleKey}/vector`;
-        },
-      },
+        RUN: (moduleKey: string) => `/adpwn/modules/${moduleKey}/run`,
+        OPTIONS: (moduleKey: string) =>
+          `/adpwn/modules/${moduleKey}/options`,
+        VECTOR: {
+          RUN: (moduleKey: string) =>
+            `/adpwn/modules/${moduleKey}/vector/run`,
+          OPTIONS: (moduleKey: string) =>
+            `/adpwn/modules/${moduleKey}/vector/options`,
+        }
+      }
     },
   },
 };

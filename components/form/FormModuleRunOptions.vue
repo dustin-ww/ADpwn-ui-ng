@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { StepperItem } from "@nuxt/ui";
 import type { ADPwnModule } from "~/types/adpwn/ADPwnModule";
+import type { ADPwnModuleOption} from "~/types/adpwn/ADPwnModuleOption";
 import { ModuleOptionType } from "~/types/adpwn/ADPwnModuleOption";
 
 const props = defineProps<{
@@ -11,6 +12,7 @@ const moduleStore = useADPwnModuleStore();
 const module = ref<ADPwnModule>();
 const dependencyStepperItems = ref<StepperItem[]>([]);
 const toast = useToast();
+const options = ref<ADPwnModuleOption[]>([]);
 
 // Create a reactive object to store all option values
 const optionValues = ref<Record<string, any>>({});
@@ -62,11 +64,13 @@ const runModule = async () => {
 
 onMounted(async () => {
   module.value = await moduleStore.getModuleWithDependencies(props.moduleKey);
+  options.value = await moduleStore.fetchAttackVectorOptions(props.moduleKey);
   console.log("module", module.value);
+  console.log("options", options.value);
   
   // Initialize the option values with defaults
-  if (module.value?.options) {
-    module.value.options.forEach(option => {
+  if (options.value) {
+    options.value.forEach(option => {
       // Set default values based on option type
       if (option.type === ModuleOptionType.Checkbox) {
         optionValues.value[option.key] = true; // Default checkbox to checked
@@ -130,12 +134,12 @@ onMounted(async () => {
     
     <!-- Module Options -->
     <div
-      v-if="module?.options && module.options.length > 0"
+      v-if="options && options.length > 0"
       class="space-y-6 p-6 bg-gray-800 rounded-lg shadow-md mt-5"
     >
       <h2 class="text-xl font-semibold text-gray-100">Module Options</h2>
       <div
-        v-for="option in module.options"
+        v-for="option in options"
         :key="option.key"
         class="space-y-4"
       >
