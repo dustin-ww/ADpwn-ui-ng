@@ -1,6 +1,8 @@
 export interface ADPwnModuleOption {
   key: string;
   type: ModuleOptionType;
+  label: string;
+  placeholder: string;
   required: boolean;
 }
 

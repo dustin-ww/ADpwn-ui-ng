@@ -26,8 +26,11 @@ export const API_ROUTES = {
       ITEMS: {
         DETAIL: (moduleKey: string) => `/adpwn/modules/items/${moduleKey}`,
         LASTRUN: (moduleKey: string) =>
-          `/adpwn/modules/items/${moduleKey}/lastrun`,
-        RUN: (moduleKey: string) => `/adpwn/modules/items/${moduleKey}/run`,
+          `/adpwn/modules/${moduleKey}/lastrun`,
+        RUN: {
+          SINGLE: (moduleKey: string) => `/adpwn/modules/${moduleKey}/run/single`,
+          VECTOR: (moduleKey: string) => `/adpwn/modules/${moduleKey}/run/vector`,
+        } ,
         VECTOR(moduleKey: string) {
           return `/adpwn/modules/items/${moduleKey}/vector`;
         },

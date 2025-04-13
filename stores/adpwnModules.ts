@@ -23,10 +23,12 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
 
   getters: {
     hasModules: (state) => state.modules.length > 0,
-    hasGraph: (state) => state.graph.nodes.length > 0 || state.graph.edges.length > 0,
+    hasGraph: (state) =>
+      state.graph.nodes.length > 0 || state.graph.edges.length > 0,
     getModules: (state) => state.modules,
     getGraph: (state) => state.graph,
-    getModuleByKey: (state) => (key: string) => state.modules.find(m => m.key === key),
+    getModuleByKey: (state) => (key: string) =>
+      state.modules.find((m) => m.key === key),
   },
 
   actions: {
@@ -52,7 +54,7 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
       if (!module) {
         throw new Error(`Module with key ${key} not found`);
       }
-      
+
       return module;
     },
 
@@ -63,7 +65,7 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
           return this.modules;
         }
       }
-      
+
       const { fetcher } = this._initBaseStore();
       const fetchModulesWithCache = fetcher<"modules">(
         () => {
@@ -77,8 +79,25 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
         },
         { skipCache: force },
       );
-      
+
       return await fetchModulesWithCache();
+    },
+
+    async runAttackVector(moduleKey: string): Promise<string> {
+      const { handleApiCall } = this._initBaseStore();
+      let result = '';
+      
+      await handleApiCall(
+        () => {
+          const api = useADPwnModuleApi();
+          return api.runAttackVector(moduleKey);
+        },
+        (response) => {
+          result = response.data ?? '';
+        }
+      );
+      
+      return result;
     },
 
     async fetchGraph(force = false) {
@@ -88,7 +107,7 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
           return this.graph;
         }
       }
-      
+
       const { handleApiCall } = this._initBaseStore();
       return await handleApiCall(
         () => {
@@ -107,42 +126,48 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
       const module = await this.fetchSingleModule(moduleKey);
 
       console.log("Loading dependencies for module:", moduleKey);
-      
-      if (!module.dependency_vector_keys || module.dependency_vector_keys.length === 0) {
+
+      if (
+        !module.dependency_vector_keys ||
+        module.dependency_vector_keys.length === 0
+      ) {
         // No dependencies to load
         module.dependency_vector = [];
         return module;
       }
-      
+
       // Check if dependencies are already loaded
-      if (module.dependency_vector && module.dependency_vector.length === module.dependency_vector_keys.length) {
+      if (
+        module.dependency_vector &&
+        module.dependency_vector.length === module.dependency_vector_keys.length
+      ) {
         return module;
       }
-      
+
       // Ensure all modules are loaded
       if (this.modules.length === 0) {
         await this.fetchModules();
       }
-      
+
       // Find dependencies from the already loaded modules
       const dependencies: ADPwnModule[] = [];
       const missingDependencies: string[] = [];
-      
+
       for (const depKey of module.dependency_vector_keys) {
-        const depModule = this.modules.find(m => m.key === depKey);
-        
+        const depModule = this.modules.find((m) => m.key === depKey);
+
         if (depModule) {
           dependencies.push(depModule);
         } else {
           missingDependencies.push(depKey);
         }
       }
-      
+
       // Try to load missing dependencies
       if (missingDependencies.length > 0) {
         // const { handleApiCall } = this._initBaseStore();
         // const api = useADPwnModuleApi();
-        
+
         for (const depKey of missingDependencies) {
           dependencies.push(this.fetchSingleModule(depKey)); // Placeholder for missing module
           // try {
@@ -165,7 +190,7 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
           // }
         }
       }
-      
+
       // Set dependencies
       module.dependency_vector = dependencies;
       return module;
@@ -174,18 +199,23 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
     // Load all modules with their dependencies
     async loadAllModulesWithDependencies() {
       await this.fetchModules();
-      
+
       const loadedModules: ADPwnModule[] = [];
-      
+
       for (const module of this.modules) {
         try {
-          const moduleWithDeps = await this.loadDependenciesForModule(module.key);
+          const moduleWithDeps = await this.loadDependenciesForModule(
+            module.key,
+          );
           loadedModules.push(moduleWithDeps);
         } catch (error) {
-          console.error(`Failed to load dependencies for module: ${module.key}`, error);
+          console.error(
+            `Failed to load dependencies for module: ${module.key}`,
+            error,
+          );
         }
       }
-      
+
       return loadedModules;
     },
 
@@ -202,5 +232,4 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
       invalidateCache(this.cache);
     },
   },
-  
 });
