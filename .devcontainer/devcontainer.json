@@ -1,0 +1,28 @@
+{
+  "name": "ADPwn UI Dev Container",
+  "dockerFile": "Dockerfile",
+  "context": "..",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Nuxt App",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "npm install",
+  "postStartCommand": "npm run dev",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Vue.volar",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "remoteUser": "node",
+  "runArgs": [
+    "--init",
+    "--security-opt", "no-new-privileges:true"
+  ]
+}
