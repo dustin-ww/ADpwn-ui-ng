@@ -21,7 +21,7 @@
     "@pinia/nuxt": "0.11.1",
     "@tailwindcss/vite": "4.1.13",
     "@vee-validate/nuxt": "4.15.1",
-    "eslint": "^9.23.0",
+    "eslint": "9.36.0",
     "nuxt": "^4.1.0",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.5.0",
