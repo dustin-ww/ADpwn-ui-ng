@@ -2,7 +2,7 @@
 const items = ref([
   [
     {
-      label: "ADPwn",
+      label: "Settings",
       type: "label",
       icon: "i-lucide-settings",
       slot: "adpwnlabel",

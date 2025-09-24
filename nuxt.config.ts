@@ -18,6 +18,12 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      watch: {
+        usePolling: true,
+        interval: 100,
+      }
+    }
   },
   runtimeConfig: {
     apiSecret: process.env.API_SECRET,
