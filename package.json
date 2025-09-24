@@ -15,6 +15,7 @@
     "prettyfix": "prettier . --write --list-different"
   },
   "dependencies": {
+    "@dagrejs/dagre": "1.1.5",
     "@nuxt/eslint": "1.9.0",
     "@nuxt/icon": "1.15.0",
     "@nuxt/ui": "3.3.4",

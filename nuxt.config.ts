@@ -15,15 +15,27 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "@vee-validate/nuxt",
   ],
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   vite: {
     plugins: [tailwindcss()],
   },
   runtimeConfig: {
     apiSecret: process.env.API_SECRET,
+    // Server-only (private)
+    apiBaseUrl: process.env.API_BASE_URL || 'http://adpwn-core:8081',
     public: {
-      apiBaseUrl: process.env.API_BASE_URL || "http://127.0.0.1:8081",
+      // Client & Server (public)
+      apiBaseUrl: '/api',
     },
+  },
+  nitro: {
+    // Proxy for dev container development
+    devProxy: {
+      '/api': {
+        target: 'http://adpwn-core:8081',
+        changeOrigin: true,
+      }
+    }
   },
   app: {
     head: {

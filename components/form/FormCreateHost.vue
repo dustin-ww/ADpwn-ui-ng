@@ -174,30 +174,30 @@ const date = ref(null);
       <h3 class="text-lg font-medium">Timestamps</h3>
 
       <UFormField label="Last Logon Timestamp" name="lastLogonTimestamp">
-        <VueDatePicker
+        <!-- <VueDatePicker
           v-model="formState.lastLogonTimestamp"
           placeholder="Start Typing ..."
           text-input
           dark
-        />
+        /> -->
       </UFormField>
 
       <UFormField label="When Created" name="whenCreated">
-        <VueDatePicker
+        <!-- <VueDatePicker
           v-model="formState.whenCreated"
           placeholder="Start Typing ..."
           text-input
           dark
-        />
+        /> -->
       </UFormField>
 
       <UFormField label="When Changed" name="whenChanged">
-        <VueDatePicker
+        <!-- <VueDatePicker
           v-model="formState.whenChanged"
           placeholder="Start Typing ..."
           text-input
           dark
-        />
+        /> -->
       </UFormField>
     </div>
 
