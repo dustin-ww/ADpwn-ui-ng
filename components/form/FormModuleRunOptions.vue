@@ -17,6 +17,10 @@ const options = ref<ADPwnModuleOption[]>([]);
 // Create a reactive object to store all option values
 const optionValues = ref<Record<string, any>>({});
 
+const emit = defineEmits<{
+  (e: "submit-success"): void;
+}>();
+
 // Function to run the module with collected values
 const runModule = async () => {
   try {
@@ -36,7 +40,7 @@ const runModule = async () => {
 
     toast.add({
       title: "Success",
-      description: "Domain created successfully",
+      description: "Module execution started successfully",
       color: "success",
     });
 

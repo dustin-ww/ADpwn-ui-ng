@@ -22,6 +22,7 @@
     "@pinia/nuxt": "0.11.1",
     "@tailwindcss/vite": "4.1.13",
     "@vee-validate/nuxt": "4.15.1",
+    "dagre": "0.8.5",
     "eslint": "9.36.0",
     "nuxt": "4.1.2",
     "pinia": "3.0.3",

@@ -5,5 +5,6 @@ export interface ProjectADTargets {
 export interface ADTarget {
   uid: string;
   note: string;
-  ip_range: string;
+  ip: string;
+  cidr: number;
 }

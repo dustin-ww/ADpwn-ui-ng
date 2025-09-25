@@ -6,13 +6,15 @@ const currentProjectStore = useCurrentProjectStore();
 
 const tableData = computed(() =>
   currentProjectStore.targets.map((target) => ({
-    ip: target.ip_range,
-    note: target.name,
+    ip: target.ip,
+    cidr: target.cidr,
+    note: target.note,
   })),
 );
 
 const columns: TableColumn[] = [
   { accessorKey: "ip", header: "IP" },
+  { accessorKey: "cidr", header: "CIDR" },
   { accessorKey: "note", header: "Note" },
 ];
 
@@ -21,6 +23,7 @@ const table = useTemplateRef("table");
 
 onMounted(async () => {
   await currentProjectStore.fetchTargets();
+  console.log(currentProjectStore.targets);
 });
 </script>
 
