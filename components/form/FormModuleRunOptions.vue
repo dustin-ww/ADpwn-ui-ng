@@ -2,17 +2,23 @@
 import type { StepperItem } from "@nuxt/ui";
 import type { ADPwnModule } from "~/types/adpwn/ADPwnModule";
 import type { ADPwnModuleOption} from "~/types/adpwn/ADPwnModuleOption";
+import type { ADPwnModuleResponse } from "~/types/adpwn/ADPwnModuleResponse";
 import { ModuleOptionType } from "~/types/adpwn/ADPwnModuleOption";
 
 const props = defineProps<{
   moduleKey: string;
 }>();
 
+const moduleRunState = reactive({
+  
+});
+
 const moduleStore = useADPwnModuleStore();
 const module = ref<ADPwnModule>();
 const dependencyStepperItems = ref<StepperItem[]>([]);
 const toast = useToast();
 const options = ref<ADPwnModuleOption[]>([]);
+const isLoading = ref(false);
 
 // Create a reactive object to store all option values
 const optionValues = ref<Record<string, any>>({});
@@ -21,18 +27,37 @@ const emit = defineEmits<{
   (e: "submit-success"): void;
 }>();
 
+// Function to build ADPwnModuleResponse array from current option values
+const buildModuleResponse = (): ADPwnModuleResponse[] => {
+  if (!options.value) return [];
+  
+  return options.value.map(option => ({
+    module: module.value?.key || "",
+    key: option.key,
+    type: option.type,
+    value: String(optionValues.value[option.key] || "")
+  }));
+};
+
 // Function to run the module with collected values
 const runModule = async () => {
+  isLoading.value = true;
+  
   try {
+    // Build the response array from current form values
+    const moduleResponses = buildModuleResponse();
+    
     const { error } = await moduleStore.runAttackVector(
-      module.value?.key ?? ""
-      //optionValues.value
+      module.value?.key ?? "",
+      moduleRunState,
+      moduleResponses // Pass the built responses to the store
     );
+    console.log("Run", moduleResponses)
 
     if (error) {
       toast.add({
         title: "Error",
-        description: error.message || "Domain creation failed",
+        description: error.message || "Module execution failed",
         color: "error",
       });
       return;
@@ -46,6 +71,7 @@ const runModule = async () => {
 
     emit("submit-success");
   } catch (error) {
+    console.error("Error running module:", error);
     toast.add({
       title: "Error",
       description: "An unexpected error occurred: " + (error as Error).message,
@@ -53,16 +79,6 @@ const runModule = async () => {
     });
   } finally {
     isLoading.value = false;
-  }
-  try {
-    console.log("Running module with options:", optionValues.value);
-    // Here you can send the values to your backend or process them
-    // Example: await moduleStore.executeModule(module.value?.key, optionValues.value);
-    
-    // You could add a success notification here
-  } catch (error) {
-    console.error("Error running module:", error);
-    // You could add an error notification here
   }
 };
 
@@ -181,10 +197,12 @@ onMounted(async () => {
     
     <!-- Run Button -->
     <UButton
-      label="Run Module"
+      :label="isLoading ? 'Running...' : 'Run Module'"
+      :loading="isLoading"
+      :disabled="isLoading"
       color="primary"
-      @click="runModule"
       class="mt-5 w-full py-3 text-lg font-medium text-gray-100 cursor-pointer"
+      @click="runModule"
     />
   </div>
 </template>

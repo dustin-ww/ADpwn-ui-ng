@@ -4,6 +4,7 @@ import type { ADPwnInheritanceGraph } from "~/types/adpwn/ADPwnModuleGraph";
 import { useBaseStore, type BaseStoreState } from "~/composables/useBaseStore";
 import { useADPwnModuleApi } from "~/composables/api/useADwnModuleApi";
 import type { ADPwnModuleOption } from "~/types/adpwn/ADPwnModuleOption";
+import type { ADPwnModuleResponse } from "~/types/adpwn/ADpwnModuleResponse";
 
 interface ADPwnModuleState extends BaseStoreState {
   modules: ADPwnModule[];
@@ -103,14 +104,14 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
       return await fetchModulesWithCache();
     },
 
-    async runAttackVector(moduleKey: string): Promise<string> {
+    async runAttackVector(moduleKey: string, params: ADPwnModuleResponse[]): Promise<string> {
       const { handleApiCall } = this._initBaseStore();
       let result = '';
       
       await handleApiCall(
         () => {
           const api = useADPwnModuleApi();
-          return api.runAttackVector(moduleKey);
+          return api.runAttackVector(moduleKey, params);
         },
         (response) => {
           result = response.data ?? '';
