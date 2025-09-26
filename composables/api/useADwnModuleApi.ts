@@ -2,7 +2,7 @@ import type { ADPwnModule } from "~/types/adpwn/ADPwnModule";
 import type { ADPwnInheritanceGraph } from "~/types/adpwn/ADPwnModuleGraph";
 import { useApiClient } from "./useApiWrapper";
 import type { ADPwnModuleOption } from "~/types/adpwn/ADPwnModuleOption";
-import type { ADPwnModuleResponse } from "~/types/adpwn/ADpwnModuleResponse";
+import type { ADPwnModuleParameters } from "~/types/adpwn/ADPwnModuleParameters";
 
 export const useADPwnModuleApi = () => {
   const api = useApiClient();
@@ -12,9 +12,10 @@ export const useADPwnModuleApi = () => {
       api.get<ADPwnModule[]>(API_ROUTES.ADPWN_MODULES.MODULES.BASE),
     getGraph: () =>
       api.get<ADPwnInheritanceGraph>(API_ROUTES.ADPWN_MODULES.MODULES.GRAPH),
-    runAttackVector: (moduleKey: string, parameterData: ADPwnModuleResponse[]) =>
-      api.create<ADPwnModule>(API_ROUTES.ADPWN_MODULES.MODULES.ITEMS.VECTOR.RUN(moduleKey),
-    parameterData),
+    runAttackVector: (moduleKey: string, parameterData: ADPwnModuleParameters[]) =>
+      api.create<ADPwnModule>(
+        API_ROUTES.ADPWN_MODULES.MODULES.ITEMS.VECTOR.RUN(moduleKey),
+        parameterData),
     getAttackVectorOptions: (moduleKey: string) =>
       api.get<ADPwnModuleOption[]>(
         API_ROUTES.ADPWN_MODULES.MODULES.ITEMS.VECTOR.OPTIONS(moduleKey),

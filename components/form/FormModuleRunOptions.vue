@@ -2,57 +2,82 @@
 import type { StepperItem } from "@nuxt/ui";
 import type { ADPwnModule } from "~/types/adpwn/ADPwnModule";
 import type { ADPwnModuleOption} from "~/types/adpwn/ADPwnModuleOption";
-import type { ADPwnModuleResponse } from "~/types/adpwn/ADPwnModuleResponse";
 import { ModuleOptionType } from "~/types/adpwn/ADPwnModuleOption";
+
+interface Input<T = unknown> {
+  type: string;
+  value: T;
+}
 
 const props = defineProps<{
   moduleKey: string;
 }>();
 
-const moduleRunState = reactive({
-  
-});
-
 const moduleStore = useADPwnModuleStore();
 const module = ref<ADPwnModule>();
 const dependencyStepperItems = ref<StepperItem[]>([]);
+const currentProjectStore = useCurrentProjectStore();
 const toast = useToast();
 const options = ref<ADPwnModuleOption[]>([]);
 const isLoading = ref(false);
 
-// Create a reactive object to store all option values
 const optionValues = ref<Record<string, any>>({});
+
+const metadata = ref<Record<string, string>>({
+  creator: "admin", // Default values
+  priority: "medium"
+});
 
 const emit = defineEmits<{
   (e: "submit-success"): void;
 }>();
 
-// Function to build ADPwnModuleResponse array from current option values
-const buildModuleResponse = (): ADPwnModuleResponse[] => {
-  if (!options.value) return [];
-  
-  return options.value.map(option => ({
-    module: module.value?.key || "",
-    key: option.key,
-    type: option.type,
-    value: String(optionValues.value[option.key] || "")
-  }));
+// Function to map ModuleOptionType to string type
+const mapOptionTypeToString = (type: ModuleOptionType): string => {
+  switch (type) {
+    case ModuleOptionType.TextInput:
+      return "textInput";
+    case ModuleOptionType.Checkbox:
+      return "checkbox";
+    case ModuleOptionType.TargetInput:
+      return "targetInput";
+    default:
+      return "textInput";
+  }
 };
 
-// Function to run the module with collected values
+// Function to build ADPwnModuleParameters from current option values
+const buildModuleParameters = (): ADPwnModuleParameters => {
+  const inputs: Record<string, Input<any>> = {};
+  
+  if (options.value) {
+    options.value.forEach(option => {
+      inputs[option.key] = {
+        type: mapOptionTypeToString(option.type),
+        value: optionValues.value[option.key]
+      };
+    });
+  }
+  
+  return {
+    project_uid: currentProjectStore.getUID,
+    metadata: metadata.value,
+    inputs: inputs
+  };
+};
+
 const runModule = async () => {
   isLoading.value = true;
   
   try {
-    // Build the response array from current form values
-    const moduleResponses = buildModuleResponse();
+    const moduleParameters = buildModuleParameters();
+    
+    console.log("Module Parameters JSON:", JSON.stringify(moduleParameters, null, 2));
     
     const { error } = await moduleStore.runAttackVector(
       module.value?.key ?? "",
-      moduleRunState,
-      moduleResponses // Pass the built responses to the store
+      moduleParameters 
     );
-    console.log("Run", moduleResponses)
 
     if (error) {
       toast.add({
@@ -88,14 +113,14 @@ onMounted(async () => {
   console.log("module", module.value);
   console.log("options", options.value);
   
-  // Initialize the option values with defaults
   if (options.value) {
     options.value.forEach(option => {
-      // Set default values based on option type
       if (option.type === ModuleOptionType.Checkbox) {
-        optionValues.value[option.key] = true; // Default checkbox to checked
+        optionValues.value[option.key] = true; 
+      } else if (option.type === ModuleOptionType.TargetInput) {
+        optionValues.value[option.key] = []; 
       } else {
-        optionValues.value[option.key] = option.default_value || ""; // Use default or empty string
+        optionValues.value[option.key] = option.default_value || "";
       }
     });
   }
@@ -127,6 +152,31 @@ onMounted(async () => {
 
 <template>
   <div>
+    <!-- Metadata Section -->
+    <div class="space-y-6 p-6 bg-gray-800 rounded-lg shadow-md mb-5">
+      <h2 class="text-xl font-semibold text-gray-100">Module Metadata</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <UFormField label="Creator" class="w-full">
+          <UInput
+            v-model="metadata.creator"
+            placeholder="Enter creator name..."
+            class="w-full border-gray-600 bg-gray-700 text-gray-100 rounded-md"
+          />
+        </UFormField>
+        <UFormField label="Priority" class="w-full">
+          <USelect
+            v-model="metadata.priority"
+            :options="[
+              { label: 'Low', value: 'low' },
+              { label: 'Medium', value: 'medium' },
+              { label: 'High', value: 'high' }
+            ]"
+            class="w-full border-gray-600 bg-gray-700 text-gray-100 rounded-md"
+          />
+        </UFormField>
+      </div>
+    </div>
+
     <!-- Module Dependencies -->
     <div
       v-if="module?.dependency_vector.length != 0"
@@ -157,7 +207,7 @@ onMounted(async () => {
       v-if="options && options.length > 0"
       class="space-y-6 p-6 bg-gray-800 rounded-lg shadow-md mt-5"
     >
-      <h2 class="text-xl font-semibold text-gray-100">Module Options</h2>
+      <h2 class="text-xl font-semibold text-gray-100">Module Inputs</h2>
       <div
         v-for="option in options"
         :key="option.key"
@@ -188,11 +238,26 @@ onMounted(async () => {
           />
           <label class="text-gray-300">{{ option.label }}</label>
         </div>
+
+        <div
+          v-if="option.type == ModuleOptionType.TargetInput"
+          class="space-y-2"
+        >
+          <UTextarea
+            v-model="optionValues[option.key]"
+            :placeholder="option.placeholder || 'Enter target data as JSON...'"
+            class="w-full border-gray-600 bg-gray-700 text-gray-100 rounded-md"
+            rows="4"
+          />
+          <p class="text-xs text-gray-400">
+            Enter target data as JSON array (e.g., [{"uid":"0x1","name":"Server 1","ip_range":"192.168.1.1-10"}])
+          </p>
+        </div>
       </div>
     </div>
     <div v-else class="space-y-6 p-6 bg-gray-800 rounded-lg shadow-md mt-5">
-      <h2 class="text-xl font-semibold text-gray-100">No Options</h2>
-      <p class="text-gray-300">This module has no options to configure.</p>
+      <h2 class="text-xl font-semibold text-gray-100">No Inputs</h2>
+      <p class="text-gray-300">This module has no inputs to configure.</p>
     </div>
     
     <!-- Run Button -->

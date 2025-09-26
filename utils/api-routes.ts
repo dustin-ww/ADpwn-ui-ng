@@ -15,11 +15,17 @@ export const API_ROUTES = {
         `/project/${projectUid}/targets/${targetId}`,
     },
     DOMAINS: {
-      BASE: (projectUid: string) => `/project/${projectUid}/domains`,
+      ALL: (projectUid: string) => `/project/${projectUid}/domains`,
     },
+    LOGS: {
+      ALL: (projectUid: string) => `/project/${projectUid}/logs`,
+    }
   },
   ADPWN_MODULES: {
     BASE: "/adpwn/",
+    RUNS: {
+      BASE: "/adpwn/runs/",
+    },
     MODULES: {
       BASE: "/adpwn/modules/",
       GRAPH: "/adpwn/modules/graph",

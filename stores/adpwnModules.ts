@@ -5,6 +5,7 @@ import { useBaseStore, type BaseStoreState } from "~/composables/useBaseStore";
 import { useADPwnModuleApi } from "~/composables/api/useADwnModuleApi";
 import type { ADPwnModuleOption } from "~/types/adpwn/ADPwnModuleOption";
 import type { ADPwnModuleResponse } from "~/types/adpwn/ADpwnModuleResponse";
+import type { ADPwnModuleParameters } from "~/types/adpwn/ADPwnModuleParameters";
 
 interface ADPwnModuleState extends BaseStoreState {
   modules: ADPwnModule[];
@@ -104,7 +105,8 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
       return await fetchModulesWithCache();
     },
 
-    async runAttackVector(moduleKey: string, params: ADPwnModuleResponse[]): Promise<string> {
+    async runAttackVector(moduleKey: string, params: ADPwnModuleParameters[]): Promise<string> {
+      console.log("EEEEEE");
       const { handleApiCall } = this._initBaseStore();
       let result = '';
       
