@@ -6,6 +6,7 @@ import { useBaseStore, type BaseStoreState } from "~/composables/useBaseStore";
 import { useDomainsApi } from "~/composables/api/useDomainsApi";
 import { useProjectsApi } from "~/composables/api/useProjectsApi";
 import type { ADDomain } from "~/types/ad/ADDomain";
+import type { ADPwnLogEntry } from "~/types/adpwn/ADPwnLogEntry";
 
 interface CurrentProjectState extends BaseStoreState {
   uid: string;
@@ -164,6 +165,24 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       );
 
       await fetchTargetsWithCache();
+    },
+
+    async fetchLogs() {
+      const { fetcher } = this._initBaseStore();
+      const fetchTargetsWithCache = fetcher(
+        () => {
+          const api = useProjectsApi();
+          return api.getLogs(this.uid);
+        },
+        "logs",
+        (logs: ADPwnLogEntry[]) => {
+          return logs;
+        },
+      );
+
+      const res = await fetchTargetsWithCache();
+
+      return res?.data ?? [];
     },
 
     async createDomain(domainData: ADDomain) {

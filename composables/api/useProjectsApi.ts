@@ -19,6 +19,9 @@ export const useProjectsApi = () => {
       api.update<ADPwnProject>(API_ROUTES.PROJECTS.DETAIL(uid), updateData, {
         headers: { "Content-Type": "application/merge-patch+json" },
       }),
+    getLogs(uid:string) {
+      return api.get<string[]>(API_ROUTES.PROJECTS.LOGS.ALL(uid));
+    },
     // Get Project with UID
     getProject: (uid: string) =>
       api.get<ADPwnProject>(API_ROUTES.PROJECTS.DETAIL(uid)),
