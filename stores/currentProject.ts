@@ -62,10 +62,8 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       if (this.isHydrated) return;
 
       if (import.meta.client) {
-        // Client-seitig: Daten sind bereits durch persist plugin geladen
         this.isHydrated = true;
       } else if (import.meta.server) {
-        // Server-seitig: von Cookie laden
         const uidCookie = useCookie('currentProject-uid', {
           default: () => '',
           maxAge: 60 * 60 * 24 * 30,

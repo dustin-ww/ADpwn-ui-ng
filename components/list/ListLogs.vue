@@ -10,18 +10,23 @@ onMounted(async () => {
   logData.value = result.map((log_entry: ADPwnLogEntry) => ({
     id: log_entry.id,
     message: log_entry.message,
-    payload: log_entry.payload,
+    payload: atob(log_entry.payload),
     timestamp: log_entry.timestamp,
+    module_key: log_entry.moduleKey,
     level: log_entry.level,
+    isSystemLog: log_entry.projectUID === "SYSTEM"
   }));
 });
 
 const columns: TableColumn[] = [
     { accessorKey: "id", header: "ID" },
+    { accessorKey: "module_key", header: "Module Key" },
     { accessorKey: "message", header: "Message" },
     { accessorKey: "timestamp", header: "Timestamp" },
     { accessorKey: "level", header: "Level" },
     { accessorKey: "payload", header: "Payload" },
+    { accessorKey: "isSystemLog", header: "System Log" },
+
 ];
 
 const columnFilters = ref([{ message: "", value: "" }]);
