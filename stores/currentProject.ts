@@ -13,6 +13,7 @@ interface CurrentProjectState extends BaseStoreState {
   description: string;
   targets: ADTarget[];
   domains: ADDomain[];
+  isHydrated: boolean;
 }
 
 export const useCurrentProjectStore = defineStore("currentProject", {
@@ -28,6 +29,7 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       domains: null,
       targets: null,
     },
+    isHydrated: false,
   }),
 
   getters: {
@@ -38,6 +40,7 @@ export const useCurrentProjectStore = defineStore("currentProject", {
     getUID: (state) => state.uid,
     getName: (state) => state.name,
     getDescription: (state) => state.description,
+    hasProject: (state) => state.uid !== "",
   },
 
   actions: {
@@ -54,16 +57,61 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       };
     },
 
+    async hydrate() {
+      if (this.isHydrated) return;
+
+      if (import.meta.client) {
+        // Client-seitig: Daten sind bereits durch persist plugin geladen
+        this.isHydrated = true;
+      } else if (import.meta.server) {
+        // Server-seitig: von Cookie laden
+        const uidCookie = useCookie('currentProject-uid', {
+          default: () => '',
+          maxAge: 60 * 60 * 24 * 30,
+          secure: true,
+          sameSite: 'lax'
+        });
+        const nameCookie = useCookie('currentProject-name', {
+          default: () => '',
+          maxAge: 60 * 60 * 24 * 30,
+          secure: true,
+          sameSite: 'lax'
+        });
+        const descriptionCookie = useCookie('currentProject-description', {
+          default: () => '',
+          maxAge: 60 * 60 * 24 * 30,
+          secure: true,
+          sameSite: 'lax'
+        });
+
+        this.uid = uidCookie.value || '';
+        this.name = nameCookie.value || '';
+        this.description = descriptionCookie.value || '';
+        this.isHydrated = true;
+      }
+    },
+
     async initialize(projectId: string, projectName: string) {
       this.reset();
       this.uid = projectId;
       this.name = projectName;
+
+      // Cookies auch setzen für SSR
+      if (import.meta.server || import.meta.client) {
+        const uidCookie = useCookie('currentProject-uid');
+        const nameCookie = useCookie('currentProject-name');
+        
+        uidCookie.value = projectId;
+        nameCookie.value = projectName;
+      }
 
       await Promise.all([this.fetchProjectDetails(), this.fetchTargets()]);
 
       if (import.meta.client) {
         this.fetchDomains();
       }
+
+      this.isHydrated = true;
     },
 
     async fetchProjectDetails() {
@@ -72,6 +120,15 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       if (project) {
         this.name = project.name;
         this.description = project.description;
+        
+        // Cookie auch aktualisieren
+        if (import.meta.server || import.meta.client) {
+          const nameCookie = useCookie('currentProject-name');
+          const descriptionCookie = useCookie('currentProject-description');
+          
+          nameCookie.value = project.name;
+          descriptionCookie.value = project.description;
+        }
       }
     },
 
@@ -154,6 +211,15 @@ export const useCurrentProjectStore = defineStore("currentProject", {
           this.name = payload.name ?? this.name;
           this.description = payload.description ?? this.description;
 
+          // Cookies aktualisieren
+          if (import.meta.server || import.meta.client) {
+            const nameCookie = useCookie('currentProject-name');
+            const descriptionCookie = useCookie('currentProject-description');
+            
+            if (payload.name) nameCookie.value = payload.name;
+            if (payload.description) descriptionCookie.value = payload.description;
+          }
+
           const projectsStore = useProjectsStore();
           projectsStore.updateProject({
             uid: this.uid,
@@ -172,9 +238,25 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       );
     },
 
+    clearProject() {
+      this.reset();
+      
+      // Cookies auch löschen
+      if (import.meta.server || import.meta.client) {
+        const uidCookie = useCookie('currentProject-uid');
+        const nameCookie = useCookie('currentProject-name');
+        const descriptionCookie = useCookie('currentProject-description');
+        
+        uidCookie.value = null;
+        nameCookie.value = null;
+        descriptionCookie.value = null;
+      }
+    },
+
     reset() {
       const { invalidateCache } = this._initBaseStore();
       this.$reset();
+      this.isHydrated = false;
       invalidateCache(this.cache);
     },
   },
