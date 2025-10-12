@@ -14,7 +14,6 @@ interface CurrentProjectState extends BaseStoreState {
   description: string;
   targets: ADTarget[];
   domains: ADDomain[];
-  isHydrated: boolean;
 }
 
 export const useCurrentProjectStore = defineStore("currentProject", {
@@ -30,7 +29,6 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       domains: null,
       targets: null,
     },
-    isHydrated: false,
   }),
 
   getters: {
@@ -45,7 +43,6 @@ export const useCurrentProjectStore = defineStore("currentProject", {
   },
 
   actions: {
-    // Initialize the base store helpers
     _initBaseStore() {
       const baseStore = useBaseStore<CurrentProjectState>("currentProject");
       const fetcher = baseStore.createFetcher(this);
@@ -58,76 +55,49 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       };
     },
 
-    async hydrate() {
-      if (this.isHydrated) return;
+    // State aus Cookies laden (Server + Client)
+    hydrate() {
+      const uid = useCookie('currentProject-uid', { default: () => '' });
+      const name = useCookie('currentProject-name', { default: () => '' });
+      const description = useCookie('currentProject-description', { default: () => '' });
 
-      if (import.meta.client) {
-        this.isHydrated = true;
-      } else if (import.meta.server) {
-        const uidCookie = useCookie('currentProject-uid', {
-          default: () => '',
-          maxAge: 60 * 60 * 24 * 30,
-          secure: true,
-          sameSite: 'lax'
-        });
-        const nameCookie = useCookie('currentProject-name', {
-          default: () => '',
-          maxAge: 60 * 60 * 24 * 30,
-          secure: true,
-          sameSite: 'lax'
-        });
-        const descriptionCookie = useCookie('currentProject-description', {
-          default: () => '',
-          maxAge: 60 * 60 * 24 * 30,
-          secure: true,
-          sameSite: 'lax'
-        });
+      this.uid = uid.value;
+      this.name = name.value;
+      this.description = description.value;
+    },
 
-        this.uid = uidCookie.value || '';
-        this.name = nameCookie.value || '';
-        this.description = descriptionCookie.value || '';
-        this.isHydrated = true;
-      }
+    // State in Cookies speichern
+    _syncCookies() {
+      const uid = useCookie('currentProject-uid');
+      const name = useCookie('currentProject-name');
+      const description = useCookie('currentProject-description');
+
+      uid.value = this.uid;
+      name.value = this.name;
+      description.value = this.description;
     },
 
     async initialize(projectId: string, projectName: string) {
       this.reset();
       this.uid = projectId;
       this.name = projectName;
-
-      // Cookies auch setzen für SSR
-      if (import.meta.server || import.meta.client) {
-        const uidCookie = useCookie('currentProject-uid');
-        const nameCookie = useCookie('currentProject-name');
-        
-        uidCookie.value = projectId;
-        nameCookie.value = projectName;
-      }
+      this._syncCookies();
 
       await Promise.all([this.fetchProjectDetails(), this.fetchTargets()]);
 
       if (import.meta.client) {
         this.fetchDomains();
       }
-
-      this.isHydrated = true;
     },
 
     async fetchProjectDetails() {
       const projectsStore = useProjectsStore();
       const project = await projectsStore.fetchSingleProject(this.uid);
+      
       if (project) {
         this.name = project.name;
         this.description = project.description;
-        
-        // Cookie auch aktualisieren
-        if (import.meta.server || import.meta.client) {
-          const nameCookie = useCookie('currentProject-name');
-          const descriptionCookie = useCookie('currentProject-description');
-          
-          nameCookie.value = project.name;
-          descriptionCookie.value = project.description;
-        }
+        this._syncCookies();
       }
     },
 
@@ -179,7 +149,6 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       );
 
       const res = await fetchTargetsWithCache();
-
       return res?.data ?? [];
     },
 
@@ -225,17 +194,9 @@ export const useCurrentProjectStore = defineStore("currentProject", {
           return await api.updateProject(this.uid, payload);
         },
         () => {
-          this.name = payload.name ?? this.name;
-          this.description = payload.description ?? this.description;
-
-          // Cookies aktualisieren
-          if (import.meta.server || import.meta.client) {
-            const nameCookie = useCookie('currentProject-name');
-            const descriptionCookie = useCookie('currentProject-description');
-            
-            if (payload.name) nameCookie.value = payload.name;
-            if (payload.description) descriptionCookie.value = payload.description;
-          }
+          if (payload.name) this.name = payload.name;
+          if (payload.description) this.description = payload.description;
+          this._syncCookies();
 
           const projectsStore = useProjectsStore();
           projectsStore.updateProject({
@@ -257,46 +218,13 @@ export const useCurrentProjectStore = defineStore("currentProject", {
 
     clearProject() {
       this.reset();
-      
-      // Cookies auch löschen
-      if (import.meta.server || import.meta.client) {
-        const uidCookie = useCookie('currentProject-uid');
-        const nameCookie = useCookie('currentProject-name');
-        const descriptionCookie = useCookie('currentProject-description');
-        
-        uidCookie.value = null;
-        nameCookie.value = null;
-        descriptionCookie.value = null;
-      }
+      this._syncCookies();
     },
 
     reset() {
       const { invalidateCache } = this._initBaseStore();
       this.$reset();
-      this.isHydrated = false;
       invalidateCache(this.cache);
     },
   },
-
-  persist: [
-    {
-      pick: ["uid", "name", "description"],
-      storage: import.meta.client
-        ? {
-            getItem: (key: string) => {
-              const cookie = useCookie(key);
-              return cookie.value;
-            },
-            setItem: (key: string, value: string) => {
-              const cookie = useCookie(key, { path: "/" });
-              cookie.value = value;
-            },
-            removeItem: (key: string) => {
-              const cookie = useCookie(key);
-              cookie.value = null;
-            },
-          }
-        : undefined,
-    },
-  ],
 });

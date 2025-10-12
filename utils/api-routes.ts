@@ -5,6 +5,9 @@
  */
 
 export const API_ROUTES = {
+  SERVER: {
+    HEALTH: "/server/health",
+  },
   PROJECTS: {
     BASE: "/project/",
     OVERVIEWS: "/project/overviews",
