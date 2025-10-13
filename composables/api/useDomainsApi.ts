@@ -9,11 +9,11 @@ export const useDomainsApi = () => {
   return {
     // Load All Projects
     getDomainsByProjectUID: (projectUid: string) =>
-      api.get<ADDomain[]>(API_ROUTES.PROJECTS.DOMAINS.BASE(projectUid)),
+      api.get<ADDomain[]>(API_ROUTES.PROJECTS.DOMAINS.ALL(projectUid)),
     // Create Project
     createDomain: (projectUid: string, domainData: ADDomain) =>
       api.create<ADDomain>(
-        API_ROUTES.PROJECTS.DOMAINS.BASE(projectUid),
+        API_ROUTES.PROJECTS.DOMAINS.ALL(projectUid),
         domainData,
       ),
     // Update Project

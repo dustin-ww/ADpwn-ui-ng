@@ -44,15 +44,6 @@ const items = ref<StepperItem[]>([
     <p class="mt-5">Current Loaded Project: {{ name }} ({{ id }})</p>
     <div class="bg-red-900 m-10 p-5 rounded-md">
       <h2 class="mt-5 text-3xl">Getting Started</h2>
-      <div class="mt-10 pb-5">
-        <UStepper ref="stepper" :items="items" class="w-full">
-          <template #content="{ item }">
-            <Placeholder class="aspect-video">
-              {{ item.title }}
-            </Placeholder>
-          </template>
-        </UStepper>
-      </div>
     </div>
     <h2 class="mt-5 text-3xl">Features</h2>
     <div class="grid grid-cols-3 gap-4 m-10">
