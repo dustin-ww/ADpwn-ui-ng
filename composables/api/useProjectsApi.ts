@@ -1,5 +1,6 @@
 // composables/api/useProjectsApi.ts
 import { useApiClient } from "~/composables/api/useApiWrapper";
+import type { LogQueryOptionsSchema } from "~/schemas/logQuery";
 import type { ProjectUpdateSchema } from "~/schemas/project";
 import type { TargetSchema } from "~/schemas/target";
 import type { ADPwnProject, Target } from "~/types/adpwn/ADPwnProject";
@@ -21,6 +22,16 @@ export const useProjectsApi = () => {
       }),
     getLogs(uid:string) {
       return api.get<string[]>(API_ROUTES.PROJECTS.LOGS.ALL(uid));
+    },
+    getLogsWithOptions(uid: string, optionData: LogQueryOptionsSchema) {
+      api.customRequest<string[]>(
+        API_ROUTES.PROJECTS.LOGS.QUERY(uid),
+        'POST',
+        { data: optionData }
+      )
+    },
+    getLogTypes(uid:string) {
+      return api.get<string[]>(API_ROUTES.PROJECTS.LOGS.TYPES(uid));
     },
     // Get Project with UID
     getProject: (uid: string) =>

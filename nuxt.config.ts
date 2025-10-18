@@ -2,11 +2,10 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  future: {
-    compatibilityVersion: 4,
-  },
-  compatibilityDate: "2024-11-01",
-  css: ["~/assets/css/main.css", "v-network-graph/lib/style.css"],
+  css: [
+    "~/assets/css/main.css", 
+    "v-network-graph/lib/style.css",
+  ],
   modules: [
     "@nuxt/ui",
     "@pinia/nuxt",
@@ -17,7 +16,9 @@ export default defineNuxtConfig({
   ],
   devtools: { enabled: false },
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+    ],
     server: {
       watch: {
         usePolling: true,

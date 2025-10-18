@@ -2,11 +2,23 @@
 import type { TableColumn } from '@nuxt/ui'
 
 const currentProjectStore = useCurrentProjectStore();
-const logData = ref<{ id: string; message: string }[]>([]);
+
+interface LogTableEntry {
+  id: string;
+  message: string;
+  payload: string;
+  timestamp: string;
+  module_key: string;
+  level: string;
+  isSystemLog: boolean;
+}
+
+const logData = ref<LogTableEntry[]>([]);
 
 onMounted(async () => {
   const result = await currentProjectStore.fetchLogs();
-  console.log(result);
+  console.log('Logs result:', result);
+  
   logData.value = result.map((log_entry: ADPwnLogEntry) => ({
     id: log_entry.id,
     message: log_entry.message,
@@ -19,34 +31,28 @@ onMounted(async () => {
 });
 
 const columns: TableColumn[] = [
-    { accessorKey: "id", header: "ID" },
-    { accessorKey: "module_key", header: "Module Key" },
-    { accessorKey: "message", header: "Message" },
-    { accessorKey: "timestamp", header: "Timestamp" },
-    { accessorKey: "level", header: "Level" },
-    { accessorKey: "payload", header: "Payload" },
-    { accessorKey: "isSystemLog", header: "System Log" },
-
+  { accessorKey: "id", header: "ID" },
+  { accessorKey: "module_key", header: "Module Key" },
+  { accessorKey: "message", header: "Message" },
+  { accessorKey: "timestamp", header: "Timestamp" },
+  { accessorKey: "level", header: "Level" },
+  { accessorKey: "payload", header: "Payload" },
+  { accessorKey: "isSystemLog", header: "System Log" },
 ];
 
 const columnFilters = ref([{ message: "", value: "" }]);
 const table = useTemplateRef("table");
 </script>
 
-
 <template>
   <div class="space-y-4">
+    
     <UInput
-      :model-value="
-        table?.tableApi?.getColumn('message')?.getFilterValue() as string
-      "
+      :model-value="table?.tableApi?.getColumn('message')?.getFilterValue() as string"
       class="max-w-sm"
       placeholder="Filter Messages..."
-      @update:model-value="
-        table?.tableApi?.getColumn('message')?.setFilterValue($event)
-      "
+      @update:model-value="table?.tableApi?.getColumn('message')?.setFilterValue($event)"
     />
-
     <div class="min-h-[300px] relative">
       <UTable
         ref="table"
@@ -55,7 +61,6 @@ const table = useTemplateRef("table");
         :columns="columns"
         :loading="currentProjectStore.loading"
       />
-
       <div v-if="currentProjectStore.error" class="mt-4 text-red-500">
         Error: {{ currentProjectStore.error.message }}
       </div>

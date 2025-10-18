@@ -30,6 +30,10 @@ const error = ref<string | null>(null);
 const graph = ref<vNG.VNetworkGraphInstance>();
 const nodeSize = 40;
 
+// Modal State
+const isModalOpen = ref(false);
+const selectedModule = ref<any>(null);
+
 const convertToGraphFormat = (graph: ADPwnInheritanceGraph) => {
   const graphNodes: Record<string, Node> = {};
   const graphEdges: Record<string, Edge> = {};
@@ -86,9 +90,8 @@ const eventHandlers: vNG.EventHandlers = {
     const moduleKey = node as string;
     const module = graphData.value?.nodes.find((n) => n.key === moduleKey);
     if (module) {
-      alert(
-        `Module: ${module.name}\nDescription: ${module.description}\nAuthor: ${module.author}`,
-      );
+      selectedModule.value = module;
+      isModalOpen.value = true;
     }
   },
 };
@@ -146,7 +149,7 @@ const configs = reactive(
 const graphData = ref<ADPwnInheritanceGraph | null>({
   nodes: [],
   edges: [],
-}); // Ensure consistent structure
+});
 
 const { getGraph } = useADPwnModuleApi();
 
@@ -207,7 +210,7 @@ onMounted(async () => {
   try {
     loading.value = true;
     const data = await getGraph();
-    graphData.value = data.data ?? { nodes: [], edges: [] }; // Ensure consistent structure
+    graphData.value = data.data ?? { nodes: [], edges: [] };
 
     const formattedGraph = convertToGraphFormat(graphData.value);
     nodes.value = formattedGraph.nodes;
@@ -225,6 +228,30 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+const getModuleTypeLabel = (type: string) => {
+  const labels: Record<string, string> = {
+    AttackModule: "Attack Modul",
+    EnumerationModule: "Enumeration Modul",
+    EXPLOIT: "Exploit",
+    POST_EXPLOIT: "Post-Exploit",
+  };
+  return labels[type] || type;
+};
+
+const getModuleTypeColor = (type: string) => {
+  const colors: Record<string, string> = {
+    AttackModule: "bg-red-500",
+    EnumerationModule: "bg-green-500",
+    EXPLOIT: "bg-orange-500",
+    POST_EXPLOIT: "bg-blue-500",
+  };
+  return colors[type] || "bg-purple-500";
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
 </script>
 
 <template>
@@ -233,14 +260,6 @@ onMounted(async () => {
       <div v-if="loading" class="loading">Lade Modul-Vererbungsgraph...</div>
       <div v-else-if="error" class="error">{{ error }}</div>
       <template v-else>
-        <div class="control-panel">
-          <button @click="updateLayout('LR')" class="control-button">
-            Layout: Links nach Rechts
-          </button>
-          <button @click="updateLayout('TB')" class="control-button">
-            Layout: Oben nach Unten
-          </button>
-        </div>
         <v-network-graph
           ref="graph"
           :nodes="nodes"
@@ -250,6 +269,89 @@ onMounted(async () => {
           :event-handlers="eventHandlers"
         />
       </template>
+
+      <!-- Custom Modal mit Tailwind -->
+      <Transition name="modal">
+        <div
+          v-if="isModalOpen"
+          class="fixed inset-0 z-50 flex items-center justify-center"
+          @click.self="closeModal"
+        >
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+
+          <!-- Modal Content -->
+          <div
+            class="relative bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-2xl w-full mx-4 overflow-hidden"
+            @click.stop
+          >
+            <!-- Header -->
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  {{ selectedModule?.name }}
+                </h3>
+                <span
+                  :class="[
+                    'inline-block px-3 py-1 rounded-full text-sm font-medium text-white',
+                    getModuleTypeColor(selectedModule?.module_type)
+                  ]"
+                >
+                  {{ getModuleTypeLabel(selectedModule?.module_type) }}
+                </span>
+              </div>
+              <button
+                @click="closeModal"
+                class="ml-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6 space-y-6">
+              <div>
+                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
+                  Beschreibung
+                </h4>
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  {{ selectedModule?.description || "Keine Beschreibung verfügbar" }}
+                </p>
+              </div>
+
+              <div>
+                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
+                  Autor
+                </h4>
+                <p class="text-gray-600 dark:text-gray-400">
+                  {{ selectedModule?.author || "Unbekannt" }}
+                </p>
+              </div>
+
+              <div v-if="selectedModule?.key">
+                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
+                  Modul-Key
+                </h4>
+                <p class="text-gray-600 dark:text-gray-400 font-mono text-sm bg-gray-100 dark:bg-gray-700 p-3 rounded">
+                  {{ selectedModule.key }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+              <button
+                @click="closeModal"
+                class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors duration-200"
+              >
+                Schließen
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
     </div>
     <template #fallback>
       <div class="loading-fallback">Lade Graph-Komponente...</div>
@@ -280,26 +382,24 @@ onMounted(async () => {
   color: #ff5252;
 }
 
-.control-panel {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 10;
-  display: flex;
-  gap: 10px;
+/* Modal Transition */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
 }
 
-.control-button {
-  background-color: #333;
-  color: white;
-  border: 1px solid #555;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
 }
 
-.control-button:hover {
-  background-color: #444;
+.modal-enter-active .relative,
+.modal-leave-active .relative {
+  transition: transform 0.3s ease;
+}
+
+.modal-enter-from .relative,
+.modal-leave-to .relative {
+  transform: scale(0.9);
 }
 </style>

@@ -22,6 +22,8 @@ export const API_ROUTES = {
     },
     LOGS: {
       ALL: (projectUid: string) => `/project/${projectUid}/logs`,
+      TYPES: (projectUid: string) => `/project/${projectUid}/logs/types`,
+      QUERY: (projectUid: string) => `/project/${projectUid}/logs/query`,
     }
   },
   ADPWN_MODULES: {

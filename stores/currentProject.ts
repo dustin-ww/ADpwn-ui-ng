@@ -137,7 +137,7 @@ export const useCurrentProjectStore = defineStore("currentProject", {
 
     async fetchLogs() {
       const { fetcher } = this._initBaseStore();
-      const fetchTargetsWithCache = fetcher(
+      const fetchLogsWithCache = fetcher(
         () => {
           const api = useProjectsApi();
           return api.getLogs(this.uid);
@@ -148,7 +148,24 @@ export const useCurrentProjectStore = defineStore("currentProject", {
         },
       );
 
-      const res = await fetchTargetsWithCache();
+      const res = await fetchLogsWithCache();
+      return res?.data ?? [];
+    },
+
+    async fetchLogTypes() {
+      const { fetcher } = this._initBaseStore();
+      const fetchLogTypesWithCache = fetcher(
+        () => {
+          const api = useProjectsApi();
+          return api.getLogTypes(this.uid);
+        },
+        "logTypes",
+        (logTypes: String[]) => {
+          return logTypes;
+        },
+      );
+
+      const res = await fetchLogTypesWithCache();
       return res?.data ?? [];
     },
 
