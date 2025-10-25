@@ -24,7 +24,7 @@ export const useProjectsApi = () => {
       return api.get<string[]>(API_ROUTES.PROJECTS.LOGS.ALL(uid));
     },
     getLogsWithOptions(uid: string, optionData: LogQueryOptionsSchema) {
-      api.customRequest<string[]>(
+      return api.customRequest<string[]>(
         API_ROUTES.PROJECTS.LOGS.QUERY(uid),
         'POST',
         { data: optionData }

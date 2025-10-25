@@ -4,6 +4,7 @@ import type { ADPwnLogEntry } from "~/types/adpwn/ADPwnLogEntry";
 import { useBaseStore, type BaseStoreState } from "~/composables/useBaseStore";
 import { useProjectsApi } from "~/composables/api/useProjectsApi";
 import { useCurrentProjectStore } from "~/stores/currentProject";
+import type { LogQueryOptionsSchema } from "~/schemas/logQuery";
 
 interface LogsStoreState extends BaseStoreState {
   logs: ADPwnLogEntry[];
@@ -43,7 +44,6 @@ export const useLogsStore = defineStore("logs", {
       const currentProject = useCurrentProjectStore();
       
       if (!currentProject.uid) {
-        // Fallback: Aus Cookie laden falls Store nicht initialisiert
         const uid = useCookie('currentProject-uid').value;
         if (!uid) {
           throw new Error('No current project selected');
@@ -72,6 +72,27 @@ export const useLogsStore = defineStore("logs", {
       );
       
       const res = await fetchLogsWithCache();
+      return res?.data ?? [];
+    },
+
+    async fetchLogsWithQuery(query: LogQueryOptionsSchema) {
+      const projectUid = this._getCurrentProjectUid();
+      const { fetcher } = this._initBaseStore();
+      
+      const fetchLogsWithQuery = fetcher(
+        () => {
+          const api = useProjectsApi();
+          return api.getLogsWithOptions(projectUid, query);
+        },
+        "logs",
+        (logs: ADPwnLogEntry[]) => {
+          this.logs = logs;
+          return logs;
+        },
+        { skipCache: true }
+      );
+      
+      const res = await fetchLogsWithQuery();
       return res?.data ?? [];
     },
 
