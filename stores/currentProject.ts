@@ -135,40 +135,6 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       await fetchTargetsWithCache();
     },
 
-    async fetchLogs() {
-      const { fetcher } = this._initBaseStore();
-      const fetchLogsWithCache = fetcher(
-        () => {
-          const api = useProjectsApi();
-          return api.getLogs(this.uid);
-        },
-        "logs",
-        (logs: ADPwnLogEntry[]) => {
-          return logs;
-        },
-      );
-
-      const res = await fetchLogsWithCache();
-      return res?.data ?? [];
-    },
-
-    async fetchLogTypes() {
-      const { fetcher } = this._initBaseStore();
-      const fetchLogTypesWithCache = fetcher(
-        () => {
-          const api = useProjectsApi();
-          return api.getLogTypes(this.uid);
-        },
-        "logTypes",
-        (logTypes: String[]) => {
-          return logTypes;
-        },
-      );
-
-      const res = await fetchLogTypesWithCache();
-      return res?.data ?? [];
-    },
-
     async createDomain(domainData: ADDomain) {
       const { entityCreator } = this._initBaseStore();
 

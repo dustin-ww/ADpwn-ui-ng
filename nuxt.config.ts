@@ -17,9 +17,7 @@ export default defineNuxtConfig({
   ],
   devtools: { enabled: false },
   vite: {
-    plugins: [
-      tailwindcss(),
-    ],
+    plugins: [ tailwindcss() ],
     server: {
       watch: {
         usePolling: true,
@@ -33,15 +31,16 @@ export default defineNuxtConfig({
     apiBaseUrl: process.env.API_BASE_URL || 'http://adpwn-core:8081',
     public: {
       // Client & Server (public)
-      apiBaseUrl: '/api',
+      apiBaseUrl: '/api/v1',
     },
   },
   nitro: {
     // Proxy for dev container development
     devProxy: {
-      '/api': {
+      '/api/v1': {
         target: 'http://adpwn-core:8081',
         changeOrigin: true,
+      
       }
     }
   },

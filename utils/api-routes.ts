@@ -23,6 +23,7 @@ export const API_ROUTES = {
     LOGS: {
       ALL: (projectUid: string) => `/project/${projectUid}/logs`,
       TYPES: (projectUid: string) => `/project/${projectUid}/logs/types`,
+      MODULE_KEYS: (projectUid: string) => `/project/${projectUid}/logs/mkeys` ,
       QUERY: (projectUid: string) => `/project/${projectUid}/logs/query`,
     }
   },

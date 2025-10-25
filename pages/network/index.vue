@@ -1,12 +1,16 @@
+<script setup lang="ts">
+useHead({
+  title: "Network Manager • ADPwn",
+});
+</script>
+
 <template>
-  <client-only>
-    <iframe
-      src="http://localhost:8000"
-      title="DGraph Dashboard"
-      frameborder="0"
-      loading="lazy"
-      sandbox="allow-same-origin allow-scripts"
-      class="h-full w-full"
-    />
-  </client-only>
+  <div>
+    <div class="flex items-center justify-between mb-4">
+      <SharedHeading heading="Network Explorer" />
+      <UButton>
+       <NuxtLink to="/network/ratel">Ratel Explorer</NuxtLink>
+       </UButton>
+    </div>
+  </div>
 </template>

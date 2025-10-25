@@ -33,6 +33,9 @@ export const useProjectsApi = () => {
     getLogTypes(uid:string) {
       return api.get<string[]>(API_ROUTES.PROJECTS.LOGS.TYPES(uid));
     },
+    getLogModuleKeys(uid:string) {
+      return api.get<string[]>(API_ROUTES.PROJECTS.LOGS.MODULE_KEYS(uid));
+    },
     // Get Project with UID
     getProject: (uid: string) =>
       api.get<ADPwnProject>(API_ROUTES.PROJECTS.DETAIL(uid)),
