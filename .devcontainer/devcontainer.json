@@ -1,0 +1,39 @@
+{
+    "name": "ADPwn UI Dev Container",
+    "dockerFile": "Dockerfile",
+    "context": "..",
+    "forwardPorts": [3000],
+    "portsAttributes": {
+        "3000": {
+            "label": "ADPwn UI",
+            "onAutoForward": "notify"
+        }
+    },
+    "workspaceFolder": "/workspace",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+    "mounts": [
+        "source=nuxt_node_modules,target=/workspace/node_modules,type=volume",
+        "source=nuxt_cache,target=/workspace/.nuxt,type=volume",
+        "source=nuxt_output,target=/workspace/.output,type=volume"
+    ],
+    "onCreateCommand": "sudo chown -R node:node /workspace/node_modules /workspace/.nuxt /workspace/.output",
+    "postCreateCommand": "npm install",
+    "postStartCommand": "npm run dev",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "Vue.volar",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode"
+            ]
+        }
+    },
+    "remoteEnv": {
+        "API_BASE_URL": "http://adpwn-core:8081"
+    },
+    "remoteUser": "node",
+    "runArgs": [
+        "--init",
+        "--network=adpwn_network"
+    ]
+}
