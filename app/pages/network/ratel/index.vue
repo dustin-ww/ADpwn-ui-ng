@@ -6,7 +6,7 @@
       frameborder="0"
       loading="lazy"
       sandbox="allow-same-origin allow-scripts"
-      class="h-full w-full"
+      class="w-full h-full"
     />
   </client-only>
 </template>

@@ -1,7 +1,7 @@
 import { useCurrentProjectStore } from "~/stores/currentProject";
 
 export default defineNuxtRouteMiddleware((to) => {
-/* 
+ 
   const project = useCurrentProjectStore();
 
   const isProjectInStore = project.uid !== "";
@@ -12,5 +12,5 @@ export default defineNuxtRouteMiddleware((to) => {
 
   if (!isProjectInStore) {
     return navigateTo("/start");
-  } */
+  } 
 });

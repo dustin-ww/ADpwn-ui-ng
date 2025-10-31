@@ -68,7 +68,7 @@ const items = ref([
           label: "See Logs",
           icon: "i-lucide-file-text",
           description: "Define shortcuts for your application.",
-          to: "/logs",
+          to: "/events",
         },
       ],
     },
