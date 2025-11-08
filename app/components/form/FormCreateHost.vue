@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
+import type { ADDomain } from "~/types/ad/ADDomain";
 import type { ADHost, adHostInputSchema } from "~/types/ad/ADHost";
 
 const formState = reactive<ADHost>({
@@ -15,47 +16,74 @@ const formState = reactive<ADHost>({
   whenCreated: new Date(),
   whenChanged: new Date(),
   userAccountControl: 0,
+  belongsToDomainUID: "",
 });
 
 const isLoading = ref(false);
 const toast = useToast();
+const currentProjectStore = useCurrentProjectStore();
+const domainStore = useDomainStore();
+const hostStore = useHostStore();
+
+const domains = ref<ADDomain[]>([]);
+const selectedDomainUID = ref<string | undefined>(undefined);
+
+onMounted(async () => {
+  isLoading.value = true;
+  const result = await domainStore.fetchDomains(currentProjectStore.uid, { skipCache: true });
+  domains.value = (result as { data?: ADDomain[] }).data ?? [];
+  console.log("Domains:", domains.value);
+  isLoading.value = false;
+});
+
+const domainOptions = computed(() =>
+  domains.value.map((d) => ({ label: d.name, value: d.uid }))
+);
 
 async function onSubmit(_event: FormSubmitEvent<ADHost>) {
-  toast.add({
-    title: "Success",
-    description: "Host created successfully",
-    color: "success",
-  });
-  //   isLoading.value = true;
+  try {
+    isLoading.value = true;
 
-  //   try {
-  //     const { error } = await currentProjectStore.createHost(formState);
+    formState.belongsToDomainUID = selectedDomainUID.value ?? undefined;
+    console.log("Creating host with data:", selectedDomainUID.value?.value);
 
-  //     if (error) {
-  //       toast.add({
-  //         title: "Error",
-  //         description: error.message || "Host creation failed",
-  //         color: "error",
-  //       });
-  //       return;
-  //     }
+    await hostStore.createHost(
+      currentProjectStore.uid,
+      selectedDomainUID.value?.value,
+      formState
+    );
 
-  //     toast.add({
-  //       title: "Success",
-  //       description: "Host created successfully",
-  //       color: "success",
-  //     });
+    toast.add({
+      title: "Success",
+      description: "Host created successfully",
+      color: "success",
+    });
 
-  //     emit("submit-success");
-  //   } catch (error) {
-  //     toast.add({
-  //       title: "Error",
-  //       description: "An unexpected error occurred: " + (error as Error).message,
-  //       color: "error",
-  //     });
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
+    Object.assign(formState, {
+      ipAddress: "",
+      distinguishedName: "",
+      objectGUID: "",
+      objectSid: "",
+      sAMAccountName: "",
+      dNSHostName: "",
+      operatingSystem: "",
+      operatingSystemVersion: "",
+      lastLogonTimestamp: new Date(),
+      whenCreated: new Date(),
+      whenChanged: new Date(),
+      userAccountControl: 0,
+      belongsToDomainUID: "",
+    });
+    selectedDomainUID.value = undefined;
+  } catch (err) {
+    toast.add({
+      title: "Error",
+      description: "Failed to create host",
+      color: "error",
+    });
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 const operatingSystems = ref([
@@ -76,8 +104,6 @@ const uacOptions = ref([
   { label: "Workstation Trust Account (4096)", value: 4096 },
   { label: "Server Trust Account (8192)", value: 8192 },
 ]);
-
-const date = ref(null);
 </script>
 
 <template>
@@ -89,6 +115,13 @@ const date = ref(null);
   >
     <!-- General Section -->
     <div class="space-y-4 border-b pb-6">
+      <h3 class="text-lg font-medium">Domain</h3>
+      <UBadge icon="i-lucide-info">The host will be created under the selected domain.</UBadge> <br></br>
+ <USelectMenu
+        v-model="selectedDomainUID"
+        placeholder="Select Domain"
+        :items="domainOptions"
+      />
       <h3 class="text-lg font-medium">Host Connection</h3>
       <UBadge icon="i-lucide-message-circle-warning"
         >Please enter one of the following connection details.
@@ -174,30 +207,12 @@ const date = ref(null);
       <h3 class="text-lg font-medium">Timestamps</h3>
 
       <UFormField label="Last Logon Timestamp" name="lastLogonTimestamp">
-        <!-- <VueDatePicker
-          v-model="formState.lastLogonTimestamp"
-          placeholder="Start Typing ..."
-          text-input
-          dark
-        /> -->
       </UFormField>
 
       <UFormField label="When Created" name="whenCreated">
-        <!-- <VueDatePicker
-          v-model="formState.whenCreated"
-          placeholder="Start Typing ..."
-          text-input
-          dark
-        /> -->
       </UFormField>
 
       <UFormField label="When Changed" name="whenChanged">
-        <!-- <VueDatePicker
-          v-model="formState.whenChanged"
-          placeholder="Start Typing ..."
-          text-input
-          dark
-        /> -->
       </UFormField>
     </div>
 

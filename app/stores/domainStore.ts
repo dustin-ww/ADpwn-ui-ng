@@ -54,28 +54,28 @@ export const useDomainStore = defineStore("domainStore", {
     },
 
    async fetchDomainsWithHosts(projectUID: string, options?: { skipCache?: boolean }) {
-  const result = await this.fetchDomains(projectUID, options);
-  const domains = ((result as { data?: ADDomain[] })?.data) ?? [];
-  const api = useDomainsApi();
-  
-  const hostResults = await Promise.all(
-    domains
-      .filter(d => d.uid)
-      .map(async (domain) => {
-        const hostsResponse = await api.getHostsByDomainUID(projectUID, domain.uid);
-        // Extrahiere das data Array aus der Response
-        const hosts = (hostsResponse as { data?: ADHost[] })?.data ?? [];
-        
-        // Setze den Domain-Namen für jeden Host
-        return hosts.map(host => {
-          host.belongsToDomainName = domain.name;
-          return host;
-        });
-      })
-  );
-  
-  return hostResults.flat();
-},
+      const result = await this.fetchDomains(projectUID, options);
+      const domains = ((result as { data?: ADDomain[] })?.data) ?? [];
+      const api = useDomainsApi();
+      
+      const hostResults = await Promise.all(
+        domains
+          .filter(d => d.uid)
+          .map(async (domain) => {
+            const hostsResponse = await api.getHostsByDomainUID(projectUID, domain.uid);
+            // Extrahiere das data Array aus der Response
+            const hosts = (hostsResponse as { data?: ADHost[] })?.data ?? [];
+            
+            // Setze den Domain-Namen für jeden Host
+            return hosts.map(host => {
+              host.belongsToDomainName = domain.name;
+              return host;
+            });
+          })
+      );
+      
+      return hostResults.flat();
+    },
 
     async createDomain(projectUID: string, domainData: ADDomain) {
       const { entityCreator } = this._initBaseStore();

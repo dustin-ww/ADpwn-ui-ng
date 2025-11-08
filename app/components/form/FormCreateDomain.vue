@@ -51,6 +51,7 @@ const formState = reactive<ADDomain>({
 });
 
 const currentProjectStore = useCurrentProjectStore();
+const domainStore = useDomainStore();
 const isLoading = ref(false);
 const toast = useToast();
 const emit = defineEmits<{
@@ -59,7 +60,7 @@ const emit = defineEmits<{
 
 async function onSubmit(_event: FormSubmitEvent<ADDomain>) {
   try {
-    const { error } = await currentProjectStore.createDomain(formState);
+    const { error } = await domainStore.createDomain(currentProjectStore.uid, formState);
 
     if (error) {
       toast.add({

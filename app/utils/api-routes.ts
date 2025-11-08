@@ -21,8 +21,14 @@ export const API_ROUTES = {
         `/project/${projectUid}/targets/${targetId}`,
     },
 
+    // ENDPOINT WITHOUT DOMAIN
+    HOSTS: {
+      ROOT: (projectUid: string) => `/project/${projectUid}/hosts`,
+    },
+
     DOMAINS: {
       LIST: (projectUid: string) => `/project/${projectUid}/domains`,
+      // ENDPOINT WITH DOMAIN
       HOSTS: (projectUid: string, domainUid: string) =>
         `/project/${projectUid}/domains/${domainUid}/hosts`,
     },

@@ -2,6 +2,7 @@
 import { useApiClient } from "~/composables/utils/useApiWrapper";
 import { API_ROUTES } from "#imports";
 import type { ADDomain } from "~/types/ad/ADDomain";
+import type { ADHost } from "~/types/ad/ADHost";
 
 export const useDomainsApi = () => {
   const api = useApiClient();
@@ -23,6 +24,15 @@ export const useDomainsApi = () => {
       api.get<ADDomain[]>(
         API_ROUTES.PROJECTS.DOMAINS.HOSTS(projectUid, domainUid)
       ),
+
+    addHost: (projectUid: string, domainUid: string, hostData: ADHost) =>
+      api.create<ADHost>(
+        API_ROUTES.PROJECTS.DOMAINS.HOSTS(projectUid, domainUid),
+        hostData
+      ),
+
+
+    
 
     // Optional: Get Project Detail if needed later
     // getProjectDetail: (uid: string) =>
