@@ -19,6 +19,7 @@ export const API_ROUTES = {
     },
     DOMAINS: {
       ALL: (projectUid: string) => `/project/${projectUid}/domains`,
+      HOSTS: (projectUid: string, domainUid: string) => `/project/${projectUid}/domains/${domainUid}/hosts`,
     },
     LOGS: {
       ALL: (projectUid: string) => `/project/${projectUid}/logs`,

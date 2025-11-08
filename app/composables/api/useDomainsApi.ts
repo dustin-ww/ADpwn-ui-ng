@@ -16,6 +16,11 @@ export const useDomainsApi = () => {
         API_ROUTES.PROJECTS.DOMAINS.ALL(projectUid),
         domainData,
       ),
+    getHostsByDomainUID: (projectUid: string, domainUid: string) =>
+      api.get<ADDomain[]>(API_ROUTES.PROJECTS.DOMAINS.HOSTS(projectUid, domainUid)),
+    // Get Project Detail
+    // getProjectDetail: (uid: string) =>
+    //   api.get<ADPwnProject>(API_ROUTES.PROJECTS.DETAIL(uid)),
     // Update Project
     // updateProject: (uid: string, updateData: ProjectUpdateSchema) =>
     //   api.update<ADPwnProject>(API_ROUTES.PROJECTS.DETAIL(uid), updateData, {

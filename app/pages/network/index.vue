@@ -5,13 +5,15 @@ useHead({
 </script>
 
 <template>
-  <div>
+  <div class="size-full">
     <div class="flex items-center justify-between mb-4">
       <SharedHeading heading="Network Explorer" />
       <UButton>
        <NuxtLink to="/network/ratel">Ratel Explorer</NuxtLink>
       </UButton>
     </div>
-    <GraphNetwork />
+    <div class="size-full">
+      <GraphNetwork />
+    </div>
   </div>
 </template>

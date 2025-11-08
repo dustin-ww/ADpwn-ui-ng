@@ -118,6 +118,41 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       await fetchDomainsWithCache();
     },
 
+
+    async fetchDomainsAndHosts(options?: { skipCache?: boolean }) {
+      const { fetcher } = this._initBaseStore();
+
+      const fetchDomainsWithCache = fetcher(
+        () => {
+          const api = useDomainsApi();
+          return api.getDomainsByProjectUID(this.uid);
+        },
+        "domains",
+        (data: ADDomain[]) => {
+          this.domains = data;
+        },
+        { skipCache: options?.skipCache || false }
+      );
+
+      const result = await fetchDomainsWithCache();
+      console.log("Domains fetched:", result);
+
+      // Greife auf result.data zu
+      const domains = result.data ?? [];
+
+      const api = useDomainsApi();
+
+      const hostResults = await Promise.all(
+        domains
+          .filter(d => d.uid) // Beachte: deine Objekte haben "uid", nicht "uuid"
+          .map(d => api.getHostsByDomainUID(this.uid, d.uid))
+      );
+
+      return hostResults.flat();
+    },
+
+
+
     async fetchTargets() {
       const { fetcher } = this._initBaseStore();
 

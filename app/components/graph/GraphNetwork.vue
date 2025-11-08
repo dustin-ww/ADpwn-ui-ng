@@ -1,4 +1,6 @@
 <script setup lang="ts">
+
+const currentProjectStore = useCurrentProjectStore();
 const nodes = {
   node1: { name: "Node 1" },
   node2: { name: "Node 2" },
@@ -11,8 +13,22 @@ const edges = {
   edge2: { source: "node2", target: "node3" },
   edge3: { source: "node3", target: "node4" },
 }
+
+// Fetch domains on component mount
+onMounted(async () => {
+  await currentProjectStore.fetchDomains();
+});
+
+// Computed table data
+const tableData = computed(() =>
+  currentProjectStore.domains.map((domain) => ({
+    uid: domain.uid,
+    name: domain.name,
+  })),
+);
+
 </script>
 
 <template>
-  <v-network-graph :nodes="nodes" :edges="edges" />
+  <v-network-graph class="w-full h-full" :nodes="currentProjectStore.domains" :edges="edges" />
 </template>
