@@ -1,7 +1,7 @@
 // stores/logs.ts
 import { defineStore } from "pinia";
 import type { ADPwnLogEntry } from "~/app/types/adpwn/ADPwnLogEntry";
-import { useBaseStore, type BaseStoreState } from "~/composables/useBaseStore";
+import { useBaseStore, type BaseStoreState } from "~/composables/utils/useBaseStore";
 import { useProjectsApi } from "~/composables/api/useProjectsApi";
 import { useCurrentProjectStore } from "~/stores/currentProject";
 import type { LogQueryOptionsSchema } from "~/app/schemas/logQuery";

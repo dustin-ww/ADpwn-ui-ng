@@ -2,11 +2,12 @@ import { defineStore } from "pinia";
 import type { ADTarget } from "~/app/types/ad/ADTarget";
 import type { ProjectUpdateSchema } from "~/app/schemas/project";
 import type { TargetSchema } from "~/app/schemas/target";
-import { useBaseStore, type BaseStoreState } from "~/composables/useBaseStore";
+import { useBaseStore, type BaseStoreState } from "~/composables/utils/useBaseStore";
 import { useDomainsApi } from "~/composables/api/useDomainsApi";
 import { useProjectsApi } from "~/composables/api/useProjectsApi";
 import type { ADDomain } from "~/app/types/ad/ADDomain";
 import type { ADPwnLogEntry } from "~/app/types/adpwn/ADPwnLogEntry";
+import { useCookieSync } from "~/composables/useCookieSync";
 
 interface CurrentProjectState extends BaseStoreState {
   uid: string;
@@ -55,26 +56,16 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       };
     },
 
-    // State aus Cookies laden (Server + Client)
+    // Load current project state from Cookies
     hydrate() {
-      const uid = useCookie('currentProject-uid', { default: () => '' });
-      const name = useCookie('currentProject-name', { default: () => '' });
-      const description = useCookie('currentProject-description', { default: () => '' });
-
-      this.uid = uid.value;
-      this.name = name.value;
-      this.description = description.value;
+      const cookieSync = useCookieSync('currentProject');
+      cookieSync.hydrate(this, ['uid', 'name', 'description']);
     },
 
     // State in Cookies speichern
     _syncCookies() {
-      const uid = useCookie('currentProject-uid');
-      const name = useCookie('currentProject-name');
-      const description = useCookie('currentProject-description');
-
-      uid.value = this.uid;
-      name.value = this.name;
-      description.value = this.description;
+      const cookieSync = useCookieSync('currentProject');
+      cookieSync.sync(this, ['uid', 'name', 'description']);
     },
 
     async initialize(projectId: string, projectName: string) {
@@ -137,14 +128,13 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       const result = await fetchDomainsWithCache();
       console.log("Domains fetched:", result);
 
-      // Greife auf result.data zu
       const domains = result.data ?? [];
 
       const api = useDomainsApi();
 
       const hostResults = await Promise.all(
         domains
-          .filter(d => d.uid) // Beachte: deine Objekte haben "uid", nicht "uuid"
+          .filter(d => d.uid) 
           .map(d => api.getHostsByDomainUID(this.uid, d.uid))
       );
 

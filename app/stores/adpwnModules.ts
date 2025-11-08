@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import type { ADPwnModule } from "~/app/types/adpwn/ADPwnModule";
 import type { ADPwnInheritanceGraph } from "~/app/types/adpwn/ADPwnModuleGraph";
-import { useBaseStore, type BaseStoreState } from "~/composables/useBaseStore";
+import { useBaseStore, type BaseStoreState } from "~/composables/utils/useBaseStore";
 import { useADPwnModuleApi } from "~/composables/api/useADwnModuleApi";
 import type { ADPwnModuleOption } from "~/app/types/adpwn/ADPwnModuleOption";
 import type { ADPwnModuleResponse } from "~/app/types/adpwn/ADpwnModuleResponse";

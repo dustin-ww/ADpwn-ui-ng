@@ -1,5 +1,5 @@
 // composables/api/useProjectsApi.ts
-import { useApiClient } from "./useApiWrapper"; 
+import { useApiClient } from "../utils/useApiWrapper"; 
 import { API_ROUTES } from "#imports";
 
 export const useServerApi = () => {

@@ -1,55 +1,57 @@
-// constants/apiRoutes.ts
-
 /**
- * API Definition
+ * API Routes Definition
  */
+
+const withId = (base: string) => (id: string) => `${base}/${id}`;
+const withTwoIds = (base: string) => (id1: string, id2: string) => `${base}/${id1}/${id2}`;
 
 export const API_ROUTES = {
   SERVER: {
     HEALTH: "/server/health",
   },
+
   PROJECTS: {
-    BASE: "/project/",
-    OVERVIEWS: "/project/overviews",
-    DETAIL: (uid: string) => `/project/${uid}`,
+    ROOT: "/project",
+    LIST: "/project/overviews",
+    DETAIL: withId("/project"),
+
     TARGETS: {
-      BASE: (projectUid: string) => `/project/${projectUid}/targets`,
+      ROOT: (projectUid: string) => `/project/${projectUid}/targets`,
       DETAIL: (projectUid: string, targetId: string) =>
         `/project/${projectUid}/targets/${targetId}`,
     },
+
     DOMAINS: {
-      ALL: (projectUid: string) => `/project/${projectUid}/domains`,
-      HOSTS: (projectUid: string, domainUid: string) => `/project/${projectUid}/domains/${domainUid}/hosts`,
+      LIST: (projectUid: string) => `/project/${projectUid}/domains`,
+      HOSTS: (projectUid: string, domainUid: string) =>
+        `/project/${projectUid}/domains/${domainUid}/hosts`,
     },
+
     LOGS: {
-      ALL: (projectUid: string) => `/project/${projectUid}/logs`,
+      LIST: (projectUid: string) => `/project/${projectUid}/logs`,
       TYPES: (projectUid: string) => `/project/${projectUid}/logs/types`,
-      MODULE_KEYS: (projectUid: string) => `/project/${projectUid}/logs/mkeys` ,
+      MODULE_KEYS: (projectUid: string) => `/project/${projectUid}/logs/mkeys`,
       QUERY: (projectUid: string) => `/project/${projectUid}/logs/query`,
-    }
-  },
-  ADPWN_MODULES: {
-    BASE: "/adpwn/",
-    RUNS: {
-      BASE: "/adpwn/runs/",
     },
+  },
+
+  ADPWN: {
+    ROOT: "/adpwn",
+    RUNS: "/adpwn/runs",
+
     MODULES: {
-      BASE: "/adpwn/modules/",
+      ROOT: "/adpwn/modules",
       GRAPH: "/adpwn/modules/graph",
-      ITEMS: {
-        DETAIL: (moduleKey: string) => `/adpwn/modules/${moduleKey}`,
-        LASTRUN: (moduleKey: string) =>
-          `/adpwn/modules/${moduleKey}/lastrun`,
-        RUN: (moduleKey: string) => `/adpwn/modules/${moduleKey}/run`,
-        OPTIONS: (moduleKey: string) =>
-          `/adpwn/modules/${moduleKey}/options`,
-        VECTOR: {
-          RUN: (moduleKey: string) =>
-            `/adpwn/modules/${moduleKey}/vector/run`,
-          OPTIONS: (moduleKey: string) =>
-            `/adpwn/modules/${moduleKey}/vector/options`,
-        }
-      }
+
+      DETAIL: (moduleKey: string) => `/adpwn/modules/${moduleKey}`,
+      LASTRUN: (moduleKey: string) => `/adpwn/modules/${moduleKey}/lastrun`,
+      RUN: (moduleKey: string) => `/adpwn/modules/${moduleKey}/run`,
+      OPTIONS: (moduleKey: string) => `/adpwn/modules/${moduleKey}/options`,
+
+      VECTOR: {
+        RUN: (moduleKey: string) => `/adpwn/modules/${moduleKey}/vector/run`,
+        OPTIONS: (moduleKey: string) => `/adpwn/modules/${moduleKey}/vector/options`,
+      },
     },
   },
-};
+} as const;
