@@ -298,7 +298,7 @@ onMounted(async () => {
 
 <template>
   <ClientOnly>
-    <div class="graph-container h-full">
+    <div class="graph-container h-full w-full">
       <!-- Loading State -->
       <div v-if="loading" class="loading">
         Lade Modul-Vererbungsgraph...

@@ -120,7 +120,7 @@ const resetFilters = () => {
     <template #content>
 
 
-      <div class="grid grid-cols-4 gap-4 items-center">
+      <div class="grid grid-cols-3 gap-4 items-center">
         <USelectMenu
           v-model="selectedLogType"
           icon="i-lucide-search"
@@ -143,7 +143,6 @@ const resetFilters = () => {
           placeholder="Filter module keys..."
         />
         <USwitch v-model="showSystemLogs" label="Show System Logs" />
-        <UButton>Button</UButton>
       </div>
       <div class="grid grid-cols-2 gap-4 mt-4">
         <UInput
@@ -194,6 +193,9 @@ const resetFilters = () => {
           >
             Reset
           </UButton>
+          <UButton icon="i-lucide-rocket" color="success">
+        Filter Exploration
+      </UButton>
         </div>
       </div>
     </div>

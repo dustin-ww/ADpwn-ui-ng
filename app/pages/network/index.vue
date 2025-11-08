@@ -10,7 +10,8 @@ useHead({
       <SharedHeading heading="Network Explorer" />
       <UButton>
        <NuxtLink to="/network/ratel">Ratel Explorer</NuxtLink>
-       </UButton>
+      </UButton>
     </div>
+    <GraphNetwork />
   </div>
 </template>

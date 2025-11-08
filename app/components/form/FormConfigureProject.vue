@@ -7,6 +7,8 @@ const currentProjectStore = useCurrentProjectStore();
 const toast = useToast();
 const isLoading = ref(false);
 
+const isDeleteModalOpen = ref(false)
+
 const formState = reactive({
   name: currentProjectStore.name,
   description: currentProjectStore.description || "",
@@ -81,5 +83,27 @@ const handleSubmit = async (_: FormSubmitEvent<typeof formState>) => {
         </UButton>
       </div>
     </UForm>
+    <div class="mt-4 w-full flex justify-center text-center">
+      <UModal title="Do you really want to delete this project?" v-model:open="isDeleteModalOpen">
+         <UButton
+          class="w-1/2 flex items-center justify-center"
+          variant="outline"
+          color="primary"
+        >
+          Delete Project 
+        </UButton>
+
+        <template #body>
+          <p>
+            This action cannot be undone. All associated data will be permanently
+            deleted.
+          </p>
+          <div class="mt-4 flex justify-end gap-4">
+            <UButton color="neutral" variant="outline" @click="isDeleteModalOpen = false">Cancel</UButton>
+            <UButton variant="solid" color="error" @click="isDeleteModalOpen = false">Delete</UButton>
+          </div>
+        </template>
+      </UModal>
+    </div>
   </div>
 </template>
