@@ -6,6 +6,9 @@ export interface ADHost {
   createdAt?: Date;
   ipAddress?: string;
 
+  belongsToDomainUID?: string;
+  belongsToDomainName?: string;
+
   // ad related
   distinguishedName: string;
   objectGUID: string;

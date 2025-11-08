@@ -97,13 +97,11 @@ const columns: TableColumn<ADDomain>[] = [
   },
 ];
 
-// Fetch domains
 const domainStore = useDomainStore();
 
 const domains = ref<ADDomain[]>([]);
 const isLoading = ref(true);
 
-// WICHTIG: useAsyncData verwenden statt onMounted für SSR
 const { data: domainsData, pending } = await useAsyncData(
   'domains',
   async () => {
@@ -114,7 +112,6 @@ const { data: domainsData, pending } = await useAsyncData(
   }
 );
 
-// Reactive domains
 watchEffect(() => {
   if (domainsData.value) {
     domains.value = domainsData.value;
@@ -122,7 +119,6 @@ watchEffect(() => {
   isLoading.value = pending.value;
 });
 
-// Template references and reactive states
 const table = useTemplateRef("table");
 const columnVisibility = ref({ name: true });
 const globalFilter = ref("");
@@ -130,7 +126,6 @@ const globalFilter = ref("");
 
 <template>
   <div class="min-h-[300px] relative">
-    <!-- Toolbar -->
     <div
       class="flex justify-end gap-2 px-4 py-3.5 border-b border-(--ui-border-accented)"
     >
@@ -165,7 +160,6 @@ const globalFilter = ref("");
       </UDropdownMenu>
     </div>
 
-    <!-- Debug Info (zum Testen) -->
     <div class="p-2 text-xs text-gray-600">
       Loaded {{ domains.length }} domains
     </div>
