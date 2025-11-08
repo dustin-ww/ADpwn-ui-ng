@@ -4,11 +4,12 @@ import type { ADDomain } from "~/types/ad/ADDomain";
 import type { ADHost } from "~/types/ad/ADHost";
 
 const currentProjectStore = useCurrentProjectStore();
+const domainStore = useDomainStore();
 
 const hosts = ref<ADHost[]>([]);
 // Fetch domains on component mount
 onMounted(async () => {
-  hosts.value = await currentProjectStore.fetchDomainsAndHosts({ skipCache: true });
+  hosts.value = await domainStore.fetchDomainsWithHosts(currentProjectStore.uid, { skipCache: true });
 
 console.log("Hosts:", hosts.value);
 });

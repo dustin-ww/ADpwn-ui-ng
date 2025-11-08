@@ -1,10 +1,8 @@
 import { defineStore } from "pinia";
 import { useBaseStore, type BaseStoreState } from "~/composables/utils/useBaseStore";
-import { useDomainsApi } from "~/composables/api/useDomainsApi";
 import { useProjectsApi } from "~/composables/api/useProjectsApi";
 import { useCookieSync } from "~/composables/useCookieSync";
 import type { ADTarget } from "~/types/ad/ADTarget";
-import type { ADDomain, adDomainSchema } from "~/types/ad/ADDomain";
 import type { TargetSchema } from "~/schemas/target";
 import type { ProjectUpdateSchema } from "~/schemas/project";
 
@@ -13,7 +11,6 @@ interface CurrentProjectState extends BaseStoreState {
   name: string;
   description: string;
   targets: ADTarget[];
-  domains: ADDomain[];
 }
 
 export const useCurrentProjectStore = defineStore("currentProject", {
@@ -22,20 +19,16 @@ export const useCurrentProjectStore = defineStore("currentProject", {
     name: "",
     description: "",
     targets: [],
-    domains: [],
     loading: false,
     error: null,
     cache: {
-      domains: null,
       targets: null,
     },
   }),
 
   getters: {
     hasTargets: (state) => state.targets.length > 0,
-    hasDomains: (state) => state.domains.length > 0,
     getTargets: (state) => state.targets,
-    getDomains: (state) => state.domains,
     getUID: (state) => state.uid,
     getName: (state) => state.name,
     getDescription: (state) => state.description,
@@ -61,7 +54,7 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       cookieSync.hydrate(this, ['uid', 'name', 'description']);
     },
 
-    // State in Cookies speichern
+    // Store current project state to Cookies
     _syncCookies() {
       const cookieSync = useCookieSync('currentProject');
       cookieSync.sync(this, ['uid', 'name', 'description']);
@@ -74,10 +67,6 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       this._syncCookies();
 
       await Promise.all([this.fetchProjectDetails(), this.fetchTargets()]);
-
-      if (import.meta.client) {
-        this.fetchDomains();
-      }
     },
 
     async fetchProjectDetails() {
@@ -90,57 +79,6 @@ export const useCurrentProjectStore = defineStore("currentProject", {
         this._syncCookies();
       }
     },
-
-    async fetchDomains() {
-      const { fetcher } = this._initBaseStore();
-
-      const fetchDomainsWithCache = fetcher(
-        () => {
-          const api = useDomainsApi();
-          return api.getDomainsByProjectUID(this.uid);
-        },
-        "domains",
-        (data: ADDomain[]) => {
-          this.domains = data;
-        },
-      );
-
-      await fetchDomainsWithCache();
-    },
-
-
-    async fetchDomainsAndHosts(options?: { skipCache?: boolean }) {
-      const { fetcher } = this._initBaseStore();
-
-      const fetchDomainsWithCache = fetcher(
-        () => {
-          const api = useDomainsApi();
-          return api.getDomainsByProjectUID(this.uid);
-        },
-        "domains",
-        (data: ADDomain[]) => {
-          this.domains = data;
-        },
-        { skipCache: options?.skipCache || false }
-      );
-
-      const result = await fetchDomainsWithCache();
-      console.log("Domains fetched:", result);
-
-      const domains = ((result as { data?: ADDomain[] })?.data) ?? [];
-
-      const api = useDomainsApi();
-
-      const hostResults = await Promise.all(
-        domains
-          .filter(d => d.uid)
-          .map(d => api.getHostsByDomainUID(this.uid, d.uid))
-      );
-
-      return hostResults.flat();
-    },
-
-
 
     async fetchTargets() {
       const { fetcher } = this._initBaseStore();
@@ -157,23 +95,6 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       );
 
       await fetchTargetsWithCache();
-    },
-
-    async createDomain(domainData: ADDomain) {
-      const { entityCreator } = this._initBaseStore();
-
-      const createDomainEntity = entityCreator(
-        () => {
-          const api = useDomainsApi();
-          console.log("Creating domain with data:", JSON.stringify(domainData));
-          return api.createDomain(this.uid, domainData);
-        },
-        "domains",
-        this.domains,
-        { successToast: true },
-      );
-
-      await createDomainEntity();
     },
 
     async createTarget(targetData: TargetSchema) {
