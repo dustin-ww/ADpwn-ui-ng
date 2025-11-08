@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { useProjectsApi } from "~/composables/api/useProjectsApi";
-import type { ADPwnProject } from "~/app/types/adpwn/ADPwnProject";
+import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
 
 interface ProjectsState {
   projectsFetched: boolean;

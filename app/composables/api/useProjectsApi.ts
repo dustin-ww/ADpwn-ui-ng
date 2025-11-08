@@ -1,10 +1,11 @@
 // composables/api/useProjectsApi.ts
 import { useApiClient } from "~/composables/utils/useApiWrapper";
-import type { LogQueryOptionsSchema } from "~/app/schemas/logQuery";
-import type { ProjectUpdateSchema } from "~/app/schemas/project";
-import type { TargetSchema } from "~/app/schemas/target";
-import type { ADPwnProject, Target } from "~/app/types/adpwn/ADPwnProject";
 import { API_ROUTES } from "#imports"; 
+import type { ADPwnProject } from "~/types/adpwn/ADPwnProject";
+import type { ProjectUpdateSchema } from "~/schemas/project";
+import type { LogQueryOptionsSchema } from "~/schemas/logQuery";
+import type { TargetSchema } from "~/schemas/target";
+import type { ADTarget } from "~/types/ad/ADTarget";
 
 export const useProjectsApi = () => {
   const api = useApiClient();
@@ -48,22 +49,13 @@ export const useProjectsApi = () => {
 
     // Get Project Targets with Project UID
     getTargets: (uid: string) =>
-      api.get<Target[]>(API_ROUTES.PROJECTS.TARGETS.ROOT(uid)),
+      api.get<ADTarget[]>(API_ROUTES.PROJECTS.TARGETS.ROOT(uid)),
 
     // Create Target for Project with given UID
     createTarget: (projectUid: string, targetData: TargetSchema) =>
-      api.create<Target>(
+      api.create<ADTarget>(
         API_ROUTES.PROJECTS.TARGETS.ROOT(projectUid),
         targetData
       ),
-
-    // Optionally: searchProjects if implemented later
-    // searchProjects: (query: string) =>
-    //   api.customRequest<ProjectSearchResult[]>(
-    //     `${API_ROUTES.PROJECTS.ROOT}/search`,
-    //     'POST',
-    //     { data: { query } }
-    //   ),
   };
 };
-

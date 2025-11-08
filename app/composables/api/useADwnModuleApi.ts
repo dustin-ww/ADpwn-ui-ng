@@ -1,9 +1,9 @@
-import type { ADPwnModule } from "~/app/types/adpwn/ADPwnModule";
-import type { ADPwnInheritanceGraph } from "~/app/types/adpwn/ADPwnModuleGraph";
 import { useApiClient } from "../utils/useApiWrapper";
-import type { ADPwnModuleOption } from "~/app/types/adpwn/ADPwnModuleOption";
-import type { ADPwnModuleParameters } from "~/app/types/adpwn/ADPwnModuleParameters";
 import { API_ROUTES } from "#imports";
+import type { ADPwnModuleParameters } from "~/types/adpwn/ADPwnModuleParameters";
+import type { ADPwnModuleOption } from "~/types/adpwn/ADPwnModuleOption";
+import type { ADPwnInheritanceGraph } from "~/types/adpwn/ADPwnModuleGraph";
+import type { ADPwnModule } from "~/types/adpwn/ADPwnModule";
 
 export const useADPwnModuleApi = () => {
   const api = useApiClient();

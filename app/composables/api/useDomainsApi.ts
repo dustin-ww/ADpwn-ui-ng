@@ -1,7 +1,7 @@
 // composables/api/useProjectsApi.ts
 import { useApiClient } from "~/composables/utils/useApiWrapper";
-import type { ADDomain } from "~/app/types/ad/ADDomain";
 import { API_ROUTES } from "#imports";
+import type { ADDomain } from "~/types/ad/ADDomain";
 
 export const useDomainsApi = () => {
   const api = useApiClient();

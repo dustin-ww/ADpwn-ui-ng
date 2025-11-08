@@ -1,13 +1,12 @@
 import { defineStore } from "pinia";
-import type { ADTarget } from "~/app/types/ad/ADTarget";
-import type { ProjectUpdateSchema } from "~/app/schemas/project";
-import type { TargetSchema } from "~/app/schemas/target";
 import { useBaseStore, type BaseStoreState } from "~/composables/utils/useBaseStore";
 import { useDomainsApi } from "~/composables/api/useDomainsApi";
 import { useProjectsApi } from "~/composables/api/useProjectsApi";
-import type { ADDomain } from "~/app/types/ad/ADDomain";
-import type { ADPwnLogEntry } from "~/app/types/adpwn/ADPwnLogEntry";
 import { useCookieSync } from "~/composables/useCookieSync";
+import type { ADTarget } from "~/types/ad/ADTarget";
+import type { ADDomain, adDomainSchema } from "~/types/ad/ADDomain";
+import type { TargetSchema } from "~/schemas/target";
+import type { ProjectUpdateSchema } from "~/schemas/project";
 
 interface CurrentProjectState extends BaseStoreState {
   uid: string;
@@ -128,13 +127,13 @@ export const useCurrentProjectStore = defineStore("currentProject", {
       const result = await fetchDomainsWithCache();
       console.log("Domains fetched:", result);
 
-      const domains = result.data ?? [];
+      const domains = ((result as { data?: ADDomain[] })?.data) ?? [];
 
       const api = useDomainsApi();
 
       const hostResults = await Promise.all(
         domains
-          .filter(d => d.uid) 
+          .filter(d => d.uid)
           .map(d => api.getHostsByDomainUID(this.uid, d.uid))
       );
 
