@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import type { TableColumn } from "@nuxt/ui";
-import type { ADHost } from "~/types/ad/ADHost";
 
 const currentProjectStore = useCurrentProjectStore();
-const domainStore = useDomainStore();
+const { fetchDomainsWithHosts, enrichedHosts } = useDomainHostData();
 
-const hosts = ref<ADHost[]>([]);
 const isLoading = ref(true);
 
 // Table columns definition
@@ -27,19 +25,16 @@ const columns: TableColumn[] = [
 // Fetch domains with hosts on component mount
 onMounted(async () => {
   isLoading.value = true;
-  hosts.value = await domainStore.fetchDomainsWithHosts(
-    currentProjectStore.uid,
-    { skipCache: true }
-  );
-  console.log("Hosts:", hosts.value);
+  await fetchDomainsWithHosts(currentProjectStore.uid);
   isLoading.value = false;
 });
 
+// Computed table data from enriched hosts
 const tableData = computed(() =>
-  hosts.value.map((host) => ({
+  enrichedHosts.value.map((host) => ({
     uid: host.uid,
     ip: host.ip,
-    domainName: host.belongsToDomainName ?? "-",
+    domainName: host.domain?.name ?? "-",
   }))
 );
 </script>

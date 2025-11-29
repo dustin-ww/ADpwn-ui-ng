@@ -49,6 +49,7 @@ const items = ref([
           icon: "i-lucide-smile",
           description:
             "You have nothing to do, @nuxt/icon will handle it automatically.",
+          to: "/services",
         },
         {
           label: "Users",

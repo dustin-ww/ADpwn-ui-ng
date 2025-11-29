@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useCurrentProjectStore } from "~/stores/currentProject";
-import { useProjectsStore } from "~/stores/projects";
+import { useCurrentProjectStore } from "~/stores/currentProjectStore";
+import { useProjectsStore } from "~/stores/projectStore";
 
 useHead({
   title: "ADPwn - Project Management",

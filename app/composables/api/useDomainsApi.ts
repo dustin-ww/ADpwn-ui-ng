@@ -23,7 +23,7 @@ export const useDomainsApi = () => {
     getHostsByDomainUID: (projectUid: string, domainUid: string) =>
       api.get<ADDomain[]>(
         API_ROUTES.PROJECTS.DOMAINS.HOSTS(projectUid, domainUid)
-      ),
+    ),
 
     addHost: (projectUid: string, domainUid: string, hostData: ADHost) =>
       api.create<ADHost>(

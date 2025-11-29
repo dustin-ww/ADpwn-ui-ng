@@ -1,4 +1,4 @@
-import { useCurrentProjectStore } from "~/stores/currentProject";
+import { useCurrentProjectStore } from "~/stores/currentProjectStore";
 
 export default defineNuxtRouteMiddleware((to) => {
  

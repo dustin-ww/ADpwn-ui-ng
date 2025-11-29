@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCurrentProjectStore } from "~/stores/currentProject";
+import { useCurrentProjectStore } from "~/stores/currentProjectStore";
 
 const currentProjectStore = useCurrentProjectStore;
 

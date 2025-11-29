@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
 import { targetSchema, type TargetForm } from "~/schemas/target";
-import { useCurrentProjectStore } from "~/stores/currentProject";
+import { useCurrentProjectStore } from "~/stores/currentProjectStore";
 
 const props = defineProps<{
   unknownTargetRange?: boolean;

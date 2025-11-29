@@ -24,6 +24,8 @@ export const API_ROUTES = {
     // ENDPOINT WITHOUT DOMAIN
     HOSTS: {
       ROOT: (projectUid: string) => `/project/${projectUid}/hosts`,
+      SERVICES: (projectUid: string, hostUid: string) =>
+        `/project/${projectUid}/hosts/${hostUid}/services`,
     },
 
     DOMAINS: {

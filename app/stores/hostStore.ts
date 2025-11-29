@@ -1,28 +1,25 @@
-import { defineStore } from "pinia";
-import { useBaseStore, type BaseStoreState } from "~/composables/utils/useBaseStore";
 import { useDomainsApi } from "~/composables/api/useDomainsApi";
 import { useHostsApi } from "~/composables/api/useHostsApi";
+import { useBaseStore } from "~/composables/utils/useBaseStore";
 import type { ADHost } from "~/types/ad/ADHost";
 
-interface HostStoreState extends BaseStoreState {
-  hosts: ADHost[];
-}
-
-export const useHostStore = defineStore("HostStore", {
+export const useHostStore = defineStore("hostStore", {
   state: (): HostStoreState => ({
     hosts: [],
     loading: false,
     error: null,
     cache: {
-      domains: null,
+      hosts: null,
     },
   }),
-
+  
   getters: {
     hasHosts: (state) => state.hosts.length > 0,
     getHosts: (state) => state.hosts,
+    getHostsByDomain: (state) => (domainUID: string) =>
+      state.hosts.filter(h => h.belongsToDomainUID === domainUID),
   },
-
+  
   actions: {
     _initBaseStore() {
       const baseStore = useBaseStore<HostStoreState>("hostStore");
@@ -31,20 +28,32 @@ export const useHostStore = defineStore("HostStore", {
       return { ...baseStore, fetcher, entityCreator };
     },
 
+    async fetchHosts(projectUID: string, options?: { skipCache?: boolean }) {
+      const { fetcher } = this._initBaseStore();
+      const fetchHostsWithCache = fetcher(
+        () => {
+          const api = useHostsApi();
+          return api.getHostsByProjectUID(projectUID);
+        },
+        "hosts",
+        (data: ADHost[]) => {
+          this.hosts = data;
+        },
+        { skipCache: options?.skipCache || false }
+      );
+      return await fetchHostsWithCache();
+    },
+
     async createHost(projectUID: string, domainUID: string | undefined, hostData: ADHost) {
       const { entityCreator } = this._initBaseStore();
-
       const createHostEntity = entityCreator(
         () => {
           const domainApi = useDomainsApi();
           const hostApi = useHostsApi();
-
-          // Prüfe, ob eine Domain wirklich gesetzt ist
+          
           if (hostData.belongsToDomainUID && domainUID) {
-            console.log("Creating host WITH domain:", JSON.stringify(hostData));
             return domainApi.addHost(projectUID, domainUID, hostData);
           } else {
-            console.log("Creating host WITHOUT domain:", JSON.stringify(hostData));
             return hostApi.createHost(projectUID, hostData);
           }
         },
@@ -52,11 +61,10 @@ export const useHostStore = defineStore("HostStore", {
         this.hosts,
         { successToast: true },
       );
-
       await createHostEntity();
     },
 
-    clearDomains() {
+    clearHosts() {
       const { invalidateCache } = this._initBaseStore();
       this.$reset();
       invalidateCache(this.cache);

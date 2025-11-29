@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { StepperItem } from "@nuxt/ui";
 import { computed } from "vue";
-import { useCurrentProjectStore } from "~/stores/currentProject";
+import { useCurrentProjectStore } from "~/stores/currentProjectStore";
 
 const currentProjectStore = useCurrentProjectStore();
 const id = computed(() => currentProjectStore.getUID);

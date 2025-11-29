@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCurrentProjectStore } from "~/stores/currentProject";
+import { useCurrentProjectStore } from "~/stores/currentProjectStore";
 import type { TableColumn } from "@nuxt/ui";
 
 const currentProjectStore = useCurrentProjectStore();

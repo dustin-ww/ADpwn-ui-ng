@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ADPwnModule } from "~/types/adpwn/ADPwnModule";
-import { useADPwnModuleStore } from "~/stores/adpwnModules";
+import { useADPwnModuleStore } from "~/stores/adpwnModuleStore";
 
 useHead({
   title: "Module List • ADPwn",

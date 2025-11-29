@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
 import { projectUpdateSchema } from "~/schemas/project";
-import { useCurrentProjectStore } from "~/stores/currentProject";
+import { useCurrentProjectStore } from "~/stores/currentProjectStore";
 
 const currentProjectStore = useCurrentProjectStore();
 const toast = useToast();

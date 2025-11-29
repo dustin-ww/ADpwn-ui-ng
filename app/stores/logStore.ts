@@ -2,7 +2,7 @@
 import { defineStore } from "pinia";
 import { useBaseStore, type BaseStoreState } from "~/composables/utils/useBaseStore";
 import { useProjectsApi } from "~/composables/api/useProjectsApi";
-import { useCurrentProjectStore } from "~/stores/currentProject";
+import { useCurrentProjectStore } from "~/stores/currentProjectStore";
 import type { ADPwnLogEntry } from "~/types/adpwn/ADPwnLogEntry";
 import type { LogQueryOptionsSchema } from "~/schemas/logQuery";
 
