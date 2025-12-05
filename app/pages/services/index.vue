@@ -10,6 +10,6 @@ useHead({
       <SharedHeading heading="Manage Services" />
       <ModalCreateDomain class="mr-10" />
     </div>
-    <ListDomains />
+    <ListServices />
   </div>
 </template>

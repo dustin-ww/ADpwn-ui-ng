@@ -18,7 +18,7 @@ export const useDomainHostData = () => {
   const enrichedHosts = computed(() => {
     return hostStore.hosts.map(host => ({
       ...host,
-      domain: domainStore.getDomainByUID(host.belongsToDomainUID),
+      domain: domainStore.getDomainByUID(host.belongsToDomain),
     }));
   });
 
@@ -32,7 +32,7 @@ export const useDomainHostData = () => {
 
   // Hosts ohne Domain (Orphans)
   const orphanedHosts = computed(() => {
-    return hostStore.hosts.filter(host => !host.belongsToDomainUID);
+    return hostStore.hosts.filter(host => !host.belongsToDomain);
   });
 
   return {

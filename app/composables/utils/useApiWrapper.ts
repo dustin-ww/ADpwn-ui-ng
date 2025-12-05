@@ -1,12 +1,12 @@
 // composables/api/useApiWrapper.ts
 import type { ApiResponse, ApiError, HttpMethod } from "~/app/types/api";
+import { convertKeysToCamelCase, convertKeysToSnakeCase  } from "./caseConverter";
 
 export const useApiClient = () => {
   const { $api } = useNuxtApp();
   const runtimeConfig = useRuntimeConfig();
   const baseURL = runtimeConfig.public.apiBaseUrl;
 
-  // Error-Handling
   const normalizeError = (error: unknown): ApiError => {
     if (error instanceof Error) {
       return {
@@ -28,7 +28,6 @@ export const useApiClient = () => {
     };
   };
 
-  // Basis-Request-Methode
   const request = async <T>(
     endpoint: string,
     method: HttpMethod = "GET",
@@ -41,18 +40,24 @@ export const useApiClient = () => {
       ...customHeaders,
     };
 
+    // Convert all keys in the request data to snake_case
+    const requestData = data ? convertKeysToSnakeCase(data) : undefined;
+
     try {
-      const response = await $api<T>(endpoint, {
+      const response = await $api(endpoint, {
         baseURL,
         method,
         headers,
-        body: method !== "GET" ? data : undefined,
-        query: method === "GET" ? data : undefined,
+        body: method !== "GET" ? requestData : undefined,
+        query: method === "GET" ? requestData : undefined,
         credentials: "include",
       });
 
+      // Convert all keys in the response data to camelCase
+      const convertedData = convertKeysToCamelCase<T>(response);
+
       return {
-        data: response,
+        data: convertedData,
         error: undefined,
       };
     } catch (error) {
@@ -64,7 +69,6 @@ export const useApiClient = () => {
     }
   };
 
-  // CRUD-Methoden
   return {
     get: <T>(endpoint: string, query?: Record<string, unknown>) =>
       request<T>(endpoint, "GET", query),

@@ -33,6 +33,7 @@ export const useDomainStore = defineStore("domainStore", {
     },
 
     async fetchDomains(projectUID: string, options?: { skipCache?: boolean }) {
+      console.log("Fetching domains for project:", projectUID);
       const { fetcher } = this._initBaseStore();
       const fetchDomainsWithCache = fetcher(
         () => {
@@ -42,6 +43,7 @@ export const useDomainStore = defineStore("domainStore", {
         "domains",
         (data: ADDomain[]) => {
           this.domains = data;
+          console.log("Fetched domains:", data);
         },
         { skipCache: options?.skipCache || false }
       );

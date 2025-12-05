@@ -16,8 +16,17 @@ export const useHostStore = defineStore("hostStore", {
   getters: {
     hasHosts: (state) => state.hosts.length > 0,
     getHosts: (state) => state.hosts,
-    getHostsByDomain: (state) => (domainUID: string) =>
-      state.hosts.filter(h => h.belongsToDomainUID === domainUID),
+    getHostsByDomain: (state) => (domainUID: string) => {
+      return state.hosts.filter(host => {
+        if (!host.belongsToDomain) return false;
+        
+        if (Array.isArray(host.belongsToDomain)) {
+          return host.belongsToDomain.some(domain => domain.uid === domainUID);
+        }
+        
+        return host.belongsToDomain.uid === domainUID;
+      });
+    },
   },
   
   actions: {
@@ -51,7 +60,7 @@ export const useHostStore = defineStore("hostStore", {
           const domainApi = useDomainsApi();
           const hostApi = useHostsApi();
           
-          if (hostData.belongsToDomainUID && domainUID) {
+          if (hostData.belongsToDomain && domainUID) {
             return domainApi.addHost(projectUID, domainUID, hostData);
           } else {
             return hostApi.createHost(projectUID, hostData);
