@@ -3,6 +3,17 @@ import { computed } from 'vue';
 import { useDomainStore } from "#imports";
 import { useHostStore } from "#imports";
 import { useServiceStore } from "#imports";
+import type { ADDomain, ADHost, ADService } from '~/types';
+
+// Exportiere die erweiterten Types
+export interface EnrichedADHost extends ADHost {
+  services: ADService[];
+  domain?: ADDomain;
+}
+
+export interface EnrichedADDomain extends ADDomain {
+  hosts: EnrichedADHost[];
+}
 
 export const useProjectData = () => {
   const domainStore = useDomainStore();
@@ -51,8 +62,8 @@ export const useProjectData = () => {
     }
   };
 
-  // Convert to computed properties
-  const enrichedDomains = computed(() => {
+  // Convert to computed properties mit korrekten Types
+  const enrichedDomains = computed<EnrichedADDomain[]>(() => {
     return domainStore.domains.map((domain) => {
       const hosts = hostStore.getHostsByDomain(domain.uid);
       return {
@@ -65,7 +76,7 @@ export const useProjectData = () => {
     });
   });
 
-  const enrichedHosts = computed(() => {
+  const enrichedHosts = computed<EnrichedADHost[]>(() => {
     return hostStore.hosts.map((host) => ({
       ...host,
       domain: domainStore.getDomainByUID(host.belongsToDomain),
@@ -73,7 +84,7 @@ export const useProjectData = () => {
     }));
   });
 
-  const orphanedHosts = computed(() => {
+  const orphanedHosts = computed<EnrichedADHost[]>(() => {
     return hostStore.hosts
       .filter((host) => !host.belongsToDomain || host.belongsToDomain.length === 0)
       .map((host) => ({
@@ -81,8 +92,6 @@ export const useProjectData = () => {
         services: serviceStore.getServicesByHost(host.uid),
       }));
   });
-
-  console.log("serviceStore:", serviceStore.services);
 
   return {
     fetchProjectHierarchy,
