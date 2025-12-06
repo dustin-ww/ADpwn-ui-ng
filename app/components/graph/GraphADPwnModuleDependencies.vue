@@ -101,7 +101,7 @@ const convertToGraphFormat = (graphDataInput: ADPwnInheritanceGraph) => {
     graphNodes[nodeId] = {
       name: module.name,
       size: NODE_SIZE,
-      color: getNodeColor(module.module_type),
+      color: getNodeColor(module.moduleType),
       label: true,
     };
     nodeLayouts[nodeId] = { x: 0, y: 0 };
@@ -110,8 +110,8 @@ const convertToGraphFormat = (graphDataInput: ADPwnInheritanceGraph) => {
   graphDataInput.edges.forEach((edge, index) => {
     const edgeId = `edge${index}`;
     graphEdges[edgeId] = {
-      source: edge.previous_module,
-      target: edge.next_module,
+      source: edge.previousModule,
+      target: edge.nextModule,
       width: 3,
       color: "#aaaaaa",
       dashed: false,
@@ -281,7 +281,6 @@ const configs = reactive(
   }),
 );
 
-// Lifecycle
 onMounted(async () => {
   if (isClient.value) {
     try {
@@ -343,13 +342,13 @@ onMounted(async () => {
                   {{ selectedModule?.name }}
                 </h3>
                 <span
-                  v-if="selectedModule?.module_type"
+                  v-if="selectedModule?.moduleType"
                   :class="[
                     'inline-block px-3 py-1 rounded-full text-sm font-medium text-white',
-                    getModuleTypeColor(selectedModule.module_type)
+                    getModuleTypeColor(selectedModule.moduleType)
                   ]"
                 >
-                  {{ getModuleTypeLabel(selectedModule.module_type) }}
+                  {{ getModuleTypeLabel(selectedModule.moduleType) }}
                 </span>
               </div>
               <button

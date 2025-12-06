@@ -21,8 +21,8 @@ const tableData = computed(() => {
   return modules.map((module) => ({
     key: module.key,
     author: module.author,
-    type: module.module_type,
-    attack_id: module.attack_id,
+    type: module.moduleType,
+    attackId: module.attackId,
     description: module.description,
   }));
 });
@@ -68,7 +68,7 @@ const columns: TableColumn<ADPwnModule>[] = [
   { accessorKey: "author", header: "Author" },
   { accessorKey: "type", header: "Type" },
   {
-    accessorKey: "attack_id",
+    accessorKey: "attackId",
     header: ({ column }) => {
       const isSorted = column.getIsSorted();
       return h(UButton, {
@@ -106,7 +106,6 @@ const columnFilters = ref([
   },
 ]);
 
-// Zeilenauswahl-Status
 const rowSelection = ref({});
 </script>
 
@@ -116,7 +115,6 @@ const rowSelection = ref({});
     <div
       class="flex justify-between px-4 py-3.5 border-b border-(--ui-border-accented)"
     >
-      <!-- Filter Input für Key Spalte -->
       <UInput
         :model-value="
           table?.tableApi?.getColumn('key')?.getFilterValue() as string
@@ -128,7 +126,6 @@ const rowSelection = ref({});
         "
       />
 
-      <!-- Dropdown für Spaltensteuerung -->
       <UDropdownMenu
         :items="
           table?.tableApi
@@ -201,7 +198,6 @@ const rowSelection = ref({});
       </template>
     </UTable>
 
-    <!-- Anzeige der ausgewählten Zeilen -->
     <div
       class="px-4 py-3.5 border-t border-(--ui-border-accented) text-sm text-(--ui-text-muted)"
     >

@@ -1,11 +1,10 @@
 import { defineStore } from "pinia";
-import type { ADPwnModule } from "~/app/types/adpwn/ADPwnModule";
-import type { ADPwnInheritanceGraph } from "~/app/types/adpwn/ADPwnModuleGraph";
 import { useBaseStore, type BaseStoreState } from "~/composables/utils/useBaseStore";
 import { useADPwnModuleApi } from "~/composables/api/useADwnModuleApi";
-import type { ADPwnModuleOption } from "~/app/types/adpwn/ADPwnModuleOption";
-import type { ADPwnModuleResponse } from "~/app/types/adpwn/ADpwnModuleResponse";
-import type { ADPwnModuleParameters } from "~/app/types/adpwn/ADPwnModuleParameters";
+import type { ADPwnModule } from "~/types/adpwn/ADPwnModule";
+import type { ADPwnInheritanceGraph } from "~/types/adpwn/ADPwnModuleGraph";
+import type { ADPwnModuleOption } from "~/types/adpwn/ADPwnModuleOption";
+import type { ADPwnModuleParameters } from "~/types/adpwn/ADPwnModuleParameters";
 
 interface ADPwnModuleState extends BaseStoreState {
   modules: ADPwnModule[];
@@ -106,7 +105,6 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
     },
 
     async runAttackVector(moduleKey: string, params: ADPwnModuleParameters[]): Promise<string> {
-      console.log("EEEEEE");
       const { handleApiCall } = this._initBaseStore();
       let result = '';
       
@@ -151,18 +149,18 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
       console.log("Loading dependencies for module:", moduleKey);
 
       if (
-        !module.dependency_vector_keys ||
-        module.dependency_vector_keys.length === 0
+        !module.dependencyVectorKeys ||
+        module.dependencyVectorKeys.length === 0
       ) {
         // No dependencies to load
-        module.dependency_vector = [];
+        module.dependencyVector = [];
         return module;
       }
 
       // Check if dependencies are already loaded
       if (
-        module.dependency_vector &&
-        module.dependency_vector.length === module.dependency_vector_keys.length
+        module.dependencyVector &&
+        module.dependencyVector.length === module.dependencyVectorKeys.length
       ) {
         return module;
       }
@@ -176,7 +174,7 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
       const dependencies: ADPwnModule[] = [];
       const missingDependencies: string[] = [];
 
-      for (const depKey of module.dependency_vector_keys) {
+      for (const depKey of module.dependencyVectorKeys) {
         const depModule = this.modules.find((m) => m.key === depKey);
 
         if (depModule) {
@@ -215,7 +213,7 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
       }
 
       // Set dependencies
-      module.dependency_vector = dependencies;
+      module.dependencyVector = dependencies;
       return module;
     },
 

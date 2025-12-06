@@ -20,8 +20,7 @@ const items = ref([
         },
         {
           label: "Module List",
-          description:
-            "Learn how to install and configure Nuxt UI in your application.",
+          //description:"Learn how to install and configure Nuxt UI in your application.",
           icon: "i-lucide-cloud-download",
           to: "/modules/list",
         },
@@ -29,15 +28,13 @@ const items = ref([
           label: "Run Queue",
           icon: "i-lucide-smile",
           to: "/modules/queue",
-          description:
-            "You have nothing to do, @nuxt/icon will handle it automatically.",
+          //description: "You have nothing to do, @nuxt/icon will handle it automatically.",
         },
 
         {
           label: "History",
           to: "/modules/history",
-          description:
-            "See Graph with Dependencies between loaded ADPwn Modules.",
+          //description:"See Graph with Dependencies between loaded ADPwn Modules.",
           icon: "i-lucide-house",
         },
       ],
@@ -49,40 +46,20 @@ const items = ref([
         {
           label: "Network Graph",
           icon: "i-lucide-file-text",
-          description: "Define shortcuts for your application.",
+         description: "View network graph of the system assets.",
           to: "/network",
         },
         {
           label: "Discovered Network Changes",
           icon: "i-lucide-file-text",
-          description: "Display a modal/slideover within your application.",
-          to: "/",
+          description: "Display a overview of recent network changes.",
+          to: "/network/list",
         },
       ],
     },
     {
       label: "Collections",
       icon: "i-lucide-box",
-      children: [
-        {
-          label: "Collection List",
-          icon: "i-lucide-file-text",
-          description: "Use NuxtLink with superpowers.",
-          to: "/collections",
-        },
-        {
-          label: "Collection Manager",
-          icon: "i-lucide-file-text",
-          description: "Display a modal within your application.",
-          to: "/",
-        },
-        {
-          label: "History",
-          icon: "i-lucide-file-text",
-          description: "Display a list of links.",
-          to: "/",
-        },
-      ],
     },
   ],
   [

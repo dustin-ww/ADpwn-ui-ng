@@ -1,5 +1,5 @@
 export interface ADPwnModuleParameters {
-  project_uid: string;
+  projectUid: string;
   metadata: Record<string, string>;
   inputs: Record<string, Input<any>>;
 }
