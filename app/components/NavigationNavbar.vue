@@ -50,7 +50,7 @@ const items = ref([
           to: "/network",
         },
         {
-          label: "Discovered Network Changes",
+          label: "Asset Tree",
           icon: "i-lucide-file-text",
           description: "Display a overview of recent network changes.",
           to: "/network/list",

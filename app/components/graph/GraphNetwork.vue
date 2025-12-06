@@ -273,9 +273,9 @@ const applyD3ForceLayout = (): void => {
         );
         
         // Project to Domain: longer distance
-        if (edge?.type === 'project-domain') return 200;
+        if (edge?.type === 'project-domain') return 20;
         // Domain to Host: medium distance
-        if (edge?.type === 'domain-host') return 150;
+        if (edge?.type === 'domain-host') return 20;
         // Host to Service: shorter distance
         return 100;
       })
@@ -449,7 +449,7 @@ onUnmounted(() => {
 
 <template>
   <ClientOnly>
-    <div class="relative w-full h-screen bg-gray-900">
+    <div class="relative w-full h-screen bg-gray-900 cursor-default">
       <!-- Control Panel -->
       <div v-if="!loading && !error" class="absolute top-5 left-5 z-10">
         <button 
