@@ -10,7 +10,6 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@dagrejs/dagre": "1.1.5",
     "@nuxt/ui": "^4.1.0",
     "@pinia/nuxt": "^0.11.2",
     "@types/node": "24.9.1",
