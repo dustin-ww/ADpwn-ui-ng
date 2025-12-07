@@ -1,6 +1,6 @@
 export interface ADService {
   uid: string;
-  runsOnHosts?: string;
+  deployedOnHost?: string;
 
     // AD related
   spns?: string[];

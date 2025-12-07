@@ -125,21 +125,21 @@ onMounted(async () => {
     });
   }
   
-  if (module.value?.dependency_vector) {
-    const copiedDependencyVector = [...module.value.dependency_vector];
+  if (module.value?.dependencyVector) {
+    const copiedDependencyVector = [...module.value.dependencyVector];
     copiedDependencyVector.push({
       key: module.value.key,
       description: module.value.description || "No description available",
-      attack_id: "",
-      execution_metric: "",
+      attackId: "",
+      executionMetric: "",
       name: "",
       version: "",
       author: "",
-      module_type: "",
-      loot_path: "",
+      moduleType: "",
+      lootPath: "",
       options: [],
-      dependency_vector_keys: [],
-      dependency_vector: [],
+      dependencyVectorKeys: [],
+      dependencyVector: [],
     });
     dependencyStepperItems.value = copiedDependencyVector.map((dependency) => ({
       title: dependency.key,
@@ -179,7 +179,7 @@ onMounted(async () => {
 
     <!-- Module Dependencies -->
     <div
-      v-if="module?.dependency_vector.length != 0"
+      v-if="module?.dependencyVector.length != 0"
       class="space-y-6 p-6 bg-gray-800 rounded-lg shadow-md"
     >
       <h2 class="text-xl font-semibold text-gray-100">Module Dependencies</h2>

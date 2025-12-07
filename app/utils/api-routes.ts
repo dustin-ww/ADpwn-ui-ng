@@ -44,21 +44,21 @@ export const API_ROUTES = {
   },
 
   ADPWN: {
-    ROOT: "/adpwn",
-    RUNS: "/adpwn/runs",
+    ROOT: "/redpaths",
+    RUNS: "/redpaths/runs",
 
     MODULES: {
-      ROOT: "/adpwn/modules",
-      GRAPH: "/adpwn/modules/graph",
+      ROOT: "/redpaths/modules",
+      GRAPH: "/redpaths/modules/graph",
 
-      DETAIL: (moduleKey: string) => `/adpwn/modules/${moduleKey}`,
-      LASTRUN: (moduleKey: string) => `/adpwn/modules/${moduleKey}/lastrun`,
-      RUN: (moduleKey: string) => `/adpwn/modules/${moduleKey}/run`,
-      OPTIONS: (moduleKey: string) => `/adpwn/modules/${moduleKey}/options`,
+      DETAIL: (moduleKey: string) => `/redpaths/modules/${moduleKey}`,
+      LASTRUN: (moduleKey: string) => `/redpaths/modules/${moduleKey}/lastrun`,
+      RUN: (moduleKey: string) => `/redpaths/modules/${moduleKey}/run`,
+      OPTIONS: (moduleKey: string) => `/redpaths/modules/${moduleKey}/options`,
 
       VECTOR: {
-        RUN: (moduleKey: string) => `/adpwn/modules/${moduleKey}/vector/run`,
-        OPTIONS: (moduleKey: string) => `/adpwn/modules/${moduleKey}/vector/options`,
+        RUN: (moduleKey: string) => `/redpaths/modules/${moduleKey}/vector/run`,
+        OPTIONS: (moduleKey: string) => `/redpaths/modules/${moduleKey}/vector/options`,
       },
     },
   },

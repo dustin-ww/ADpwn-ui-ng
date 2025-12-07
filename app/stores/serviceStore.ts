@@ -24,13 +24,13 @@ export const useServiceStore = defineStore("serviceStore", {
       state.services.find(d => d.uid === uid),
     getServicesByHost: (state) => (hostUID: string) =>
     state.services.filter(s => {
-      if (!s.runsOnHosts) return false;
+      if (!s.deployedOnHost) return false;
       
-      if (typeof s.runsOnHosts === 'object' && 'uid' in s.runsOnHosts) {
-        return s.runsOnHosts.uid === hostUID;
+      if (typeof s.deployedOnHost === 'object' && 'uid' in s.deployedOnHost) {
+        return s.deployedOnHost.uid === hostUID;
       }
       
-      return s.runsOnHosts === hostUID;
+      return s.deployedOnHost === hostUID;
     }),
   },
   
@@ -53,11 +53,11 @@ export const useServiceStore = defineStore("serviceStore", {
         "services",
         (data: ADService[]) => {
           this.services = this.services.filter(s => {
-            if (!s.runsOnHosts) return true;
-            if (typeof s.runsOnHosts === 'object' && 'uid' in s.runsOnHosts) {
-              return s.runsOnHosts.uid !== hostUID;
+            if (!s.deployedOnHost) return true;
+            if (typeof s.deployedOnHost === 'object' && 'uid' in s.deployedOnHost) {
+              return s.deployedOnHost.uid !== hostUID;
             }
-            return s.runsOnHosts !== hostUID;
+            return s.deployedOnHost !== hostUID;
           });
           
           // Füge die nuen Services hinzu
