@@ -24,9 +24,13 @@ const isLoading = ref(false);
 const optionValues = ref<Record<string, any>>({});
 
 const metadata = ref<Record<string, string>>({
-  creator: "admin", // Default values
+  creator: "admin",
   priority: "medium"
 });
+
+// NEU: SSE EventSource
+const eventSource = ref<EventSource | null>(null);
+const currentRunId = ref<string | null>(null);
 
 const emit = defineEmits<{
   (e: "submit-success"): void;
@@ -66,6 +70,72 @@ const buildModuleParameters = (): ADPwnModuleParameters => {
   };
 };
 
+// NEU: SSE Connection Setup
+const setupSSEConnection = (runId: string) => {
+  // Close existing connection if any
+   if (eventSource.value) {
+    eventSource.value.close();
+  }
+
+  // GEÄNDERT: Von /recommendation zu /sse
+  const sseUrl = `http://localhost:8082/recommendation?runId=${runId}`;
+  eventSource.value = new EventSource(sseUrl);
+
+  eventSource.value.addEventListener('connected', (event) => {
+    console.log('[SSE] Connected:', JSON.parse(event.data));
+  });
+
+  eventSource.value.addEventListener('log', (event) => {
+    const logData = JSON.parse(event.data);
+    console.log('[SSE] Log:', logData);
+  });
+
+eventSource.value.addEventListener('recommendation', (event) => {
+  const moduleKey = event.data; // <-- KEIN JSON.parse
+
+  console.log('[SSE] Recommendation received:', moduleKey);
+
+  toast.add({
+    title: "Recommendation Available",
+    description: `Recommended next module: ${moduleKey}`,
+    color: "info",
+  });
+});
+
+
+  eventSource.value.addEventListener('heartbeat', (event) => {
+    // Silent heartbeat
+  });
+
+  eventSource.value.addEventListener('module_complete', (event) => {
+    const data = JSON.parse(event.data);
+    console.log('[SSE] Module completed:', data);
+  });
+
+  eventSource.value.addEventListener('module_error', (event) => {
+    const data = JSON.parse(event.data);
+    console.error('[SSE] Module error:', data);
+    toast.add({
+      title: "Module Error",
+      description: data.payload?.error || "An error occurred",
+      color: "error",
+    });
+  });
+
+  eventSource.value.onerror = (error) => {
+    console.error('[SSE] Connection error:', error);
+    eventSource.value?.close();
+  };
+};
+
+// NEU: Cleanup SSE Connection
+const closeSSEConnection = () => {
+  if (eventSource.value) {
+    eventSource.value.close();
+    eventSource.value = null;
+  }
+};
+
 const runModule = async () => {
   isLoading.value = true;
   
@@ -74,10 +144,12 @@ const runModule = async () => {
     
     console.log("Module Parameters JSON:", JSON.stringify(moduleParameters, null, 2));
     
-    const { error } = await moduleStore.runAttackVector(
+    const { data, error } = await moduleStore.runAttackVector(
       module.value?.key ?? "",
       moduleParameters 
     );
+
+    console.log("Run Module Response:", data, error);
 
     if (error) {
       toast.add({
@@ -86,6 +158,14 @@ const runModule = async () => {
         color: "error",
       });
       return;
+    }
+
+    // NEU: Setup SSE Connection mit der runId aus der Response
+    if (data?.runUid) {
+      currentRunId.value = data.runUid;
+      console.log
+      setupSSEConnection(data.runUid);
+      console.log('[SSE] Connected to runId:', data.runUid);
     }
 
     toast.add({
@@ -147,6 +227,11 @@ onMounted(async () => {
       icon: dependency.icon || "i-lucide-box",
     }));
   }
+});
+
+// NEU: Cleanup beim Unmount
+onUnmounted(() => {
+  closeSSEConnection();
 });
 </script>
 

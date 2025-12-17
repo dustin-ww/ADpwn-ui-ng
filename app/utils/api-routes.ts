@@ -45,7 +45,11 @@ export const API_ROUTES = {
 
   ADPWN: {
     ROOT: "/redpaths",
-    RUNS: "/redpaths/runs",
+    
+    HISTORY: {
+      MODULE_RUNS: (projectUid: string) => `/redpaths/${projectUid}/mruns`,
+      VECTORS_RUNS : (projectUid: string) => `/redpaths/${projectUid}/vruns`,
+    },
 
     MODULES: {
       ROOT: "/redpaths/modules",

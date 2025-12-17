@@ -104,9 +104,14 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
       return await fetchModulesWithCache();
     },
 
-    async runAttackVector(moduleKey: string, params: ADPwnModuleParameters[]): Promise<string> {
+    async runAttackVector(
+      moduleKey: string,
+      params: ADPwnModuleParameters[]
+    ): Promise<{ data: string | null; error: any | null }> {
+      
       const { handleApiCall } = this._initBaseStore();
-      let result = '';
+      let result: string | null = null;
+      let error: any | null = null;
       
       await handleApiCall(
         () => {
@@ -114,11 +119,14 @@ export const useADPwnModuleStore = defineStore("adpwnModules", {
           return api.runAttackVector(moduleKey, params);
         },
         (response) => {
-          result = response.data ?? '';
+          result = response.data ?? null;
+        },
+        (err) => {
+          error = err;
         }
       );
-      
-      return result;
+
+      return { data: result, error };
     },
 
     async fetchGraph(force = false) {
