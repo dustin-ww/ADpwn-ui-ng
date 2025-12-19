@@ -83,7 +83,6 @@ export const useRPHistoryStore = defineStore("rpHistory", {
       return vectorRuns;
     },
 
-    // Reset store
     resetModules() {
       const { invalidateCache } = this._initBaseStore();
       this.$reset();

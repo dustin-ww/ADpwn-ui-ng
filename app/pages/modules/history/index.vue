@@ -20,7 +20,6 @@
     <div v-if="loading" class="text-blue-600">Loading...</div>
     <div v-if="error" class="text-red-600 mb-4">Error: {{ error }}</div>
 
-    <!-- Vector Runs -->
     <div
       v-if="!loading && historyStore.hasVectorRuns"
       class="space-y-6"
@@ -41,7 +40,6 @@
         <p><strong>Project UID:</strong> {{ vectorRun.projectUid }}</p>
         <p><strong>Ran At:</strong> {{ vectorRun.ranAt }}</p>
 
-        <!-- Module Runs for this Vector -->
         <div
           v-if="historyStore.getModuleRunsWithVectorUID(vectorRun.runUid).length > 0"
           class="mt-4 space-y-3"
@@ -79,7 +77,6 @@ const historyStore = useRPHistoryStore();
 const loading = ref(false);
 const error = ref("");
 
-// Projekt-UID (wie bei dir)
 const currentProjectStore = useCurrentProjectStore();
 const projectUID = currentProjectStore.getUID;
 

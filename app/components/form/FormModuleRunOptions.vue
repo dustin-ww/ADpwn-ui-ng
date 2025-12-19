@@ -28,7 +28,6 @@ const metadata = ref<Record<string, string>>({
   priority: "medium"
 });
 
-// NEU: SSE EventSource
 const eventSource = ref<EventSource | null>(null);
 const currentRunId = ref<string | null>(null);
 
@@ -70,14 +69,11 @@ const buildModuleParameters = (): ADPwnModuleParameters => {
   };
 };
 
-// NEU: SSE Connection Setup
 const setupSSEConnection = (runId: string) => {
-  // Close existing connection if any
    if (eventSource.value) {
     eventSource.value.close();
   }
 
-  // GEÄNDERT: Von /recommendation zu /sse
   const sseUrl = `http://localhost:8082/recommendation?runId=${runId}`;
   eventSource.value = new EventSource(sseUrl);
 
@@ -128,7 +124,6 @@ eventSource.value.addEventListener('recommendation', (event) => {
   };
 };
 
-// NEU: Cleanup SSE Connection
 const closeSSEConnection = () => {
   if (eventSource.value) {
     eventSource.value.close();
@@ -160,7 +155,6 @@ const runModule = async () => {
       return;
     }
 
-    // NEU: Setup SSE Connection mit der runId aus der Response
     if (data?.runUid) {
       currentRunId.value = data.runUid;
       console.log
@@ -229,7 +223,6 @@ onMounted(async () => {
   }
 });
 
-// NEU: Cleanup beim Unmount
 onUnmounted(() => {
   closeSSEConnection();
 });
