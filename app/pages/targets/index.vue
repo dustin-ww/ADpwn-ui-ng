@@ -22,9 +22,7 @@ function refetchTargets() {
         @click="isCreateModalOpen = true"
       />
     </div>
-
     <ListTarget />
-
     <ModalCreateTarget
       v-model:open="isCreateModalOpen"
       @target-created="refetchTargets"

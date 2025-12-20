@@ -6,6 +6,8 @@ import type { ADDomain } from "~/types/ad/ADDomain";
 
 const currentProjectStore = useCurrentProjectStore();
 const toast = useToast();
+const { domainWithHosts } = useDomainHostData();
+
 
 // Resolve components
 const UButton = resolveComponent("UButton");
@@ -14,6 +16,11 @@ const UDropdownMenu = resolveComponent("UDropdownMenu");
 
 // Expandable state
 const expanded = ref<Record<string, boolean>>({});
+
+function useExpandedDomain(domainUID: string) {
+  return domainWithHosts(domainUID);
+}
+
 
 // Helper function to generate row-specific dropdown items
 function getRowItems(row: any) {
@@ -177,20 +184,12 @@ const globalFilter = ref("");
       :ui="{ tr: 'data-[expanded=true]:bg-(--ui-bg-elevated)/50' }"
     >
       <template #expanded="{ row }">
-        <div class="p-4 bg-gray-50">
-          <h3 class="text-lg font-semibold mb-2">Domain Details</h3>
-          <div class="grid grid-cols-2 gap-2 text-sm">
-            <div><strong>UID:</strong> {{ row.original.uid }}</div>
-            <div><strong>Name:</strong> {{ row.original.name }}</div>
-            <div><strong>Created:</strong> {{ new Date(row.original.created).toLocaleString() }}</div>
-            <div><strong>Modified:</strong> {{ new Date(row.original.last_modified).toLocaleString() }}</div>
-          </div>
-          <details class="mt-4">
-            <summary class="cursor-pointer font-semibold">Full JSON</summary>
-            <pre class="text-xs mt-2 p-2 bg-white rounded">{{ row.original }}</pre>
-          </details>
-        </div>
+         <OverviewDomain
+    :domain="row.original"
+    :expanded-domain-data="useExpandedDomain(row.original.uid).value"
+  />
       </template>
+
     </UTable>
 
     <!-- Error Message -->

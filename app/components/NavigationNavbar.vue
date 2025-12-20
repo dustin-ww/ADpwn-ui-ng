@@ -57,10 +57,6 @@ const items = ref([
         },
       ],
     },
-    {
-      label: "Collections",
-      icon: "i-lucide-box",
-    },
   ],
   [
     {

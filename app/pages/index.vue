@@ -42,55 +42,6 @@ const items = ref<StepperItem[]>([
   <div class="text-center">
     <h1 class="text-5xl mt-20">Welcome to ADPwn</h1>
     <p class="mt-5">Current Loaded Project: {{ name }} ({{ id }})</p>
-    <div class="bg-red-900 m-10 p-5 rounded-md">
-      <h2 class="mt-5 text-3xl">Getting Started</h2>
-    </div>
-    <h2 class="mt-5 text-3xl">Features</h2>
-    <div class="grid grid-cols-3 gap-4 m-10">
-      <UCard class="bg-red-900">
-        <template #header>
-          <h1>Loading custom modules</h1>
-        </template>
-        <p>
-          Automate attack vectors with self-written and highly extensible
-          modules
-        </p>
-      </UCard>
-      <UCard class="bg-red-900">
-        <template #header>
-          <h1>Graph-based automation of attack vectors</h1>
-        </template>
 
-        todo
-      </UCard>
-      <UCard class="bg-red-900">
-        <template #header>
-          <h1>Configure reusable collections to automate enumeration</h1>
-        </template>
-        todo
-      </UCard>
-    </div>
-    <div class="grid grid-cols-3 gap-4 m-10">
-      <UCard class="bg-red-900">
-        <template #header>
-          <h1>Change History of configured AD</h1>
-        </template>
-        todo
-      </UCard>
-      <UCard class="bg-red-900">
-        <template #header>
-          <h1>Network Graph of AD</h1>
-        </template>
-
-        todo
-      </UCard>
-      <UCard class="bg-red-900">
-        <template #header>
-          <h1>Loot Explorer</h1>
-        </template>
-
-        todo
-      </UCard>
-    </div>
   </div>
 </template>

@@ -60,6 +60,9 @@ export const adDomainSchema = v.object({
   createdBy: v.string(),
   updatedBy: v.string(),
 
+  lastModifiedAt: v.optional(v.string()),
+  
+
   // Statusflags
   isDefault: v.boolean(),
   isActiveDirectoryManagedDomain: v.boolean(),

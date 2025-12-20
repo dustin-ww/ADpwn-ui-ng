@@ -27,12 +27,24 @@ export const useDomainHostData = () => {
     }));
   });
 
+ const domainWithHosts = (domainUID: string) =>
+  computed(() => {
+    const domain = domainStore.getDomainByUID(domainUID);
+    if (!domain) return null;
+
+    return {
+      ...domain,
+      hosts: hostStore.getHostsByDomain(domain.uid),
+    };
+  });
+
   const orphanedHosts = computed(() => {
     return hostStore.hosts.filter(host => !host.belongsToDomain);
   });
 
   return {
     fetchDomainsWithHosts,
+    domainWithHosts,
     enrichedHosts,
     domainsWithHosts,
     orphanedHosts,
