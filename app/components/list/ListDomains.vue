@@ -9,12 +9,10 @@ const toast = useToast();
 const { domainWithHosts } = useDomainHostData();
 
 
-// Resolve components
 const UButton = resolveComponent("UButton");
 const UBadge = resolveComponent("UBadge");
 const UDropdownMenu = resolveComponent("UDropdownMenu");
 
-// Expandable state
 const expanded = ref<Record<string, boolean>>({});
 
 function useExpandedDomain(domainUID: string) {
@@ -22,7 +20,6 @@ function useExpandedDomain(domainUID: string) {
 }
 
 
-// Helper function to generate row-specific dropdown items
 function getRowItems(row: any) {
   return [
     { type: "label", label: "Actions" },
@@ -42,7 +39,6 @@ function getRowItems(row: any) {
   ];
 }
 
-// Table columns definition
 const columns: TableColumn<ADDomain>[] = [
   {
     id: "expand",
@@ -72,11 +68,18 @@ const columns: TableColumn<ADDomain>[] = [
   },
   {
     accessorKey: "created",
-    header: "Created",
+    header: "Discovered At",
     cell: ({ row }) => {
-      const date = new Date(row.original.created);
-      return date.toLocaleDateString();
-    }
+      const date = new Date(row.original.discoveredAt)
+      return date.toLocaleString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+    },
   },
   {
     id: "actions",
@@ -136,7 +139,7 @@ const globalFilter = ref("");
     <div
       class="flex justify-end gap-2 px-4 py-3.5 border-b border-(--ui-border-accented)"
     >
-      <UInput v-model="globalFilter" class="max-w-sm" placeholder="Filter..." />
+      <UInput v-model="globalFilter" class="max-w-sm" placeholder="Filter Domains..." />
       <UDropdownMenu
         :items="
           table?.tableApi
@@ -171,7 +174,6 @@ const globalFilter = ref("");
       Loaded {{ domains.length }} domains
     </div>
 
-    <!-- Table -->
     <UTable
       ref="table"
       v-model:expanded="expanded"
@@ -192,7 +194,6 @@ const globalFilter = ref("");
 
     </UTable>
 
-    <!-- Error Message -->
     <div v-if="currentProjectStore.error" class="mt-4 text-red-500">
       Error: {{ currentProjectStore.error.message }}
     </div>

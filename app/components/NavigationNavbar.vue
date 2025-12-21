@@ -14,27 +14,21 @@ const items = ref([
         {
           label: "Graph",
           description:
-            "See Graph with Dependencies between loaded ADPwn Modules.",
+            "Explore Dependency Graph of loaded ADPwn Modules.",
           icon: "i-lucide-house",
           to: "/modules",
         },
         {
-          label: "Module List",
-          //description:"Learn how to install and configure Nuxt UI in your application.",
+          label: "Module Library",
+          description:"See all available ADPwn Modules.",
           icon: "i-lucide-cloud-download",
           to: "/modules/list",
-        },
-        {
-          label: "Run Queue",
-          icon: "i-lucide-smile",
-          to: "/modules/queue",
-          //description: "You have nothing to do, @nuxt/icon will handle it automatically.",
         },
 
         {
           label: "History",
           to: "/modules/history",
-          //description:"See Graph with Dependencies between loaded ADPwn Modules.",
+          description:"View the history of module executions.",
           icon: "i-lucide-house",
         },
       ],

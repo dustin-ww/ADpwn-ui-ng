@@ -5,7 +5,6 @@ import { useHostStore } from "#imports";
 import { useServiceStore } from "#imports";
 import type { ADDomain, ADHost, ADService } from '~/types';
 
-// Exportiere die erweiterten Types
 export interface EnrichedADHost extends ADHost {
   services: ADService[];
   domain?: ADDomain;
@@ -62,7 +61,6 @@ export const useProjectData = () => {
     }
   };
 
-  // Convert to computed properties mit korrekten Types
   const enrichedDomains = computed<EnrichedADDomain[]>(() => {
     return domainStore.domains.map((domain) => {
       const hosts = hostStore.getHostsByDomain(domain.uid);

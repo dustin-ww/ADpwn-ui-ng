@@ -15,7 +15,6 @@ defineProps<{
 
 <template>
   <div class="p-4">
-    <!-- DESCRIPTION -->
     <h3 class="text-md font-semibold mb-2 mt-5">
       Description
     </h3>
@@ -23,7 +22,6 @@ defineProps<{
       {{ domain.description || "n. a." }}
     </div>
 
-    <!-- EXPLORATION DETAILS -->
     <h3 class="text-lg font-semibold mb-2 text-red-800 mt-5">
       Exploration Details
     </h3>
@@ -42,7 +40,6 @@ defineProps<{
       </div>
     </div>
 
-    <!-- DOMAIN DETAILS -->
     <h3 class="text-lg font-semibold mb-2 mt-8">
       Domain Details
     </h3>
@@ -58,7 +55,6 @@ defineProps<{
       <div><strong>Region:</strong> {{ domain.region }}</div>
     </div>
 
-    <!-- SECURITY POLICIES -->
     <h3 class="text-lg font-semibold mb-2 mt-8">
       Security Policies
     </h3>
@@ -81,7 +77,6 @@ defineProps<{
       </div>
     </div>
 
-    <!-- FULL JSON -->
     <details class="mt-4">
       <summary class="cursor-pointer font-semibold">Full JSON</summary>
       <pre class="text-xs mt-2 p-2 rounded overflow-x-auto">
@@ -89,7 +84,6 @@ defineProps<{
       </pre>
     </details>
 
-    <!-- HOSTS -->
     <h1 class="text-lg mt-8 mb-2">Hosts</h1>
 
     <template v-if="expandedDomainData">
@@ -120,5 +114,13 @@ defineProps<{
         No hosts assigned to this domain
       </div>
     </template>
+    <div class="flex gap-4 mt-4">
+          <UButton color="neutral" variant="outline">
+            Edit Domain
+          </UButton>
+          <UButton variant="outline">
+            Delete Domain
+          </UButton>
+        </div> 
   </div>
 </template>
