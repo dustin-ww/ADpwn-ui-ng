@@ -11,13 +11,11 @@ const items = ref([
       children: [
         {
           label: "Project",
-          description: "Fully styled and customizable components for Nuxt.",
           icon: "i-lucide-house",
           to: "/project",
         },
         {
           label: "Targets",
-          description: "Fully styled and customizable components for Nuxt.",
           icon: "i-lucide-house",
           to: "/targets",
         },
@@ -33,29 +31,25 @@ const items = ref([
       children: [
         {
           label: "Domains",
-          description: "Fully styled and customizable components for Nuxt.",
           icon: "i-lucide-house",
           to: "/domains",
         },
         {
           label: "Hosts",
-          description:
-            "Learn how to install and configure Nuxt UI in your application.",
           icon: "i-lucide-cloud-download",
           to: "/hosts",
         },
         {
           label: "Services",
           icon: "i-lucide-smile",
-          description:
-            "You have nothing to do, @nuxt/icon will handle it automatically.",
+         
           to: "/services",
         },
         {
           label: "Users",
           icon: "i-lucide-swatch-book",
-          description:
-            "Choose a primary and a neutral color from your Tailwind CSS theme.",
+        
+          to: "/users",
         },
       ],
     },
@@ -68,7 +62,6 @@ const items = ref([
         {
           label: "See Logs",
           icon: "i-lucide-file-text",
-          description: "Define shortcuts for your application.",
           to: "/events",
         },
       ],
@@ -81,7 +74,6 @@ const items = ref([
         {
           label: "All",
           icon: "i-lucide-file-text",
-          description: "Use NuxtLink with superpowers.",
           to: "/",
         },
       ],

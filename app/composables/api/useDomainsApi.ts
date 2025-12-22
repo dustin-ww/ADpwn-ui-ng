@@ -3,6 +3,7 @@ import { useApiClient } from "~/composables/utils/useApiWrapper";
 import { API_ROUTES } from "#imports";
 import type { ADDomain } from "~/types/ad/ADDomain";
 import type { ADHost } from "~/types/ad/ADHost";
+import type { ADUser } from "~/types/ad/ADUsers";
 
 export const useDomainsApi = () => {
   const api = useApiClient();
@@ -30,6 +31,13 @@ export const useDomainsApi = () => {
         API_ROUTES.PROJECTS.DOMAINS.HOSTS(projectUid, domainUid),
         hostData
       ),
+
+    addUser: (projectUid: string, domainUid: string, userData: ADUser) =>
+      api.create<ADUser>(
+        API_ROUTES.PROJECTS.DOMAINS.USERS(projectUid, domainUid),
+        userData
+      ),
+
 
 
     

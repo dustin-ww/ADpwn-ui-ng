@@ -9,12 +9,6 @@
       >
         Load All Data
       </button>
-      <button 
-        @click="clearData"
-        class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-      >
-        Clear
-      </button>
     </div>
 
     <div v-if="loading" class="text-blue-600">Loading...</div>
@@ -94,10 +88,6 @@ const loadData = async () => {
   }
 };
 
-const clearData = () => {
-  // Optional: Clear stores if you have clear methods
-  error.value = '';
-};
 </script>
 
 <style scoped>

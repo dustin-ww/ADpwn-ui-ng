@@ -28,11 +28,17 @@ export const API_ROUTES = {
         `/project/${projectUid}/hosts/${hostUid}/services`,
     },
 
+    USERS: {
+      ROOT: (projectUid: string) => `/project/${projectUid}/users`,
+    },
+
     DOMAINS: {
       LIST: (projectUid: string) => `/project/${projectUid}/domains`,
       // ENDPOINT WITH DOMAIN
       HOSTS: (projectUid: string, domainUid: string) =>
         `/project/${projectUid}/domains/${domainUid}/hosts`,
+      USERS: (projectUid: string, domainUid: string) =>
+        `/project/${projectUid}/domains/${domainUid}/users`,
     },
 
     LOGS: {
