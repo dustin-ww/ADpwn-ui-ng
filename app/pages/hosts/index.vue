@@ -10,6 +10,8 @@ useHead({
       <SharedHeading heading="Manage Hosts" />
       <ModalCreateHost class="mr-10" />
     </div>
-    <ListHosts />
+    <div class="ml-5">
+      <ListHosts />
+    </div>
   </div>
 </template>

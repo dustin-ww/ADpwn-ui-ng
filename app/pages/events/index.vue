@@ -104,7 +104,8 @@ const resetFilters = () => {
 <template>
   <div class="me-8">
     <SharedHeading heading="Log Explorer" />
-    <UCollapsible class="flex flex-col gap-2 min-w-80">
+    <div class="ml-5">
+      <UCollapsible class="flex flex-col gap-2 min-w-80">
     <UButton
       class="group min-w-80"
       label="Advanced Search"
@@ -207,5 +208,6 @@ const resetFilters = () => {
     <div class="mt-6">
       <ListLogs ref="listLogsRef" :show-system-logs="showSystemLogs" />
     </div>
-  </div>
+    </div>
+      </div>
 </template>

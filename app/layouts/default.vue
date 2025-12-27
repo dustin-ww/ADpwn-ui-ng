@@ -11,6 +11,7 @@
             src="/ADPwnLogo.png"
             alt="Logo"
           /> -->
+          <h1 class="text-3xl">RedPaths</h1>
         </NuxtLink>
         <ProjectSelector />
         <NavigationSidebar />

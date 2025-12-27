@@ -1,56 +1,61 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick, computed } from 'vue';
-import * as vNG from 'v-network-graph';
-import * as d3 from 'd3-force';
-import { useProjectData } from '~/composables/useProjectData';
-import type { ADDomain, ADHost, ADService } from '~/types';
+import { ref, onMounted, nextTick, onUnmounted, computed } from 'vue'
+import * as vNG from 'v-network-graph'
+import * as d3 from 'd3-force'
+import { useProjectData } from '~/composables/useProjectData'
+import type { ADDomain, ADHost, ADService } from '~/types'
 
+// =======================
 // Types
+// =======================
 interface Node extends vNG.Node {
-  size: number;
-  color: string;
-  label?: boolean;
-  type: 'project' | 'domain' | 'host' | 'service';
-  uid: string;
-  ip?: string;
-  port?: string;
+  size: number
+  color: string
+  label?: boolean
+  type: 'project' | 'domain' | 'host' | 'service'
+  uid: string
+  ip?: string
+  port?: string
+  icon?: string
+  // Zusätzliche Infos für Popup
+  dNSHostName?: string
+  serviceName?: string
 }
 
 interface Edge extends vNG.Edge {
-  width: number;
-  color: string;
-  dashed?: boolean;
-  type: 'project-domain' | 'domain-host' | 'host-service';
+  width: number
+  color: string
+  dashed?: boolean
+  type: 'project-domain' | 'domain-host' | 'host-service'
 }
 
 interface D3Node {
-  id: string;
-  x?: number;
-  y?: number;
-  vx?: number;
-  vy?: number;
-  fx?: number | null;
-  fy?: number | null;
+  id: string
+  x?: number
+  y?: number
+  vx?: number
+  vy?: number
 }
 
 interface D3Link {
-  source: string | D3Node;
-  target: string | D3Node;
+  source: string | D3Node
+  target: string | D3Node
 }
 
-// Extended types
 interface EnrichedADHost extends ADHost {
-  services?: ADService[];
+  services?: ADService[]
 }
 
 interface EnrichedADDomain extends ADDomain {
-  hosts?: EnrichedADHost[];
+  hosts?: EnrichedADHost[]
 }
 
+// =======================
 // Constants
-const NODE_SIZE = 40;
-const FIT_CONTENT_MARGIN = 80;
-const PROJECT_NODE_ID = 'project-root';
+// =======================
+const NODE_SIZE = 40
+const FIT_CONTENT_MARGIN = 80
+const PROJECT_NODE_ID = 'project-root'
 
 const NODE_COLORS = {
   project: '#9c27b0',
@@ -58,47 +63,103 @@ const NODE_COLORS = {
   host: '#2196f3',
   service: '#ff9800',
   orphanedHost: '#f44336',
-} as const;
+} as const
 
-// Route
-const route = useRoute();
-const currentProjectStore = useCurrentProjectStore();
-const projectUID = currentProjectStore.getUID;
-const projectName = currentProjectStore.getName;
+// Material Icons (Codepoints)
+const NODE_ICONS: Record<Node['type'], string> = {
+  project: '&#xe2c8', // workspaces
+  domain: '&#xe2bd',  // cloud
+  host: '&#xe30a',    // computer
+  service: '&#xe8b8', // settings
+}
 
-// Composables
-const { fetchProjectHierarchy, enrichedDomains, orphanedHosts } = useProjectData();
+// =======================
+// Stores / Composables (Nuxt 4)
+// =======================
+const currentProjectStore = useCurrentProjectStore()
+const projectUID = currentProjectStore.getUID
+const projectName = currentProjectStore.getName
 
+const { fetchProjectHierarchy, enrichedDomains, orphanedHosts } = useProjectData()
+
+// =======================
 // State
-const nodes = ref<Record<string, Node>>({});
-const edges = ref<Record<string, Edge>>({});
+// =======================
+const nodes = ref<Record<string, Node>>({})
+const edges = ref<Record<string, Edge>>({})
 const layouts = ref<{ nodes: Record<string, { x: number; y: number }> }>({
   nodes: {},
-});
-const loading = ref(true);
-const error = ref<string | null>(null);
-const graph = ref<vNG.VNetworkGraphInstance>();
-const simulation = ref<d3.Simulation<D3Node, D3Link> | null>(null);
+})
 
-// Modal State
-const isModalOpen = ref(false);
-const selectedNode = ref<Node | null>(null);
+const loading = ref(true)
+const error = ref<string | null>(null)
 
+const graph = ref<vNG.VNetworkGraphInstance>()
+const simulation = ref<d3.Simulation<D3Node, D3Link> | null>(null)
+
+// Popup State
+const selectedNode = ref<Node | null>(null)
+const showPopup = ref(false)
+const popupPosition = ref({ x: 0, y: 0 })
+
+// =======================
 // Computed
-const isClient = computed(() => typeof window !== 'undefined');
+// =======================
+const popupData = computed(() => {
+  if (!selectedNode.value) return null
 
-// Helper Functions
+  const node = selectedNode.value
+  const data: Array<{ label: string; value: string }> = [
+    { label: 'Type', value: node.type.toUpperCase() },
+    { label: 'UID', value: node.uid },
+  ]
+
+  if (node.type === 'project') {
+    data.push({ label: 'Name', value: node.name })
+  }
+
+  if (node.type === 'domain') {
+    data.push({ label: 'Domain', value: node.name })
+    // Zähle Hosts in dieser Domain
+    const hostCount = Object.values(edges.value).filter(
+      e => e.source === node.uid && e.type === 'domain-host'
+    ).length
+    data.push({ label: 'Hosts', value: hostCount.toString() })
+  }
+
+  if (node.type === 'host') {
+    if (node.ip) data.push({ label: 'IP', value: node.ip })
+    if (node.dNSHostName) data.push({ label: 'DNS Name', value: node.dNSHostName })
+    
+    // Zähle Services für diesen Host
+    const serviceCount = Object.values(edges.value).filter(
+      e => e.source === node.uid && e.type === 'host-service'
+    ).length
+    data.push({ label: 'Services', value: serviceCount.toString() })
+  }
+
+  if (node.type === 'service') {
+    if (node.serviceName) data.push({ label: 'Service', value: node.serviceName })
+    if (node.port) data.push({ label: 'Port', value: node.port })
+  }
+
+  return data
+})
+
+// =======================
+// Graph Builder
+// =======================
 const convertToGraphFormat = (
   domains: EnrichedADDomain[],
   orphanedHostsList: EnrichedADHost[],
   projectNameValue: string
 ) => {
-  const graphNodes: Record<string, Node> = {};
-  const graphEdges: Record<string, Edge> = {};
-  const nodeLayouts: Record<string, { x: number; y: number }> = {};
-  let edgeCounter = 0;
+  const graphNodes: Record<string, Node> = {}
+  const graphEdges: Record<string, Edge> = {}
+  const nodeLayouts: Record<string, { x: number; y: number }> = {}
+  let edgeCounter = 0
 
-  // Create central Project node
+  // ---------- Project ----------
   graphNodes[PROJECT_NODE_ID] = {
     name: projectNameValue,
     size: NODE_SIZE * 2,
@@ -106,11 +167,12 @@ const convertToGraphFormat = (
     label: true,
     type: 'project',
     uid: PROJECT_NODE_ID,
-  };
-  nodeLayouts[PROJECT_NODE_ID] = { x: 0, y: 0 };
+    icon: NODE_ICONS.project,
+  }
+  nodeLayouts[PROJECT_NODE_ID] = { x: 0, y: 0 }
 
-  // Process Domains
-  domains.forEach((domain) => {
+  // ---------- Domains ----------
+  domains.forEach(domain => {
     graphNodes[domain.uid] = {
       name: domain.name,
       size: NODE_SIZE * 1.5,
@@ -118,22 +180,21 @@ const convertToGraphFormat = (
       label: true,
       type: 'domain',
       uid: domain.uid,
-    };
-    nodeLayouts[domain.uid] = { x: 0, y: 0 };
+      icon: NODE_ICONS.domain,
+    }
+    nodeLayouts[domain.uid] = { x: 0, y: 0 }
 
-    // Add edge from Project to Domain
-    graphEdges[`edge${edgeCounter++}`] = {
+    graphEdges[`e${edgeCounter++}`] = {
       source: PROJECT_NODE_ID,
       target: domain.uid,
       width: 4,
       color: '#7b1fa2',
-      dashed: false,
       type: 'project-domain',
-    };
+    }
 
-    domain.hosts?.forEach((host) => {
-      const hostName = host.ip || host.dNSHostName || host.sAMAccountName || host.uid;
-      
+    domain.hosts?.forEach(host => {
+      const hostName = host.ip || host.dNSHostName || host.uid
+
       graphNodes[host.uid] = {
         name: hostName,
         size: NODE_SIZE,
@@ -142,48 +203,49 @@ const convertToGraphFormat = (
         type: 'host',
         uid: host.uid,
         ip: host.ip,
-      };
-      nodeLayouts[host.uid] = { x: 0, y: 0 };
+        dNSHostName: host.dNSHostName,
+        icon: NODE_ICONS.host,
+      }
+      nodeLayouts[host.uid] = { x: 0, y: 0 }
 
-      graphEdges[`edge${edgeCounter++}`] = {
+      graphEdges[`e${edgeCounter++}`] = {
         source: domain.uid,
         target: host.uid,
         width: 3,
         color: '#aaaaaa',
-        dashed: false,
         type: 'domain-host',
-      };
+      }
 
-      host.services?.forEach((service) => {
-        const serviceId = service.uid;
-
-        graphNodes[serviceId] = {
+      // Host → Services
+      host.services?.forEach(service => {
+        graphNodes[service.uid] = {
           name: `${service.name}:${service.port}`,
           size: NODE_SIZE * 0.7,
           color: NODE_COLORS.service,
-          label: true,
+          label: false,
           type: 'service',
           uid: service.uid,
           port: service.port,
-        };
-        nodeLayouts[serviceId] = { x: 0, y: 0 };
+          serviceName: service.name,
+          icon: NODE_ICONS.service,
+        }
+        nodeLayouts[service.uid] = { x: 0, y: 0 }
 
-        graphEdges[`edge${edgeCounter++}`] = {
+        graphEdges[`e${edgeCounter++}`] = {
           source: host.uid,
-          target: serviceId,
+          target: service.uid,
           width: 2,
           color: '#cccccc',
-          dashed: false,
           type: 'host-service',
-        };
-      });
-    });
-  });
+        }
+      })
+    })
+  })
 
-  // Process Orphaned Hosts - connect directly to Project node
-  orphanedHostsList.forEach((host) => {
-    const hostName = host.ip || host.dNSHostName || host.sAMAccountName || host.uid;
-    
+  // ---------- Orphaned Hosts ----------
+  orphanedHostsList.forEach(host => {
+    const hostName = host.ip || host.dNSHostName || host.uid
+
     graphNodes[host.uid] = {
       name: hostName,
       size: NODE_SIZE,
@@ -192,410 +254,339 @@ const convertToGraphFormat = (
       type: 'host',
       uid: host.uid,
       ip: host.ip,
-    };
-    nodeLayouts[host.uid] = { x: 0, y: 0 };
+      dNSHostName: host.dNSHostName,
+      icon: NODE_ICONS.host,
+    }
+    nodeLayouts[host.uid] = { x: 0, y: 0 }
 
-    // Connect orphaned hosts directly to Project node
-    graphEdges[`edge${edgeCounter++}`] = {
+    graphEdges[`e${edgeCounter++}`] = {
       source: PROJECT_NODE_ID,
       target: host.uid,
       width: 3,
       color: '#e91e63',
       dashed: true,
-      type: 'project-domain', // Reuse type for simplicity
-    };
+      type: 'project-domain',
+    }
 
-    host.services?.forEach((service) => {
-      const serviceId = service.uid;
-
-      graphNodes[serviceId] = {
+    // Host → Services
+    host.services?.forEach(service => {
+      graphNodes[service.uid] = {
         name: `${service.name}:${service.port}`,
         size: NODE_SIZE * 0.7,
         color: NODE_COLORS.service,
-        label: true,
+        label: false,
         type: 'service',
         uid: service.uid,
         port: service.port,
-      };
-      nodeLayouts[serviceId] = { x: 0, y: 0 };
+        serviceName: service.name,
+        icon: NODE_ICONS.service,
+      }
+      nodeLayouts[service.uid] = { x: 0, y: 0 }
 
-      graphEdges[`edge${edgeCounter++}`] = {
+      graphEdges[`e${edgeCounter++}`] = {
         source: host.uid,
-        target: serviceId,
+        target: service.uid,
         width: 2,
         color: '#cccccc',
-        dashed: false,
         type: 'host-service',
-      };
-    });
-  });
+      }
+    })
+  })
 
-  return {
-    nodes: graphNodes,
-    edges: graphEdges,
-    layouts: { nodes: nodeLayouts },
-  };
-};
+  return { nodes: graphNodes, edges: graphEdges, layouts: { nodes: nodeLayouts } }
+}
 
-const applyD3ForceLayout = (): void => {
-  const nodeArray = Object.keys(nodes.value);
-  const edgeArray = Object.values(edges.value);
+// =======================
+// D3 Force Layout
+// =======================
+const applyD3ForceLayout = () => {
+  if (!Object.keys(nodes.value).length) return
+  simulation.value?.stop()
 
-  if (nodeArray.length === 0) return;
+  const d3Nodes: D3Node[] = Object.keys(nodes.value).map(id => ({
+    id,
+    x: Math.random() * 800,
+    y: Math.random() * 600,
+  }))
 
-  // Stop existing simulation
-  if (simulation.value) {
-    simulation.value.stop();
+  const d3Links: D3Link[] = Object.values(edges.value).map(e => ({
+    source: e.source,
+    target: e.target,
+  }))
+
+  simulation.value = d3.forceSimulation(d3Nodes)
+    .force('link', d3.forceLink(d3Links).id(d => d.id).distance(120))
+    .force('charge', d3.forceManyBody().strength(-400))
+    .force('center', d3.forceCenter(400, 300))
+    .force(
+      'collision',
+      d3.forceCollide().radius(d => (nodes.value[d.id]?.size ?? NODE_SIZE) / 2 + 10)
+    )
+    .on('tick', () => {
+      const nextLayouts = { nodes: {} as Record<string, { x: number; y: number }> }
+      d3Nodes.forEach(n => {
+        nextLayouts.nodes[n.id] = { x: n.x ?? 0, y: n.y ?? 0 }
+      })
+      layouts.value = nextLayouts
+    })
+}
+
+// =======================
+// Event Handlers
+// =======================
+const handleNodeClick = ({ node, event }: { node: string; event: MouseEvent }) => {
+  selectedNode.value = nodes.value[node]
+  showPopup.value = true
+  
+  // Position Popup relativ zum Klick
+  popupPosition.value = {
+    x: event.clientX,
+    y: event.clientY,
   }
+}
 
-  // Create D3 nodes
-  const d3Nodes: D3Node[] = nodeArray.map(nodeId => ({
-    id: nodeId,
-    x: layouts.value.nodes[nodeId]?.x || Math.random() * 800,
-    y: layouts.value.nodes[nodeId]?.y || Math.random() * 600,
-  }));
+const closePopup = () => {
+  showPopup.value = false
+  selectedNode.value = null
+}
 
-  // Create D3 links
-  const d3Links: D3Link[] = edgeArray.map(edge => ({
-    source: edge.source,
-    target: edge.target,
-  }));
-
-  // Create force simulation
-  simulation.value = d3.forceSimulation<D3Node>(d3Nodes)
-    .force('link', d3.forceLink<D3Node, D3Link>(d3Links)
-      .id(d => d.id)
-      .distance(d => {
-        // Different distances based on edge type
-        const edge = edgeArray.find(e => 
-          (e.source === (d.source as D3Node).id && e.target === (d.target as D3Node).id) ||
-          (e.source === d.source && e.target === d.target)
-        );
-        
-        // Project to Domain: longer distance
-        if (edge?.type === 'project-domain') return 20;
-        // Domain to Host: medium distance
-        if (edge?.type === 'domain-host') return 20;
-        // Host to Service: shorter distance
-        return 100;
-      })
-      .strength(0.5)
-    )
-    .force('charge', d3.forceManyBody<D3Node>()
-      .strength(d => {
-        const node = nodes.value[d.id];
-        // Project node has strongest repulsion (center)
-        if (node?.type === 'project') return -800;
-        // Domains have strong repulsion
-        if (node?.type === 'domain') return -500;
-        // Regular nodes
-        return -200;
-      })
-    )
-    .force('center', d3.forceCenter<D3Node>(400, 300))
-    .force('collision', d3.forceCollide<D3Node>()
-      .radius(d => {
-        const node = nodes.value[d.id];
-        return (node?.size || NODE_SIZE) / 2 + 10;
-      })
-    )
-    .alphaDecay(0.02)
-    .velocityDecay(0.3);
-
-  // Update positions on each tick
-  simulation.value.on('tick', () => {
-    const newLayouts = { nodes: { ...layouts.value.nodes } };
-    
-    d3Nodes.forEach(d3Node => {
-      newLayouts.nodes[d3Node.id] = {
-        x: d3Node.x || 0,
-        y: d3Node.y || 0,
-      };
-    });
-    
-    layouts.value = newLayouts;
-  });
-
-  // Stop simulation after it settles
-  simulation.value.on('end', () => {
-    console.log('D3 Force simulation ended');
-  });
-};
-
-const closeModal = (): void => {
-  isModalOpen.value = false;
-  selectedNode.value = null;
-};
-
-const handleNodeClick = ({ node }: { node: string }): void => {
-  const nodeData = nodes.value[node];
-  if (nodeData) {
-    selectedNode.value = nodeData;
-    isModalOpen.value = true;
-  }
-};
-
-const fitGraphToView = async (): Promise<void> => {
-  await nextTick();
-  setTimeout(() => {
-    graph.value?.fitToContents();
-  }, 200);
-};
-
-const loadGraphData = async (): Promise<void> => {
+// =======================
+// Lifecycle
+// =======================
+const loadGraphData = async () => {
+  loading.value = true
   try {
-    loading.value = true;
-    error.value = null;
-
     await fetchProjectHierarchy(projectUID, {
       includeDomains: true,
       includeHosts: true,
       includeServices: true,
       skipCache: true,
-    });
+    })
 
-    const formattedGraph = convertToGraphFormat(
+    const g = convertToGraphFormat(
       enrichedDomains.value,
       orphanedHosts.value,
       projectName
-    );
-    
-    nodes.value = formattedGraph.nodes;
-    edges.value = formattedGraph.edges;
-    layouts.value = formattedGraph.layouts;
+    )
 
-    // Apply D3 force layout
-    await nextTick();
-    applyD3ForceLayout();
-    
-    // Fit to view after simulation settles
-    setTimeout(async () => {
-      await fitGraphToView();
-    }, 1000);
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'An unknown error occurred';
-    console.error('Error loading graph data:', err);
+    nodes.value = g.nodes
+    edges.value = g.edges
+    layouts.value = g.layouts
+
+    await nextTick()
+    applyD3ForceLayout()
+  } catch (e) {
+    console.error(e)
+    error.value = 'Failed to load graph'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
-// Event Handlers
+onMounted(loadGraphData)
+onUnmounted(() => simulation.value?.stop())
+
 const eventHandlers: vNG.EventHandlers = {
   'node:click': handleNodeClick,
-};
+}
 
-// Configs
+// =======================
+// Config
+// =======================
 const configs = vNG.defineConfigs<Node, Edge>({
   view: {
     autoPanAndZoomOnLoad: 'fit-content',
     fitContentMargin: FIT_CONTENT_MARGIN,
     scalingObjects: true,
-    minZoomLevel: 0.1,
-    maxZoomLevel: 16,
   },
   node: {
     normal: {
       type: 'circle',
-      radius: (node) => node.size / 2,
-      color: (node) => node.color,
+      radius: n => n.size / 2,
+      color: n => n.color,
     },
-    hover: {
-      radius: (node) => node.size / 2 + 5,
-      color: (node) => node.color,
-    },
-    selectable: true,
     label: {
-      visible: (node) => !!node.label,
-      direction: 'center',
+      visible: n => !!n.label,
       color: '#ffffff',
-      fontSize: (node) => node.type === 'project' ? 14 : 12,
-      fontFamily: 'Arial, sans-serif',
-      fontWeight: (node) => node.type === 'project' ? 'bold' : 'normal',
-    },
-    focusring: {
-      color: '#ffffff',
+      fontSize: 12,
     },
   },
   edge: {
     normal: {
-      width: (edge) => edge.width,
-      color: (edge) => edge.color,
-      dasharray: (edge) => (edge.dashed ? '4' : '0'),
-    },
-    hover: {
-      width: (edge) => edge.width + 1,
-    },
-    margin: 4,
-    marker: {
-      source: { type: 'none' },
-      target: { type: 'arrow' },
+      width: e => e.width,
+      color: e => e.color,
+      dasharray: e => (e.dashed ? '4' : '0'),
     },
   },
-});
-
-// Lifecycle
-onMounted(async () => {
-  await loadGraphData();
-});
-
-// Cleanup
-onUnmounted(() => {
-  if (simulation.value) {
-    simulation.value.stop();
-  }
-});
+})
 </script>
 
 <template>
   <ClientOnly>
-    <div class="relative w-full h-screen bg-gray-900 cursor-default">
-      <!-- Control Panel -->
-      <div v-if="!loading && !error" class="absolute top-5 left-5 z-10">
-        <button 
-          @click="fitGraphToView"
-          class="px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-md shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-        >
-          Fit to View
-        </button>
-      </div>
-
+    <div class="w-full h-screen bg-gray-900 relative">
       <!-- Loading State -->
-      <div v-if="loading" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-lg text-center">
-        Loading Network Topology...
+      <div
+        v-if="loading"
+        class="absolute inset-0 flex items-center justify-center bg-gray-900 z-50"
+      >
+        <div class="text-white text-xl">Loading graph...</div>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-red-500 text-lg text-center">
-        {{ error }}
+      <div
+        v-if="error"
+        class="absolute inset-0 flex items-center justify-center bg-gray-900 z-50"
+      >
+        <div class="text-red-500 text-xl">{{ error }}</div>
       </div>
 
       <!-- Graph -->
-      <template v-else>
-        <v-network-graph
-          ref="graph"
-          class="w-full h-full"
-          :nodes="nodes"
-          :edges="edges"
-          :layouts="layouts"
-          :configs="configs"
-          :event-handlers="eventHandlers"
-        />
-      </template>
-
-      <!-- Modal -->
-      <Transition
-        enter-active-class="transition-opacity duration-300 ease-out"
-        leave-active-class="transition-opacity duration-300 ease-in"
-        enter-from-class="opacity-0"
-        leave-to-class="opacity-0"
+      <v-network-graph
+        ref="graph"
+        class="w-full h-full"
+        :nodes="nodes"
+        :edges="edges"
+        :layouts="layouts"
+        :configs="configs"
+        :event-handlers="eventHandlers"
       >
+        <!-- Material Icons -->
+        <defs>
+          <component is="style">
+            @font-face {
+              font-family: 'Material Icons';
+              font-style: normal;
+              font-weight: 400;
+              src: url(https://fonts.gstatic.com/s/materialicons/v97/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2)
+                format('woff2');
+            }
+          </component>
+        </defs>
+
+        <!-- Custom Node mit Icon -->
+        <template #override-node="{ nodeId, scale, config, ...slotProps }">
+          <g>
+            <circle
+              :r="config.radius * scale"
+              :fill="config.color"
+              v-bind="slotProps"
+              style="cursor: pointer"
+            />
+            <text
+              v-if="nodes[nodeId]?.icon"
+              font-family="Material Icons"
+              :font-size="nodes[nodeId].size * 0.5 * scale"
+              fill="#ffffff"
+              text-anchor="middle"
+              dominant-baseline="central"
+              style="pointer-events: none; user-select: none"
+              v-html="nodes[nodeId].icon"
+            />
+          </g>
+        </template>
+      </v-network-graph>
+
+      <!-- Popup Modal -->
+      <Transition name="fade">
         <div
-          v-if="isModalOpen"
-          class="fixed inset-0 z-50 flex items-center justify-center"
-          @click.self="closeModal"
+          v-if="showPopup && selectedNode"
+          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          @click="closePopup"
         >
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
-
-          <!-- Modal Content -->
-          <Transition
-            enter-active-class="transition-transform duration-300 ease-out"
-            leave-active-class="transition-transform duration-300 ease-in"
-            enter-from-class="scale-90"
-            leave-to-class="scale-90"
+          <div
+            class="bg-gray-800 rounded-lg shadow-2xl p-6 max-w-md w-full mx-4 border border-gray-700"
+            @click.stop
           >
-            <div
-              v-if="isModalOpen"
-              class="relative bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-2xl w-full mx-4 overflow-hidden"
-              @click.stop
-            >
-              <!-- Header -->
-              <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-                <div class="flex-1">
-                  <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    {{ selectedNode?.name }}
-                  </h3>
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-12 h-12 rounded-full flex items-center justify-center text-white text-2xl"
+                  :style="{ backgroundColor: selectedNode.color }"
+                >
                   <span
-                    v-if="selectedNode?.type"
-                    :class="[
-                      'inline-block px-3 py-1 rounded-full text-sm font-medium text-white',
-                      selectedNode.type === 'project' ? 'bg-purple-500' :
-                      selectedNode.type === 'domain' ? 'bg-green-500' : 
-                      selectedNode.type === 'host' ? 'bg-blue-500' : 'bg-orange-500'
-                    ]"
-                  >
-                    {{ selectedNode.type === 'project' ? 'Project' :
-                       selectedNode.type === 'domain' ? 'Domain' : 
-                       selectedNode.type === 'host' ? 'Host' : 'Service' }}
-                  </span>
+                    class="material-icons"
+                    v-html="selectedNode.icon"
+                  />
                 </div>
-                <button
-                  type="button"
-                  @click="closeModal"
-                  class="ml-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
-                  aria-label="Close modal"
-                >
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              <!-- Body -->
-              <div class="p-6 space-y-4">
-                <div v-if="selectedNode?.ip">
-                  <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
-                    IP Address
-                  </h4>
-                  <p class="text-gray-600 dark:text-gray-400 font-mono">
-                    {{ selectedNode.ip }}
-                  </p>
-                </div>
-
-                <div v-if="selectedNode?.port">
-                  <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
-                    Port
-                  </h4>
-                  <p class="text-gray-600 dark:text-gray-400 font-mono">
-                    {{ selectedNode.port }}
-                  </p>
-                </div>
-
-                <div v-if="selectedNode?.uid && selectedNode.type !== 'project'">
-                  <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
-                    UID
-                  </h4>
-                  <p class="text-gray-600 dark:text-gray-400 font-mono text-sm bg-gray-100 dark:bg-gray-700 p-3 rounded">
-                    {{ selectedNode.uid }}
+                <div>
+                  <h3 class="text-xl font-bold text-white">
+                    {{ selectedNode.name }}
+                  </h3>
+                  <p class="text-sm text-gray-400 capitalize">
+                    {{ selectedNode.type }}
                   </p>
                 </div>
               </div>
-
-              <!-- Footer -->
-              <div class="flex justify-end p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-                <button
-                  type="button"
-                  @click="closeModal"
-                  class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors duration-200"
+              <button
+                @click="closePopup"
+                class="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  Close
-                </button>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Content -->
+            <div class="space-y-3">
+              <div
+                v-for="item in popupData"
+                :key="item.label"
+                class="flex justify-between items-center py-2 border-b border-gray-700"
+              >
+                <span class="text-gray-400 font-medium">{{ item.label }}:</span>
+                <span class="text-white font-mono text-sm">{{ item.value }}</span>
               </div>
             </div>
-          </Transition>
+
+            <!-- Footer -->
+            <div class="mt-6 flex justify-end">
+              <button
+                @click="closePopup"
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       </Transition>
     </div>
-
-    <!-- Fallback -->
-    <template #fallback>
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-lg text-center">
-        Loading Graph Component...
-      </div>
-    </template>
   </ClientOnly>
 </template>
 
 <style scoped>
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>

@@ -179,7 +179,7 @@ const columns: TableColumn<ADUser>[] = [
       :ui="{ tr: 'data-[expanded=true]:bg-(--ui-bg-elevated)/50' }"
     >
       <template #expanded="{ row }">
-        <p>TEST</p>
+        <OverviewUser :user="row.original" />
       </template>
     </UTable>
   </div>

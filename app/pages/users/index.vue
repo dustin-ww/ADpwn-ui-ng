@@ -13,6 +13,8 @@ useHead({
       <SharedHeading heading="Manage Users" />
       <ModalCreateUser class="mr-10" />
     </div>
-    <ListUsers />
+    <div class="ml-5">
+      <ListUsers />
+    </div>
   </div>
 </template>

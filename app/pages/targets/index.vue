@@ -22,10 +22,12 @@ function refetchTargets() {
         @click="isCreateModalOpen = true"
       />
     </div>
-    <ListTarget />
-    <ModalCreateTarget
-      v-model:open="isCreateModalOpen"
-      @target-created="refetchTargets"
-    />
+    <div class="ml-5 mr-5">
+      <ListTarget />
+      <ModalCreateTarget
+        v-model:open="isCreateModalOpen"
+        @target-created="refetchTargets"
+      />
+    </div>
   </div>
 </template>

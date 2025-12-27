@@ -37,29 +37,5 @@ export const useDomainsApi = () => {
         API_ROUTES.PROJECTS.DOMAINS.USERS(projectUid, domainUid),
         userData
       ),
-
-
-
-    
-
-    // Optional: Get Project Detail if needed later
-    // getProjectDetail: (uid: string) =>
-    //   api.get<ADPwnProject>(API_ROUTES.PROJECTS.DETAIL(uid)),
-
-    // Optional: Update Project if needed later
-    // updateProject: (uid: string, updateData: ProjectUpdateSchema) =>
-    //   api.update<ADPwnProject>(
-    //     API_ROUTES.PROJECTS.DETAIL(uid),
-    //     updateData,
-    //     { headers: { "Content-Type": "application/merge-patch+json" } }
-    //   ),
-
-    // Optional: Search Projects if implemented later
-    // searchProjects: (query: string) =>
-    //   api.customRequest<ProjectSearchResult[]>(
-    //     `${API_ROUTES.PROJECTS.ROOT}/search`,
-    //     'POST',
-    //     { data: { query } }
-    //   )
   };
 };

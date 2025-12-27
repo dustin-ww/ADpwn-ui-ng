@@ -5,7 +5,7 @@
     <UButton
       to="/start"
       ctarget="_blank"
-      class="flex items-center justify-center w-1text-center"
+      class="flex items-center justify-center w-1text-center font-extrabold"
     >
       Change Project
     </UButton>

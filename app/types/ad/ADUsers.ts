@@ -1,6 +1,7 @@
 export interface ADUser {
   uid: string;
   name: string;
+  description: string;
 
   // Identity
   samAccountName: string;

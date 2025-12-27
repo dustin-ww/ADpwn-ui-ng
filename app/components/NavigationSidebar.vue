@@ -27,28 +27,30 @@ const items = ref([
       type: "label",
       slot: "adlabel",
       defaultOpen: true,
-      icon: "i-lucide-settings",
+      icon: "i-lucide-database",
       children: [
         {
           label: "Domains",
           icon: "i-lucide-house",
           to: "/domains",
+          badge: '3',
         },
         {
           label: "Hosts",
           icon: "i-lucide-cloud-download",
           to: "/hosts",
+          badge: '5',
         },
         {
           label: "Services",
           icon: "i-lucide-smile",
-         
           to: "/services",
+          badge: '12',
         },
         {
           label: "Users",
           icon: "i-lucide-swatch-book",
-        
+          badge: '15',
           to: "/users",
         },
       ],
@@ -57,26 +59,13 @@ const items = ref([
   [
     {
       label: "Logs",
-      icon: "i-lucide-database",
-      children: [
-        {
-          label: "See Logs",
-          icon: "i-lucide-file-text",
-          to: "/events",
-        },
-      ],
+      icon: "i-lucide-file-text",
+      to: "/events",
     },
     {
       label: "Loot",
       icon: "i-lucide-box",
       to: "/",
-      children: [
-        {
-          label: "All",
-          icon: "i-lucide-file-text",
-          to: "/",
-        },
-      ],
     },
   ],
 ]);

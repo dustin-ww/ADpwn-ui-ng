@@ -6,7 +6,7 @@ const currentProjectStore = useCurrentProjectStore;
 const items = ref([
   [
     {
-      label: "ADPwnn Modules",
+      label: "Modules",
       icon: "i-lucide-book-open",
       active: true,
       defaultOpen: true,
